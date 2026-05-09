@@ -250,7 +250,14 @@ def gen_graph_data(birthday):
     start_year = current_year - 2
     prompt = f"""生年月日: {birthday}
 
-5つの占術それぞれについて、全体運スコア（1-10の整数）を算出してください。
+5つの占術それぞれについて、全体運スコア（1〜10の整数）を算出してください。
+
+【重要なルール】
+・スコアは1〜10の全範囲を積極的に使うこと（5〜7の中間値ばかりはNG）
+・好調な月/年は8〜10、低調な時期は1〜3を必ず含めること
+・各占術で異なる波形になるよう個性を出すこと
+・運気の山と谷がはっきり見えるよう変化をつけること
+
 1) {current_year}年の1月〜12月（12個）
 2) {start_year}年〜{start_year + 12}年（13個）
 
@@ -290,7 +297,7 @@ def generate_fortune_image(graph_data, birthday_iso):
     current_month = datetime.now().month
     start_year = current_year - 2
 
-    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(8, 9), facecolor='#0c0c22')
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(10, 11), facecolor='#0c0c22')
     bday_disp = iso_to_birthday(birthday_iso)
     fig.suptitle(f'星夜堂  運勢グラフ  ({bday_disp})',
                  color='#c8a8ff', fontsize=11, y=0.99)
@@ -309,9 +316,10 @@ def generate_fortune_image(graph_data, birthday_iso):
     for ax, key, labels, title, curr_idx in charts:
         ax.set_facecolor('#10102c')
         ax.set_title(title, color='#a0c8ff', fontsize=10, pad=7)
-        ax.set_ylim(0.5, 10.5)
+        ax.set_ylim(1, 10)
         ax.set_yticks(range(1, 11))
-        ax.tick_params(colors='#8888bb', labelsize=8.5)
+        ax.set_yticklabels([str(i) for i in range(1, 11)], fontsize=9)
+        ax.tick_params(colors='#8888bb', labelsize=9)
         ax.grid(color='#1e1e44', linewidth=0.7, alpha=0.8)
         for spine in ax.spines.values():
             spine.set_color('#2a2a54')
@@ -341,9 +349,9 @@ def generate_fortune_image(graph_data, birthday_iso):
                   framealpha=0.9, edgecolor='#3a3a64',
                   handlelength=1.5, handletextpad=0.5)
 
-    plt.tight_layout(rect=[0, 0, 1, 0.97])
+    plt.tight_layout(rect=[0, 0, 1, 0.97], hspace=0.4)
     buf = BytesIO()
-    fig.savefig(buf, format='png', dpi=130,
+    fig.savefig(buf, format='png', dpi=150,
                 bbox_inches='tight', facecolor='#0c0c22')
     plt.close(fig)
     buf.seek(0)
@@ -359,34 +367,34 @@ CAT_EMOJI = {
 def fmt_daily(data):
     if not data:
         return "⚠️ 運勢の計算に失敗しました。もう一度お試しください。"
-    lines = [f"✨ {data.get('date','今日')}の運勢 ✨",
+    lines = [f"📅 {data.get('date','今日')}の運勢",
              f"🌙 {data.get('overall_message','')}",
              "━━━━━━━━━━━━━━━━━━"]
     for cat, emoji in CAT_EMOJI.items():
         d = data.get("categories", {}).get(cat, {})
         score = d.get("score", 5)
-        lines.append(f"{emoji} {cat}  {score_bar(score)}  {score}/10")
-        lines.append(f"   {d.get('message','')}")
+        lines.append(f"  {cat}  {score}/10")
+        lines.append(f"  {d.get('message','')}")
         if d.get("lucky"):
-            lines.append(f"   🍀 {d['lucky']}")
+            lines.append(f"  → {d['lucky']}")
     return "\n".join(lines)
 
 
 def fmt_monthly(data):
     if not data:
         return "⚠️ 今月の運勢の計算に失敗しました。"
-    trend_icon = {"上昇": "📈", "安定": "➡️", "下降": "📉"}
-    lines = [f"🌕 {data.get('month','今月')}の運勢 🌕",
-             f"✨ {data.get('overall_message','')}",
+    trend_icon = {"上昇": "↑", "安定": "→", "下降": "↓"}
+    lines = [f"📆 {data.get('month','今月')}の運勢",
+             f"🌙 {data.get('overall_message','')}",
              "━━━━━━━━━━━━━━━━━━"]
     for cat, emoji in CAT_EMOJI.items():
         d = data.get("categories", {}).get(cat, {})
         score = d.get("score", 5)
         trend = d.get("trend", "安定")
-        lines.append(f"{emoji} {cat}  {score_bar(score)}  {trend_icon.get(trend,'➡️')}")
+        lines.append(f"  {cat}  {score}/10  {trend_icon.get(trend,'→')}")
         lines.append(f"   {d.get('message','')}")
     lines += ["━━━━━━━━━━━━━━━━━━",
-              f"🌟 吉日：{data.get('best_days','-')}",
+              f"吉日：{data.get('best_days','-')}",
               f"⚠️ 注意日：{data.get('caution_days','-')}"]
     return "\n".join(lines)
 
