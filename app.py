@@ -11,9 +11,17 @@ import anthropic
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+import matplotlib.font_manager as fm
+
+# Japanese font setup - explicitly load font from package to avoid cache issues
 try:
-    import japanize_matplotlib  # Japanese font support
-except ImportError:
+    import japanize_matplotlib as _jm
+    import os as _os
+    _font_path = _os.path.join(_os.path.dirname(_jm.__file__), 'fonts', 'ipaexg.ttf')
+    if _os.path.exists(_font_path):
+        fm.fontManager.addfont(_font_path)
+        matplotlib.rcParams['font.family'] = 'IPAexGothic'
+except Exception:
     pass
 
 from linebot.v3 import WebhookHandler
@@ -111,7 +119,7 @@ def main_menu_qr():
         QuickReplyItem(action=MessageAction(label="📅 今日の運勢",  text="今日の運勢")),
         QuickReplyItem(action=MessageAction(label="📆 今月の運勢",  text="今月の運勢")),
         QuickReplyItem(action=MessageAction(label="🔮 占術別診断",  text="占術別診断")),
-        QuickReplyItem(action=MessageAction(label="📊 12年の推移",  text="12年の推移")),
+        QuickReplyItem(action=MessageAction(label="📊 今年/12年推移グラフ",  text="今年/12年推移グラフ")),
         QuickReplyItem(action=MessageAction(label="✏️ 誕生日変更",  text="誕生日変更")),
     ])
 
@@ -510,7 +518,7 @@ WELCOME_TEXT = """🌙 星夜堂へようこそ ✨
   数秘術・紫微斗数の5占術の結果を
   スコア付きで一覧できます
 
-📊 12年の推移
+📊 今年/12年推移グラフ
   5占術の全体運を折れ線グラフ画像で
   チャットに直接送信します
 
@@ -560,7 +568,7 @@ def handle_message(event):
         "今日の運勢": "📅 今日の運勢を占い中です...\nしばらくお待ちください 🌙",
         "今月の運勢": "📆 今月の運勢を計算中です...\nしばらくお待ちください 🌕",
         "占術別診断": "🔮 5つの占術で診断中です...\nしばらくお待ちください ✨",
-        "12年の推移": "📊 12年間の運勢推移を計算中です...\nしばらくお待ちください 🌌",
+        "今年/12年推移グラフ": "📊 12年間の運勢推移を計算中です...\nしばらくお待ちください 🌌",
     }
     fortune_map = {
         "今日の運勢": "daily",
@@ -568,7 +576,7 @@ def handle_message(event):
         "占術別診断": "divination",
     }
 
-    if text == "12年の推移":
+    if text == "今年/12年推移グラフ":
         reply_msg(event.reply_token,
                   "📈 折れ線グラフを生成中です...\nしばらくお待ちください 🌌\n（初回は20〜30秒かかります）")
         threading.Thread(
