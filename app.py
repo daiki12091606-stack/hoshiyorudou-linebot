@@ -72,7 +72,7 @@ COLORS = {
 
 def get_user(user_id):
     if user_id not in user_data:
-        user_data[user_id] = {"state": "new", "birthday": None}
+        user_data[user_id] = {"state": "new", "birthday": None, "name": None, "birthplace": None, "birth_time": None}
     return user_data[user_id]
 
 
@@ -94,6 +94,51 @@ def parse_birthday(text):
                 pass
     return None
 
+
+
+def parse_birth_time(text):
+    import re as _re
+    m = _re.search(r'午前\s*(\d{1,2})時(?:\s*(\d{1,2})分)?', text)
+    if m:
+        h, mn = int(m.group(1)), int(m.group(2) or 0)
+        return "午前" + str(h) + "時" + (str(mn) + "分" if mn else "")
+    m = _re.search(r'午後\s*(\d{1,2})時(?:\s*(\d{1,2})分)?', text)
+    if m:
+        h, mn = int(m.group(1)), int(m.group(2) or 0)
+        return "午後" + str(h) + "時" + (str(mn) + "分" if mn else "")
+    m = _re.search(r'\b(\d{1,2}):(\d{2})\b', text)
+    if m:
+        return str(int(m.group(1))) + "時" + str(int(m.group(2))) + "分"
+    return None
+
+
+def parse_extra_info(text):
+    import re as _re
+    result = {}
+    cleaned = _re.sub(r'\d{2,4}[年/\-.]\d{1,2}[月/\-.]\d{1,2}日?', '', text)
+    cleaned = _re.sub(r'午前|午後|\d{1,2}時\d*分?|\d{1,2}:\d{2}', '', cleaned)
+    cleaned = _re.sub(r'[\s\u3000]+', ' ', cleaned).strip()
+    bp = _re.search(r'[\u3040-\u9fff\u30a0-\u30ff]+[都道府県市区町村]', cleaned)
+    if bp:
+        result["birthplace"] = bp.group(0)
+        cleaned = cleaned.replace(bp.group(0), '').strip()
+    nm = _re.search(r'[\u4e00-\u9fff\u30a0-\u30ff][\u3040-\u9fff\u30a0-\u30ff]{1,7}', cleaned)
+    if nm:
+        result["name"] = nm.group(0)
+    return result
+
+
+def build_user_context(user):
+    bd = user.get("birthday", "")
+    bt = user.get("birth_time")
+    nm = user.get("name")
+    bp = user.get("birthplace")
+    lines = ["生年月日: " + bd + (" " + bt if bt else "")]
+    if nm:
+        lines.append("名前: " + nm)
+    if bp:
+        lines.append("出生地: " + bp)
+    return "\n".join(lines)
 
 def birthday_to_iso(bday):
     try:
@@ -184,9 +229,11 @@ def ask_claude(prompt, max_tokens=2000):
     return None
 
 
-def gen_daily(birthday):
+def gen_daily(user):
     today = datetime.now().strftime("%Y年%m月%d日")
-    prompt = f"""生年月日: {birthday}
+    ctx = build_user_context(user)
+    birthday = user.get("birthday", "")
+    prompt = f"""{ctx}
 今日: {today}
 
 今日の運勢を以下のJSON形式で返してください。
@@ -205,9 +252,11 @@ def gen_daily(birthday):
     return ask_claude(prompt)
 
 
-def gen_monthly(birthday):
+def gen_monthly(user):
     month = datetime.now().strftime("%Y年%m月")
-    prompt = f"""生年月日: {birthday}
+    ctx = build_user_context(user)
+    birthday = user.get("birthday", "")
+    prompt = f"""{ctx}
 対象月: {month}
 
 今月の運勢を以下のJSON形式で返してください。
@@ -228,9 +277,11 @@ def gen_monthly(birthday):
     return ask_claude(prompt)
 
 
-def gen_divination(birthday):
+def gen_divination(user):
     today = datetime.now().strftime("%Y年%m月%d日")
-    prompt = f"""生年月日: {birthday}
+    ctx = build_user_context(user)
+    birthday = user.get("birthday", "")
+    prompt = f"""{ctx}
 今日: {today}
 
 5つの占術でこの人物を診断してJSON形式で返してください。
@@ -244,11 +295,13 @@ def gen_divination(birthday):
     return ask_claude(prompt, max_tokens=2500)
 
 
-def gen_yearly(birthday):
+def gen_yearly(user):
     current_year = datetime.now().year
     start = current_year - 2
     end = current_year + 10
-    prompt = f"""生年月日: {birthday}
+    ctx = build_user_context(user)
+    birthday = user.get("birthday", "")
+    prompt = f"""{ctx}
 
 {start}年から{end}年までの13年間の運勢推移をJSON形式で返してください。
 {{
@@ -457,16 +510,17 @@ def fmt_yearly(data):
               f"⚠️ 注意の年：{data.get('caution_year','-')}年"]
     return "\n".join(lines)
 
-def fortune_thread(user_id, birthday, fortune_type):
+def fortune_thread(user_id, user, fortune_type):
     try:
+        birthday = user.get("birthday", "")
         if fortune_type == "daily":
-            push(user_id, fmt_daily(gen_daily(birthday)))
+            push(user_id, fmt_daily(gen_daily(user)))
         elif fortune_type == "monthly":
-            push(user_id, fmt_monthly(gen_monthly(birthday)))
+            push(user_id, fmt_monthly(gen_monthly(user)))
         elif fortune_type == "divination":
-            push(user_id, fmt_divination(gen_divination(birthday)))
+            push(user_id, fmt_divination(gen_divination(user)))
         elif fortune_type == "yearly":
-            push(user_id, fmt_yearly(gen_yearly(birthday)))
+            push(user_id, fmt_yearly(gen_yearly(user)))
     except Exception as e:
         push(user_id, f"⚠️ エラーが発生しました。もう一度お試しください。\n({e})")
 
@@ -524,12 +578,15 @@ WELCOME_TEXT = """🌙 星夜堂へようこそ ✨
   チャットに直接送信します
 
 ━━━━━━━━━━━━━━━━━━
-まず、あなたの生年月日を
-教えてください。
+まず、以下を教えてください。
+
+📅 生年月日（分かれば時刻も）
+👤 名前 ※精度向上
+📍 出生地 ※精度向上
 
 入力例：
-・1990年3月15日
-・1990/3/15"""
+1990年3月15日 午前10時
+田中太郎 東京都"""
 
 
 @handler.add(FollowEvent)
@@ -555,8 +612,20 @@ def handle_message(event):
         if birthday:
             user["birthday"] = birthday
             user["state"] = "menu"
+            bt = parse_birth_time(text)
+            if bt:
+                user["birth_time"] = bt
+            extra = parse_extra_info(text)
+            if extra.get("name"):
+                user["name"] = extra["name"]
+            if extra.get("birthplace"):
+                user["birthplace"] = extra["birthplace"]
+            detail = ""
+            if user.get("birth_time"): detail += f" {user['birth_time']}"
+            if user.get("name"): detail += f"\n👤 {user['name']}"
+            if user.get("birthplace"): detail += f"\n📍 {user['birthplace']}"
             reply_msg(event.reply_token,
-                      f"✨ {birthday} で登録しました！\n\nメニューからお選びください。",
+                      f"✨ {birthday}{detail}\n\nで登録しました！\nメニューからお選びください。",
                       with_menu=True)
         else:
             reply_msg(event.reply_token,
@@ -591,7 +660,7 @@ def handle_message(event):
         reply_msg(event.reply_token, loading_msgs[text])
         threading.Thread(
             target=fortune_thread,
-            args=(user_id, birthday, fortune_map[text]),
+            args=(user_id, user, fortune_map[text]),
             daemon=True,
         ).start()
     else:
