@@ -349,7 +349,8 @@ def generate_fortune_image(graph_data, birthday_iso):
                   framealpha=0.9, edgecolor='#3a3a64',
                   handlelength=1.5, handletextpad=0.5)
 
-    plt.tight_layout(rect=[0, 0, 1, 0.97], hspace=0.4)
+    plt.tight_layout(rect=[0, 0, 1, 0.97])
+    plt.subplots_adjust(hspace=0.4)
     buf = BytesIO()
     fig.savefig(buf, format='png', dpi=150,
                 bbox_inches='tight', facecolor='#0c0c22')
