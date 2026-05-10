@@ -12,15 +12,25 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import matplotlib.font_manager as fm
+import os as _os
+import glob as _glob
 
-# Japanese font setup - explicitly load font from package to avoid cache issues
+# Delete stale matplotlib font cache so Japanese fonts are always found
+try:
+    _cache_dir = matplotlib.get_cachedir()
+    for _fc in _glob.glob(_os.path.join(_cache_dir, 'fontlist*.json')):
+        _os.remove(_fc)
+except Exception:
+    pass
+
+# Load Japanese font explicitly
 try:
     import japanize_matplotlib as _jm
-    import os as _os
     _font_path = _os.path.join(_os.path.dirname(_jm.__file__), 'fonts', 'ipaexg.ttf')
     if _os.path.exists(_font_path):
         fm.fontManager.addfont(_font_path)
         matplotlib.rcParams['font.family'] = 'IPAexGothic'
+        plt.rcParams['font.family'] = 'IPAexGothic'
 except Exception:
     pass
 
@@ -253,39 +263,30 @@ def gen_yearly(birthday):
 
 
 def gen_graph_data(birthday):
-    current_year = datetime.now().year
-    start_year = current_year - 2
-    prompt = f"""生年月日: {birthday}
+    """Deterministic fortune scores derived purely from birthday — no AI call needed."""
+    import hashlib, math
+    h = int(hashlib.sha256(birthday.encode()).hexdigest(), 16)
 
-5つの占術それぞれについて、全体運スコア（1〜10の整数）を算出してください。
+    def wave_scores(seed, n):
+        phase  = (seed & 0xFFFF) / 0xFFFF * 2 * math.pi
+        freq   = 1.0 + (seed >> 16 & 3) * 0.5
+        amp    = 2.5 + (seed >> 20 & 3) * 0.5
+        center = 4   + (seed >> 24 & 3)
+        scores = []
+        for j in range(n):
+            val = center + amp * math.sin(freq * 2 * math.pi * j / n + phase)
+            noise_s = (seed ^ (j * 0x9E3779B9)) & 0xFFFFFFFF
+            val += ((noise_s & 0xFF) / 255.0 - 0.5) * 1.5
+            scores.append(max(1, min(10, round(val))))
+        return scores
 
-【重要なルール】
-・スコアは1〜10の全範囲を積極的に使うこと（5〜7の中間値ばかりはNG）
-・好調な月/年は8〜10、低調な時期は1〜3を必ず含めること
-・各占術で異なる波形になるよう個性を出すこと
-・運気の山と谷がはっきり見えるよう変化をつけること
-
-1) {current_year}年の1月〜12月（12個）
-2) {start_year}年〜{start_year + 12}年（13個）
-
-JSON形式（数値配列のみ）：
-{{
-  "monthly": {{
-    "四柱推命":   [1,2,3,4,5,6,7,8,9,10,11,12],
-    "算命学":     [12個],
-    "西洋占星術": [12個],
-    "数秘術":     [12個],
-    "紫微斗数":   [12個]
-  }},
-  "yearly": {{
-    "四柱推命":   [13個],
-    "算命学":     [13個],
-    "西洋占星術": [13個],
-    "数秘術":     [13個],
-    "紫微斗数":   [13個]
-  }}
-}}"""
-    return ask_claude(prompt, max_tokens=1500)
+    arts = ["四柱推命", "算命学", "西洋占星術", "数秘術", "紫微斗数"]
+    monthly, yearly = {}, {}
+    for i, art in enumerate(arts):
+        art_seed = (h ^ (i * 0x517CC1B727220A95)) & 0xFFFFFFFF
+        monthly[art] = wave_scores(art_seed, 12)
+        yearly[art]  = wave_scores(art_seed ^ 0xDEADBEEF, 13)
+    return {"monthly": monthly, "yearly": yearly}
 
 
 def get_graph_data_cached(birthday_iso):
