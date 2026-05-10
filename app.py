@@ -112,7 +112,6 @@ def main_menu_qr():
         QuickReplyItem(action=MessageAction(label="📆 今月の運勢",  text="今月の運勢")),
         QuickReplyItem(action=MessageAction(label="🔮 占術別診断",  text="占術別診断")),
         QuickReplyItem(action=MessageAction(label="📊 12年の推移",  text="12年の推移")),
-        QuickReplyItem(action=MessageAction(label="📈 グラフ表示",  text="グラフ表示")),
         QuickReplyItem(action=MessageAction(label="✏️ 誕生日変更",  text="誕生日変更")),
     ])
 
@@ -511,11 +510,7 @@ WELCOME_TEXT = """🌙 星夜堂へようこそ ✨
   数秘術・紫微斗数の5占術の結果を
   スコア付きで一覧できます
 
-📊 12年間の運勢推移
-  過去2年〜未来10年の運気を
-  テキストグラフで可視化
-
-📈 グラフ表示
+📊 12年の推移
   5占術の全体運を折れ線グラフ画像で
   チャットに直接送信します
 
@@ -571,10 +566,9 @@ def handle_message(event):
         "今日の運勢": "daily",
         "今月の運勢": "monthly",
         "占術別診断": "divination",
-        "12年の推移": "yearly",
     }
 
-    if text == "グラフ表示":
+    if text == "12年の推移":
         reply_msg(event.reply_token,
                   "📈 折れ線グラフを生成中です...\nしばらくお待ちください 🌌\n（初回は20〜30秒かかります）")
         threading.Thread(
