@@ -12,27 +12,6 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import matplotlib.font_manager as fm
-import os as _os
-import glob as _glob
-
-# Delete stale matplotlib font cache so Japanese fonts are always found
-try:
-    _cache_dir = matplotlib.get_cachedir()
-    for _fc in _glob.glob(_os.path.join(_cache_dir, 'fontlist*.json')):
-        _os.remove(_fc)
-except Exception:
-    pass
-
-# Load Japanese font explicitly
-try:
-    import japanize_matplotlib as _jm
-    _font_path = _os.path.join(_os.path.dirname(_jm.__file__), 'fonts', 'ipaexg.ttf')
-    if _os.path.exists(_font_path):
-        fm.fontManager.addfont(_font_path)
-        matplotlib.rcParams['font.family'] = 'IPAexGothic'
-        plt.rcParams['font.family'] = 'IPAexGothic'
-except Exception:
-    pass
 
 from linebot.v3 import WebhookHandler
 from linebot.v3.exceptions import InvalidSignatureError
@@ -315,10 +294,15 @@ def gen_yearly(user):
     return ask_claude(prompt, max_tokens=2500)
 
 
-def gen_graph_data(birthday):
-    """Deterministic fortune scores derived purely from birthday — no AI call needed."""
+def gen_graph_data(user):
+    """Deterministic fortune scores from birthday, name, birthplace, birth_time."""
     import hashlib, math
-    h = int(hashlib.sha256(birthday.encode()).hexdigest(), 16)
+    birthday = user.get("birthday", "")
+    name = user.get("name") or ""
+    birthplace = user.get("birthplace") or ""
+    birth_time = user.get("birth_time") or ""
+    seed_str = "|".join([birthday, name, birthplace, birth_time])
+    h = int(hashlib.sha256(seed_str.encode()).hexdigest(), 16)
 
     def wave_scores(seed, n):
         phase  = (seed & 0xFFFF) / 0xFFFF * 2 * math.pi
@@ -342,26 +326,54 @@ def gen_graph_data(birthday):
     return {"monthly": monthly, "yearly": yearly}
 
 
-def get_graph_data_cached(birthday_iso):
+def get_graph_data_cached(user):
+    birthday = user.get("birthday", "")
+    name = user.get("name") or ""
+    birthplace = user.get("birthplace") or ""
+    birth_time = user.get("birth_time") or ""
+    cache_key = birthday_to_iso(birthday) + "|" + name + "|" + birthplace + "|" + birth_time
     now = datetime.now()
-    if birthday_iso in graph_cache:
-        age_h = (now - graph_cache[birthday_iso]["cached_at"]).total_seconds() / 3600
+    if cache_key in graph_cache:
+        age_h = (now - graph_cache[cache_key]["cached_at"]).total_seconds() / 3600
         if age_h < 24:
-            return graph_cache[birthday_iso]["data"]
-    data = gen_graph_data(iso_to_birthday(birthday_iso))
+            return graph_cache[cache_key]["data"]
+    data = gen_graph_data(user)
     if data:
-        graph_cache[birthday_iso] = {"data": data, "cached_at": now}
+        graph_cache[cache_key] = {"data": data, "cached_at": now}
     return data
 
-def generate_fortune_image(graph_data, birthday_iso):
+def generate_fortune_image(graph_data, user):
+    # Load Japanese font explicitly for this render
+    try:
+        import japanize_matplotlib as _jm2, os as _os3
+        _fp = _os3.path.join(_os3.path.dirname(_jm2.__file__), 'fonts', 'ipaexg.ttf')
+        if _os3.path.exists(_fp):
+            fm.fontManager.addfont(_fp)
+            _fprop = fm.FontProperties(fname=_fp)
+            matplotlib.rcParams['font.family'] = _fprop.get_name()
+            plt.rcParams['font.family'] = _fprop.get_name()
+    except Exception:
+        pass
+
     current_year = datetime.now().year
     current_month = datetime.now().month
     start_year = current_year - 2
 
+    birthday = user.get("birthday", "")
+    birthday_iso = birthday_to_iso(birthday) or ""
+    bday_disp = iso_to_birthday(birthday_iso) if birthday_iso else birthday
+    name = user.get("name") or ""
+    birthplace = user.get("birthplace") or ""
+    birth_time = user.get("birth_time") or ""
+
+    info_parts = [bday_disp]
+    if birth_time: info_parts.append(birth_time)
+    if name: info_parts.append(name)
+    if birthplace: info_parts.append(birthplace)
+    title_str = '星夜堂  運勢グラフ  (' + '  '.join(info_parts) + ')'
+
     fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(10, 11), facecolor='#0c0c22')
-    bday_disp = iso_to_birthday(birthday_iso)
-    fig.suptitle(f'星夜堂  運勢グラフ  ({bday_disp})',
-                 color='#c8a8ff', fontsize=11, y=0.99)
+    fig.suptitle(title_str, color='#c8a8ff', fontsize=11, y=0.99)
 
     charts = [
         (ax1, 'monthly',
@@ -418,12 +430,6 @@ def generate_fortune_image(graph_data, birthday_iso):
     plt.close(fig)
     buf.seek(0)
     return buf.getvalue()
-
-
-CAT_EMOJI = {
-    "全体運": "⭐", "金運": "💰", "恋愛運": "💕",
-    "仕事運": "💼", "健康運": "💪", "対人運": "🤝",
-}
 
 
 def fmt_daily(data):
@@ -525,15 +531,15 @@ def fortune_thread(user_id, user, fortune_type):
         push(user_id, f"⚠️ エラーが発生しました。もう一度お試しください。\n({e})")
 
 
-def graph_image_thread(user_id, birthday):
+def graph_image_thread(user_id, user):
     try:
-        birthday_iso = birthday_to_iso(birthday)
-        data = get_graph_data_cached(birthday_iso)
+        birthday_iso = birthday_to_iso(user.get("birthday", ""))
+        data = get_graph_data_cached(user)
         if not data:
             push(user_id, "⚠️ グラフデータの生成に失敗しました。もう一度お試しください。")
             return
 
-        img_bytes = generate_fortune_image(data, birthday_iso)
+        img_bytes = generate_fortune_image(data, user)
         img_id = uuid.uuid4().hex
         store_image(img_id, img_bytes)
 
@@ -651,7 +657,7 @@ def handle_message(event):
                   "📈 折れ線グラフを生成中です...\nしばらくお待ちください 🌌\n（初回は20〜30秒かかります）")
         threading.Thread(
             target=graph_image_thread,
-            args=(user_id, birthday),
+            args=(user_id, user),
             daemon=True,
         ).start()
         return
