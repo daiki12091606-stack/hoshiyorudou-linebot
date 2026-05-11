@@ -47,6 +47,21 @@ COLORS = {
     "数秘術":     "#66BB6A",
     "紫微斗数":   "#AB47BC",
 }
+SYSTEM_EN = {
+    "四柱推命":   "4Pillars",
+    "算命学":     "9-Star",
+    "西洋占星術": "Western",
+    "数秘術":     "Numerol.",
+    "紫微斗数":   "ZWDS",
+}
+LEGEND_TEXT = (
+    "━" * 14 + "\n"
+    "U0001F7E6 4Pillars = 四柱推命\n"
+    "U0001F7E1 9-Star   = 算命学\n"
+    "U0001F534 Western  = 西洋占星術\n"
+    "U0001F7E2 Numerol. = 数秘術\n"
+    "U0001F7E3 ZWDS     = 紫微斗数"
+)
 
 
 def get_user(user_id):
@@ -343,18 +358,6 @@ def get_graph_data_cached(user):
     return data
 
 def generate_fortune_image(graph_data, user):
-    # Load Japanese font explicitly for this render
-    try:
-        import japanize_matplotlib as _jm2, os as _os3
-        _fp = _os3.path.join(_os3.path.dirname(_jm2.__file__), 'fonts', 'ipaexg.ttf')
-        if _os3.path.exists(_fp):
-            fm.fontManager.addfont(_fp)
-            _fprop = fm.FontProperties(fname=_fp)
-            matplotlib.rcParams['font.family'] = _fprop.get_name()
-            plt.rcParams['font.family'] = _fprop.get_name()
-    except Exception:
-        pass
-
     current_year = datetime.now().year
     current_month = datetime.now().month
     start_year = current_year - 2
@@ -362,27 +365,21 @@ def generate_fortune_image(graph_data, user):
     birthday = user.get("birthday", "")
     birthday_iso = birthday_to_iso(birthday) or ""
     bday_disp = iso_to_birthday(birthday_iso) if birthday_iso else birthday
-    name = user.get("name") or ""
-    birthplace = user.get("birthplace") or ""
-    birth_time = user.get("birth_time") or ""
-
-    info_parts = [bday_disp]
-    if birth_time: info_parts.append(birth_time)
-    if name: info_parts.append(name)
-    if birthplace: info_parts.append(birthplace)
-    title_str = '星夜堂  運勢グラフ  (' + '  '.join(info_parts) + ')'
 
     fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(10, 11), facecolor='#0c0c22')
-    fig.suptitle(title_str, color='#c8a8ff', fontsize=11, y=0.99)
+    fig.suptitle(f'Hoshiyorudou Fortune  ({bday_disp})',
+                 color='#c8a8ff', fontsize=11, y=0.99)
 
+    month_labels = ['Jan','Feb','Mar','Apr','May','Jun',
+                    'Jul','Aug','Sep','Oct','Nov','Dec']
     charts = [
         (ax1, 'monthly',
-         [f"{m}月" for m in range(1, 13)],
-         f'{current_year}年  月別運勢推移（全体運）',
+         month_labels,
+         f'{current_year} Monthly Fortune',
          current_month - 1),
         (ax2, 'yearly',
          [str(start_year + i) for i in range(13)],
-         '12年間の運勢推移（全体運）',
+         '12-Year Fortune Trend',
          2),
     ]
 
@@ -406,7 +403,7 @@ def generate_fortune_image(graph_data, user):
                         linewidth=2.2,
                         marker='o',
                         markersize=3.5,
-                        label=system,
+                        label=SYSTEM_EN[system],
                         alpha=0.92)
 
         ax.set_xticks(range(len(labels)))
@@ -551,9 +548,13 @@ def graph_image_thread(user_id, user):
         img_url = f"{base}/img/{img_id}"
         push_image(user_id, img_url)
 
-        push(user_id,
-             "📸 スクリーンショットで保存できます。\n※データは24時間キャッシュされます。",
-             with_menu=True)
+        legend = (
+            "📊 グラフの色の凡例\n"
+            + LEGEND_TEXT + "\n\n"
+            "📸 スクリーンショットで保存できます。\n"
+            "※データは24時間キャッシュされます。"
+        )
+        push(user_id, legend, with_menu=True)
 
     except Exception as e:
         push(user_id, f"⚠️ グラフの生成に失敗しました。\n({e})")
