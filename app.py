@@ -117,9 +117,13 @@ def parse_birth_time(text):
 def parse_extra_info(text):
     import re as _re
     result = {}
-    cleaned = _re.sub(r'\d{2,4}[年/\-.]\d{1,2}[月/\-.]\d{1,2}日?', '', text)
+    cleaned = _re.sub(r'\d{2,4}[年/\-.]+\d{1,2}[月/\-.]+\d{1,2}日?', '', text)
     cleaned = _re.sub(r'午前|午後|\d{1,2}時\d*分?|\d{1,2}:\d{2}', '', cleaned)
     cleaned = _re.sub(r'[\s\u3000]+', ' ', cleaned).strip()
+    kana_paren = _re.search(r'[（(]([\u3040-\u309f\u30fc]{2,})[）)]', cleaned)
+    if kana_paren:
+        result["name_kana"] = kana_paren.group(1)
+        cleaned = cleaned.replace(kana_paren.group(0), '').strip()
     bp = _re.search(r'[\u3040-\u9fff\u30a0-\u30ff]+[都道府県市区町村]', cleaned)
     if bp:
         result["birthplace"] = bp.group(0)
@@ -127,17 +131,20 @@ def parse_extra_info(text):
     nm = _re.search(r'[\u4e00-\u9fff\u30a0-\u30ff][\u3040-\u9fff\u30a0-\u30ff]{1,7}', cleaned)
     if nm:
         result["name"] = nm.group(0)
+    if "name_kana" not in result:
+        kana_only = _re.search(r'^[\u3040-\u309f\u30fc]{2,}$', cleaned.strip())
+        if kana_only:
+            result["name_kana"] = kana_only.group(0)
     return result
-
-
 def build_user_context(user):
     bd = user.get("birthday", "")
     bt = user.get("birth_time")
     nm = user.get("name")
+    nk = user.get("name_kana")
     bp = user.get("birthplace")
     lines = ["生年月日: " + bd + (" " + bt if bt else "")]
     if nm:
-        lines.append("名前: " + nm)
+        lines.append("名前: " + nm + ("（" + nk + "）" if nk else ""))
     if bp:
         lines.append("出生地: " + bp)
     return "\n".join(lines)
@@ -318,37 +325,121 @@ def gen_yearly(user):
 
 
 def gen_graph_data(user):
-    """Deterministic fortune scores from birthday, name, birthplace, birth_time."""
     import hashlib, math
-    birthday = user.get("birthday", "")
-    name = user.get("name") or ""
+    from datetime import datetime, date as _date
+    import re as _re
+
+    birthday   = user.get("birthday", "")
+    name       = user.get("name") or ""
+    name_kana  = user.get("name_kana") or ""
     birthplace = user.get("birthplace") or ""
     birth_time = user.get("birth_time") or ""
-    seed_str = "|".join([birthday, name, birthplace, birth_time])
-    h = int(hashlib.sha256(seed_str.encode()).hexdigest(), 16)
 
-    def wave_scores(seed, n):
-        phase  = (seed & 0xFFFF) / 0xFFFF * 2 * math.pi
-        freq   = 1.0 + (seed >> 16 & 3) * 0.5
-        amp    = 2.5 + (seed >> 20 & 3) * 0.5
-        center = 4   + (seed >> 24 & 3)
-        scores = []
-        for j in range(n):
-            val = center + amp * math.sin(freq * 2 * math.pi * j / n + phase)
-            noise_s = (seed ^ (j * 0x9E3779B9)) & 0xFFFFFFFF
-            val += ((noise_s & 0xFF) / 255.0 - 0.5) * 1.5
-            scores.append(max(1, min(10, round(val))))
-        return scores
+    # Parse birth date
+    bday_iso = birthday_to_iso(birthday) or ""
+    by, bm, bd_num = 1990, 1, 1
+    if bday_iso:
+        try:
+            parts = bday_iso.split('-')
+            by, bm, bd_num = int(parts[0]), int(parts[1]), int(parts[2])
+        except Exception:
+            pass
 
-    arts = ["四柱推命", "算命学", "西洋占星術", "数秘術", "紫微斗数"]
-    monthly, yearly = {}, {}
-    for i, art in enumerate(arts):
-        art_seed = (h ^ (i * 0x517CC1B727220A95)) & 0xFFFFFFFF
-        monthly[art] = wave_scores(art_seed, 12)
-        yearly[art]  = wave_scores(art_seed ^ 0xDEADBEEF, 13)
-    return {"monthly": monthly, "yearly": yearly}
+    # Parse birth hour
+    birth_hour = 12
+    if birth_time:
+        h = _re.search(r'午前(\d+)', birth_time)
+        if h: birth_hour = int(h.group(1)) % 12
+        h = _re.search(r'午後(\d+)', birth_time)
+        if h: birth_hour = int(h.group(1)) % 12 + 12
+        h = _re.search(r'(\d{1,2}):(\d{2})', birth_time)
+        if h: birth_hour = int(h.group(1))
+        h2 = _re.search(r'(\d{1,2})時', birth_time)
+        if h2 and birth_hour == 12: birth_hour = int(h2.group(1))
 
+    # 1. 数秘術: ライフパスナンバー + 名前数
+    def digit_reduce(n):
+        while n > 9 and n not in (11, 22, 33):
+            n = sum(int(c) for c in str(n))
+        return n
+    life_path = digit_reduce(by + bm + bd_num)
+    KANA_VAL = {
+        'あ':1,'い':2,'う':3,'え':4,'お':5,
+        'か':1,'き':2,'く':3,'け':4,'こ':5,
+        'さ':1,'し':2,'す':3,'せ':4,'そ':5,
+        'た':1,'ち':2,'つ':3,'て':4,'と':5,
+        'な':1,'に':2,'ぬ':3,'ね':4,'の':5,
+        'は':1,'ひ':2,'ふ':3,'へ':4,'ほ':5,
+        'ま':1,'み':2,'む':3,'め':4,'も':5,
+        'や':1,'ゆ':3,'よ':5,
+        'ら':1,'り':2,'る':3,'れ':4,'ろ':5,
+        'わ':1,'を':5,'ん':5,
+    }
+    raw_name_num = sum(KANA_VAL.get(c, 0) for c in name_kana)
+    name_num = digit_reduce(raw_name_num) if raw_name_num else life_path
 
+    # 2. 算命学: 九星
+    adj_year = by - 1 if (bm == 1 or (bm == 2 and bd_num < 4)) else by
+    kyusei = ((11 - adj_year) % 9) or 9
+
+    # 3. 四柱推命: 日干 (天干 0-9)
+    try:
+        delta = (_date(by, bm, bd_num) - _date(2000, 1, 1)).days
+    except Exception:
+        delta = 0
+    day_kan = ((delta % 10) + 10) % 10
+    hour_branch = (birth_hour + 1) // 2 % 12
+
+    # 4. 西洋占星術: 太陽星座 (0=牡羊 ... 11=魚)
+    sign_starts = [(3,21),(4,20),(5,21),(6,21),(7,23),(8,23),
+                   (9,23),(10,23),(11,22),(12,22),(1,20),(2,19)]
+    sun_sign = 11
+    for i, (sm, sd) in enumerate(sign_starts):
+        if bm == sm and bd_num >= sd:
+            sun_sign = i; break
+        nxt = sign_starts[(i + 1) % 12]
+        if bm == nxt[0] and bd_num < nxt[1]:
+            sun_sign = i; break
+
+    # 5. 紫微斗数: 命宮ベース (1-9)
+    zwds_base = (by * 12 + bm * 30 + bd_num + hour_branch) % 9 + 1
+
+    # 各占術のベーススコア (実際の占術値から算出)
+    base_scores = {
+        "四柱推命":   5.0 + (day_kan   - 4.5) * 0.45,
+        "算命学":     5.0 + (kyusei    - 5.0) * 0.50,
+        "西洋占星術": 5.0 + math.sin(sun_sign * math.pi / 6.0) * 2.0,
+        "数秘術":     5.0 + (name_num  - 5.0) * 0.35 + (life_path - 5.0) * 0.20,
+        "紫微斗数":   5.0 + (zwds_base - 5.0) * 0.50,
+    }
+
+    # SHA256 由来の波形パラメータ (位相・振幅)
+    def art_hash(art, tag):
+        seed = f"{birthday}|{name}|{name_kana}|{birthplace}|{birth_time}|{art}|{tag}"
+        return int(hashlib.sha256(seed.encode()).hexdigest(), 16)
+
+    def wave_score(art, t, tag):
+        hv = art_hash(art, tag)
+        b  = base_scores[art]
+        f1 = 1.0 + (hv % 100) / 200.0
+        f2 = 2.0 + (hv % 50)  / 100.0
+        p1 = (hv % 628) / 100.0
+        p2 = ((hv >> 8) % 628) / 100.0
+        a1 = 1.6 + (hv % 30) / 20.0
+        a2 = 0.9 + (hv % 20) / 25.0
+        s  = b + a1 * math.sin(f1 * t + p1) + a2 * math.sin(f2 * t + p2)
+        return max(1.0, min(10.0, s))
+
+    current_year = datetime.now().year
+    arts = list(base_scores.keys())
+    result = {}
+    for art in arts:
+        monthly = [round(wave_score(art, (m / 12.0) * 2 * math.pi, "monthly"), 1)
+                   for m in range(12)]
+        yearly  = [round(wave_score(art, (y / 13.0) * 2 * math.pi, "yearly"), 1)
+                   for y in range(13)]
+        result[art] = {"monthly": monthly, "yearly": yearly}
+    return result
 def get_graph_data_cached(user):
     birthday = user.get("birthday", "")
     name = user.get("name") or ""
@@ -596,12 +687,12 @@ WELCOME_TEXT = """🌙 星夜堂へようこそ ✨
 まず、以下を教えてください。
 
 📅 生年月日（分かれば時刻も）
-👤 名前 ※精度向上
+👤 名前と読み方（平仮名） ※数秘術の精度向上
 📍 出生地 ※精度向上
 
 入力例：
 1990年3月15日 午前10時
-田中太郎 東京都"""
+田中太郎（たなかたろう） 東京都"""
 
 
 @handler.add(FollowEvent)
