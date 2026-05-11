@@ -238,53 +238,238 @@ def ask_claude(prompt, max_tokens=2000):
     return None
 
 
+
+# ── 占術計算ヘルパー ─────────────────────────────────────────────
+
+def _digit_reduce(n):
+    while n > 9 and n not in (11, 22, 33):
+        n = sum(int(c) for c in str(n))
+    return n
+
+def _five_elem(kan):
+    return [0, 0, 1, 1, 2, 2, 3, 3, 4, 4][kan % 10]
+
+def _stem_harmony(bkan, tkan):
+    be, te = _five_elem(bkan), _five_elem(tkan)
+    gen  = {(0,1),(1,2),(2,3),(3,4),(4,0)}
+    ctrl = {(0,2),(2,4),(4,1),(1,3),(3,0)}
+    if be == te:          return 7
+    if (be, te) in gen:   return 9
+    if (te, be) in gen:   return 7
+    if (be, te) in ctrl:  return 3
+    if (te, be) in ctrl:  return 2
+    return 5
+
+def _date_day_kan(d):
+    from datetime import date as _dc
+    return ((_dc(d.year, d.month, d.day) - _dc(2000, 1, 1)).days % 10 + 10) % 10
+
+def _kyusei_daily(d):
+    from datetime import date as _dc
+    delta = (_dc(d.year, d.month, d.day) - _dc(2000, 1, 6)).days
+    s = 6 - (delta % 9)
+    while s <= 0: s += 9
+    return s
+
+def _kyusei_harmony(personal, daily):
+    diff = (personal - daily) % 9
+    return {0:8, 1:6, 2:7, 3:5, 4:3, 5:4, 6:6, 7:7, 8:5}.get(diff, 5)
+
+def _western_daily(sun_sign, d):
+    from datetime import date as _dc
+    days = (_dc(d.year, d.month, d.day) - _dc(2000, 1, 1)).days
+    moon_sign = days % 12
+    diff = (moon_sign - sun_sign) % 12
+    return {0:9,1:5,2:7,3:5,4:8,5:6,6:3,7:5,8:8,9:6,10:7,11:5}.get(diff, 5)
+
+def _numerology_daily(life_path, name_num, d):
+    pd = _digit_reduce(d.year + d.month + d.day)
+    lp_m = life_path % 9 or 9
+    pd_m = pd % 9 or 9
+    diff = abs(lp_m - pd_m)
+    base = {0:9,1:7,2:6,3:8,4:3,5:4,6:8,7:6,8:7}.get(diff % 9, 5)
+    nd = abs((name_num % 9 or 9) - pd_m)
+    return min(10, base + (1 if nd in (0, 3, 6) else 0))
+
+def _zwds_daily(zwds_base, d):
+    combined = ((d.month + zwds_base - 2) % 12 + d.day % 12) % 12
+    return {0:5,1:8,2:4,3:6,4:8,5:4,6:6,7:8,8:4,9:6,10:8,11:5}.get(combined, 5)
+
+def _parse_bdata(user):
+    import re as _re
+    birthday   = user.get("birthday", "")
+    name_kana  = user.get("name_kana") or ""
+    birth_time = user.get("birth_time") or ""
+    bday_iso = birthday_to_iso(birthday) or "1990-01-01"
+    try:
+        p = bday_iso.split('-')
+        by, bm, bd = int(p[0]), int(p[1]), int(p[2])
+    except Exception:
+        by, bm, bd = 1990, 1, 1
+    birth_hour = 12
+    if birth_time:
+        h = _re.search(r'午前(\d+)', birth_time)
+        if h: birth_hour = int(h.group(1)) % 12
+        h = _re.search(r'午後(\d+)', birth_time)
+        if h: birth_hour = int(h.group(1)) % 12 + 12
+        h = _re.search(r'(\d{1,2}):(\d{2})', birth_time)
+        if h: birth_hour = int(h.group(1))
+        h2 = _re.search(r'(\d{1,2})時', birth_time)
+        if h2 and birth_hour == 12: birth_hour = int(h2.group(1))
+    from datetime import date as _dc
+    try: bdo = _dc(by, bm, bd)
+    except: bdo = _dc(1990, 1, 1)
+    adj_year = by - 1 if (bm == 1 or (bm == 2 and bd < 4)) else by
+    personal_star = ((11 - adj_year) % 9) or 9
+    life_path = _digit_reduce(by + bm + bd)
+    KANA_VAL = {'あ':1,'い':2,'う':3,'え':4,'お':5,'か':1,'き':2,'く':3,'け':4,'こ':5,'さ':1,'し':2,'す':3,'せ':4,'そ':5,'た':1,'ち':2,'つ':3,'て':4,'と':5,'な':1,'に':2,'ぬ':3,'ね':4,'の':5,'は':1,'ひ':2,'ふ':3,'へ':4,'ほ':5,'ま':1,'み':2,'む':3,'め':4,'も':5,'や':1,'ゆ':3,'よ':5,'ら':1,'り':2,'る':3,'れ':4,'ろ':5,'わ':1,'を':5,'ん':5}
+    rn = sum(KANA_VAL.get(c, 0) for c in name_kana)
+    name_num = _digit_reduce(rn) if rn else life_path
+    sign_starts = [(3,21),(4,20),(5,21),(6,21),(7,23),(8,23),(9,23),(10,23),(11,22),(12,22),(1,20),(2,19)]
+    sun_sign = 11
+    for i, (sm, sd) in enumerate(sign_starts):
+        if bm == sm and bd >= sd: sun_sign = i; break
+        nxt = sign_starts[(i+1)%12]
+        if bm == nxt[0] and bd < nxt[1]: sun_sign = i; break
+    hb = (birth_hour + 1) // 2 % 12
+    zwds_base = (by * 12 + bm * 30 + bd + hb) % 9 + 1
+    return {"bdo": bdo, "bday_kan": _date_day_kan(bdo),
+            "personal_star": personal_star, "life_path": life_path,
+            "name_num": name_num, "sun_sign": sun_sign, "zwds_base": zwds_base}
+
+def _calc_scores(bdata, d):
+    return {
+        "四柱推命":   _stem_harmony(bdata["bday_kan"], _date_day_kan(d)),
+        "算命学":     _kyusei_harmony(bdata["personal_star"], _kyusei_daily(d)),
+        "西洋占星術": _western_daily(bdata["sun_sign"], d),
+        "数秘術":     _numerology_daily(bdata["life_path"], bdata["name_num"], d),
+        "紫微斗数":   _zwds_daily(bdata["zwds_base"], d),
+    }
+
+_MSG = {
+    "全体運": [["静かに過ごすのが吉","無理をせず休養を"],["慎重な行動が◎","焦らずゆっくりと"],["穏やかな運気です","平穏な一日に"],["好調な運気！積極的に","良い流れに乗って"],["絶好調！チャンスを","最高の運気です"]],
+    "金運":   [["支出に注意を","節約を心がけて"],["衝動買いは控えて","慎重な金銭管理を"],["安定した金運です","普通の一日"],["臨時収入の兆し","金運上昇中"],["絶好の金運！大きな","チャンスを活かして"]],
+    "恋愛運": [["一人の時間を大切に","自分磨きの日"],["素直な気持ちを大切に","焦らずゆっくり"],["穏やかな恋愛運","良い関係を維持"],["出会いのチャンス！","気持ちを伝えるのに◎"],["恋愛最高潮！積極的に","運命的な出会いも"]],
+    "仕事運": [["守りに徹して","重要な決断は避けて"],["慎重に進めること","丁寧な仕事ぶりを"],["コツコツ積み上げる日","着実な仕事が◎"],["仕事運好調！リーダーを","成果が出やすい日"],["大きな成果が期待◎","絶好のビジネスチャンス"]],
+    "健康運": [["無理は禁物","体のサインに敏感に"],["睡眠を十分に","疲れをためないよう"],["体調は安定","バランスを保てそう"],["エネルギッシュな日","活動的に過ごせそう"],["最高のコンディション！","体も心も絶好調"]],
+    "対人運": [["静かに過ごして","人混みは避けて"],["聞き役に回るのが◎","相手の気持ちを優先"],["円滑なコミュニケーション","人間関係は安定"],["人脈が広がりそう","積極的に交流を"],["最高の対人運！","素晴らしい出会いも"]],
+}
+_LUCKY = {
+    "全体運": [["休息","瞑想"],["柔軟な発想","静観"],["散歩","温かい飲み物"],["積極的な行動","旅の計画"],["大きな決断","直感を信じて"]],
+    "金運":   [["財布を整理","節約"],["家計管理","貯蓄"],["黄色いアイテム","財布の整理"],["投資・副業","臨時収入を活用"],["大きな契約","ビジネス展開"]],
+    "恋愛運": [["自己理解","内面を磨く"],["ピンク","心温まる言葉"],["青","落ち着いた場所"],["赤いアイテム","積極的なアプローチ"],["赤・ピンク","告白・プロポーズ"]],
+    "仕事運": [["業務の見直し","準備"],["メモ・ノート","集中"],["コーヒー","整理整頓"],["新プロジェクト","プレゼン"],["重要な会議","大型案件"]],
+    "健康運": [["休息","早寝"],["ストレッチ","水分補給"],["ウォーキング","バランス食"],["運動","アウトドア"],["スポーツ","挑戦"]],
+    "対人運": [["読書","内省"],["傾聴","穏やかな言葉"],["お礼メッセージ","笑顔"],["新しい出会い","交流会"],["パーティー","積極的な交流"]],
+}
+
 def gen_daily(user):
-    today = datetime.now().strftime("%Y年%m月%d日")
-    ctx = build_user_context(user)
-    birthday = user.get("birthday", "")
-    prompt = f"""{ctx}
-今日: {today}
+    import hashlib as _hs
+    from datetime import datetime, date as _dc
+    now = datetime.now()
+    today = _dc(now.year, now.month, now.day)
+    bdata = _parse_bdata(user)
+    s = _calc_scores(bdata, today)
 
-今日の運勢を以下のJSON形式で返してください。
-{{
-  "date": "{today}",
-  "overall_message": "今日全体のひとことメッセージ（50文字以内）",
-  "categories": {{
-    "全体運": {{"score": 1, "message": "コメント20文字以内", "lucky": "ラッキーアイテム"}},
-    "金運":   {{"score": 1, "message": "コメント20文字以内", "lucky": "ラッキーカラー"}},
-    "恋愛運": {{"score": 1, "message": "コメント20文字以内", "lucky": "ラッキーアクション"}},
-    "仕事運": {{"score": 1, "message": "コメント20文字以内", "lucky": "ラッキーワード"}},
-    "健康運": {{"score": 1, "message": "コメント20文字以内", "lucky": ""}},
-    "対人運": {{"score": 1, "message": "コメント20文字以内", "lucky": ""}}
-  }}
-}}"""
-    return ask_claude(prompt)
+    def wt(a, b, c, d, e): return max(1, min(10, round(s["四柱推命"]*a + s["算命学"]*b + s["西洋占星術"]*c + s["数秘術"]*d + s["紫微斗数"]*e)))
+    cat_sc = {
+        "全体運": wt(0.2, 0.2, 0.2, 0.2, 0.2),
+        "金運":   wt(0.4, 0.2, 0.1, 0.2, 0.1),
+        "恋愛運": wt(0.1, 0.1, 0.4, 0.2, 0.2),
+        "仕事運": wt(0.4, 0.3, 0.1, 0.1, 0.1),
+        "健康運": wt(0.2, 0.3, 0.1, 0.1, 0.3),
+        "対人運": wt(0.1, 0.2, 0.4, 0.2, 0.1),
+    }
 
+    def lv(sc): return min(4, max(0, (sc - 1) * 4 // 9))
+    def pick(lst, key):
+        h = int(_hs.sha256(f"{user.get('birthday','')}|{now.strftime('%Y%m%d')}|{key}".encode()).hexdigest(), 16)
+        return lst[h % len(lst)]
+
+    date_str = now.strftime("%Y年%m月%d日")
+    ov = cat_sc["全体運"]
+    om_list = ["今日はゆっくり休んで体を整えましょう","慎重に一歩ずつ進む日です","穏やかで安定した一日になりそう","運気が上昇中！積極的に動いて","最高の運気。大きな一歩を踏み出して"]
+    overall_msg = om_list[lv(ov)]
+    categories = {}
+    for cat in ["全体運","金運","恋愛運","仕事運","健康運","対人運"]:
+        sc = cat_sc[cat]
+        v = lv(sc)
+        msg  = pick(_MSG[cat][v], cat + "_msg")
+        lucky_list = _LUCKY.get(cat, [["",""],["",""],["",""],["",""],["",""]])[v]
+        lucky = pick(lucky_list, cat + "_lucky") if cat not in ("健康運","対人運") else ""
+        categories[cat] = {"score": sc, "message": msg, "lucky": lucky}
+    return {"date": date_str, "overall_message": overall_msg, "categories": categories}
 
 def gen_monthly(user):
-    month = datetime.now().strftime("%Y年%m月")
-    ctx = build_user_context(user)
-    birthday = user.get("birthday", "")
-    prompt = f"""{ctx}
-対象月: {month}
+    import hashlib as _hs, calendar as _cal
+    from datetime import datetime, date as _dc
+    now = datetime.now()
+    year, month = now.year, now.month
+    bdata = _parse_bdata(user)
+    _, last_day = _cal.monthrange(year, month)
 
-今月の運勢を以下のJSON形式で返してください。
-{{
-  "month": "{month}",
-  "overall_message": "今月全体のメッセージ（80文字以内）",
-  "categories": {{
-    "全体運": {{"score": 1, "trend": "上昇か安定か下降", "message": "30文字以内"}},
-    "金運":   {{"score": 1, "trend": "上昇か安定か下降", "message": "30文字以内"}},
-    "恋愛運": {{"score": 1, "trend": "上昇か安定か下降", "message": "30文字以内"}},
-    "仕事運": {{"score": 1, "trend": "上昇か安定か下降", "message": "30文字以内"}},
-    "健康運": {{"score": 1, "trend": "上昇か安定か下降", "message": "30文字以内"}},
-    "対人運": {{"score": 1, "trend": "上昇か安定か下降", "message": "30文字以内"}}
-  }},
-  "best_days": "吉日（例: 3日・15日・22日）",
-  "caution_days": "注意日（例: 8日・19日）"
-}}"""
-    return ask_claude(prompt)
+    # 全日のスコアを計算して月間平均と吉凶日を特定
+    day_avgs = []
+    for day in range(1, last_day + 1):
+        try:
+            ds = _calc_scores(bdata, _dc(year, month, day))
+            avg = sum(ds.values()) / len(ds)
+            day_avgs.append((day, avg, ds))
+        except Exception:
+            pass
 
+    # 月全体のカテゴリスコア（全日の加重平均）
+    def wt(a,b,c,d,e):
+        vals = [sum(ds["四柱推命"]*a + ds["算命学"]*b + ds["西洋占星術"]*c + ds["数秘術"]*d + ds["紫微斗数"]*e for _, _, ds in day_avgs) / len(day_avgs)]
+        return max(1, min(10, round(vals[0])))
+    cat_sc = {
+        "全体運": round(sum(v for _,v,_ in day_avgs)/len(day_avgs)),
+        "金運":   wt(0.4,0.2,0.1,0.2,0.1),
+        "恋愛運": wt(0.1,0.1,0.4,0.2,0.2),
+        "仕事運": wt(0.4,0.3,0.1,0.1,0.1),
+        "健康運": wt(0.2,0.3,0.1,0.1,0.3),
+        "対人運": wt(0.1,0.2,0.4,0.2,0.1),
+    }
+    cat_sc = {k: max(1, min(10, v)) for k, v in cat_sc.items()}
+
+    # 前半・後半でトレンドを判定
+    mid = last_day // 2
+    first_half  = sum(v for d,v,_ in day_avgs if d <= mid) / max(1, mid)
+    second_half = sum(v for d,v,_ in day_avgs if d >  mid) / max(1, last_day - mid)
+    diff = second_half - first_half
+    trend_map = {cat: ("上昇" if diff > 0.3 else "下降" if diff < -0.3 else "安定") for cat in cat_sc}
+    # 個別カテゴリのトレンドをスコアで微調整
+    for cat in ["金運","恋愛運","仕事運","健康運","対人運"]:
+        sc = cat_sc[cat]
+        if sc >= 7: trend_map[cat] = "上昇" if trend_map["全体運"] != "下降" else "安定"
+        elif sc <= 4: trend_map[cat] = "下降" if trend_map["全体運"] != "上昇" else "安定"
+
+    # 吉日・注意日（上位3日・下位3日）
+    sorted_days = sorted(day_avgs, key=lambda x: -x[1])
+    best_days    = "・".join(str(d) + "日" for d,_,_ in sorted_days[:3])
+    caution_days = "・".join(str(d) + "日" for d,_,_ in sorted_days[-3:])
+
+    def lv(sc): return min(4, max(0, (sc-1)*4//9))
+    def pick(lst, key):
+        h = int(_hs.sha256(f"{user.get('birthday','')}|{year}{month:02d}|{key}".encode()).hexdigest(),16)
+        return lst[h % len(lst)]
+
+    month_str = now.strftime("%Y年%m月")
+    ov = cat_sc["全体運"]
+    om_list = ["慎重に過ごす月です","一歩一歩着実に","穏やかな運気の月","好調な月！積極的に","絶好調の月。大きな挑戦を"]
+    categories = {}
+    for cat in ["全体運","金運","恋愛運","仕事運","健康運","対人運"]:
+        sc = cat_sc[cat]
+        v  = lv(sc)
+        msg = pick(_MSG[cat][v], cat + "_monthly")
+        categories[cat] = {"score": sc, "trend": trend_map[cat], "message": msg}
+    return {
+        "month": month_str,
+        "overall_message": om_list[lv(ov)],
+        "categories": categories,
+        "best_days": best_days,
+        "caution_days": caution_days,
+    }
 
 def gen_divination(user):
     today = datetime.now().strftime("%Y年%m月%d日")
@@ -817,3 +1002,7 @@ def health_check():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
+
+Claude is active in this tab group
+Open chat
+Dismiss
