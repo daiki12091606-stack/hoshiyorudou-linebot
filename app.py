@@ -1,4 +1,6 @@
 import os
+import redis as _redis_lib
+from collections import deque
 import json
 import re
 import threading
@@ -34,9 +36,67 @@ configuration = Configuration(access_token=LINE_CHANNEL_ACCESS_TOKEN)
 claude_client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
 
 user_data = {}
+
+# ── Redis helper (persistent storage) ──────────────────────────────
+_redis_client = None
+_user_data_fallback = {}
+_conv_history_fallback = {}
+
+def _get_redis():
+    global _redis_client
+    if _redis_client is None:
+        url = os.environ.get("REDIS_URL")
+        if url:
+            try:
+                _redis_client = _redis_lib.from_url(url, decode_responses=True)
+                _redis_client.ping()
+            except Exception:
+                _redis_client = None
+    return _redis_client
+
+def get_user(uid):
+    r = _get_redis()
+    if r:
+        try:
+            raw = r.get(f"user:{uid}")
+            return json.loads(raw) if raw else {}
+        except Exception:
+            pass
+    return _user_data_fallback.get(uid, {})
+
+def set_user(uid, data):
+    r = _get_redis()
+    if r:
+        try:
+            r.setex(f"user:{uid}", 180 * 86400, json.dumps(data, ensure_ascii=False))
+            return
+        except Exception:
+            pass
+    _user_data_fallback[uid] = data
+
+def get_conv(uid):
+    r = _get_redis()
+    if r:
+        try:
+            raw = r.get(f"conv:{uid}")
+            return json.loads(raw) if raw else []
+        except Exception:
+            pass
+    return _conv_history_fallback.get(uid, [])
+
+def set_conv(uid, history):
+    r = _get_redis()
+    if r:
+        try:
+            r.setex(f"conv:{uid}", 7 * 86400, json.dumps(history, ensure_ascii=False))
+            return
+        except Exception:
+            pass
+    _conv_history_fallback[uid] = history
+# ────────────────────────────────────────────────────────────────────
 graph_cache = {}
 image_cache = {}
-image_cache_order = []
+image_cache_order = deque(maxlen=60)
 MAX_IMAGES = 60
 
 SYSTEMS = ["四柱推命", "算命学", "西洋占星術", "数秘術", "紫微斗数"]
@@ -74,7 +134,7 @@ CAT_EMOJI = {
 
 def get_user(user_id):
     if user_id not in user_data:
-        user_data[user_id] = {"state": "new", "birthday": None, "name": None, "birthplace": None, "birth_time": None}
+        set_user(user_id, {"state": "new", "birthday": None, "name": None, "birthplace": None, "birth_time": None})
     return user_data[user_id]
 
 
@@ -221,7 +281,7 @@ def store_image(img_id, img_bytes):
     image_cache[img_id] = img_bytes
     image_cache_order.append(img_id)
     while len(image_cache_order) > MAX_IMAGES:
-        old_id = image_cache_order.pop(0)
+        old_id = image_cache_order.popleft()
         image_cache.pop(old_id, None)
 
 def ask_claude(prompt, max_tokens=2000):
@@ -883,7 +943,7 @@ WELCOME_TEXT = """🌙 星夜堂へようこそ ✨
 @handler.add(FollowEvent)
 def handle_follow(event):
     user_id = event.source.user_id
-    user_data[user_id] = {"state": "waiting_birthday", "birthday": None}
+    set_user(user_id, {"state": "waiting_birthday", "birthday": None})
     reply_msg(event.reply_token, WELCOME_TEXT)
 
 
