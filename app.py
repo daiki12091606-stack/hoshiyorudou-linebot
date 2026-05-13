@@ -10,7 +10,7 @@ from io import BytesIO
 from flask import Flask, request, abort, make_response, jsonify
 import anthropic
 
-import matplotlib
+import matplotlibh
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import matplotlib.font_manager as fm
@@ -230,6 +230,7 @@ def main_menu_qr():
         QuickReplyItem(action=MessageAction(label="📆 今月の運勢", text="今月の運勢")),
         QuickReplyItem(action=MessageAction(label="🔮 占術別診断", text="占術別診断")),
         QuickReplyItem(action=MessageAction(label="📊 今年/12年推移グラフ", text="今年/12年推移グラフ")),
+        QuickReplyItem(action=MessageAction(label="📈 過去12年の運勢", text="過去12年")),
         QuickReplyItem(action=MessageAction(label="✏️ 誕生日変更", text="誕生日変更")),
     ])
 
