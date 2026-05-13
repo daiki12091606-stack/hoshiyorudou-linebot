@@ -703,9 +703,8 @@ def generate_fortune_image(graph_data, user):
         for spine in ax.spines.values():
             spine.set_color('#2a2a54')
 
-        data = graph_data.get(key, {})
         for system in SYSTEMS:
-            scores = data.get(system, [])
+            scores = graph_data.get(system, {}).get(key, [])
             if scores:
                 ax.plot(scores,
                         color=COLORS[system],
