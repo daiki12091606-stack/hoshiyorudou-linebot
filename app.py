@@ -985,12 +985,9 @@ def handle_follow(event):
     # ブロック解除時も含め、フォロー時は常にユーザーデータをリセットして登録フローを再スタート
     set_user(user_id, {"state": "waiting_birthday", "birthday": None, "name": None, "birthplace": None, "birth_time": None})
     user_data.pop(user_id, None) # インメモリキャッシュもリセット
-    reply_msg(event.reply_token, WELCOME_TEXT)
-    # 登録プロンプトを別メッセージとして送信
-    threading.Thread(
-        target=lambda: push(user_id, REGISTRATION_PROMPT, with_menu=False),
-        daemon=True
-    ).start()
+    # ウェルカムメッセージ＋登録プロンプトを1回のreply_msgで確実に送信（pushは使わない）
+    combined = WELCOME_TEXT + "\n\n━━━━━━━━━━━━━━━━━━\n\n" + REGISTRATION_PROMPT
+    reply_msg(event.reply_token, combined)
 
 @handler.add(MessageEvent, message=TextMessageContent)
 def handle_message(event):
