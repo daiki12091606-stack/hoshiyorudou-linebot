@@ -18,10 +18,10 @@ import matplotlib.font_manager as fm
 from linebot.v3 import WebhookHandler
 from linebot.v3.exceptions import InvalidSignatureError
 from linebot.v3.messaging import (
-    Configuration, ApiClient, MessagingApi,
-    ReplyMessageRequest, PushMessageRequest,
-    TextMessage, ImageMessage,
-    QuickReply, QuickReplyItem, MessageAction,
+Configuration, ApiClient, MessagingApi,
+ReplyMessageRequest, PushMessageRequest,
+TextMessage, ImageMessage,
+QuickReply, QuickReplyItem, MessageAction,
 )
 from linebot.v3.webhooks import MessageEvent, TextMessageContent, FollowEvent
 
@@ -101,42 +101,35 @@ MAX_IMAGES = 60
 
 SYSTEMS = ["四柱推命", "算命学", "西洋占星術", "数秘術", "紫微斗数"]
 COLORS = {
-    "四柱推命":   "#4FC3F7",
-    "算命学":     "#FFD54F",
+    "四柱推命": "#4FC3F7",
+    "算命学": "#FFD54F",
     "西洋占星術": "#FF7043",
-    "数秘術":     "#66BB6A",
-    "紫微斗数":   "#AB47BC",
+    "数秘術": "#66BB6A",
+    "紫微斗数": "#AB47BC",
 }
 SYSTEM_EN = {
-    "四柱推命":   "4Pillars",
-    "算命学":     "9-Star",
+    "四柱推命": "4Pillars",
+    "算命学": "9-Star",
     "西洋占星術": "Western",
-    "数秘術":     "Numerol.",
-    "紫微斗数":   "ZWDS",
+    "数秘術": "Numerol.",
+    "紫微斗数": "ZWDS",
 }
 LEGEND_TEXT = (
     "━" * 14 + "\n"
     "U0001F7E6 4Pillars = 四柱推命\n"
-    "U0001F7E1 9-Star   = 算命学\n"
-    "U0001F534 Western  = 西洋占星術\n"
+    "U0001F7E1 9-Star = 算命学\n"
+    "U0001F534 Western = 西洋占星術\n"
     "U0001F7E2 Numerol. = 数秘術\n"
-    "U0001F7E3 ZWDS     = 紫微斗数"
+    "U0001F7E3 ZWDS = 紫微斗数"
 )
 CAT_EMOJI = {
     "全体運": "🌟",
-    "金運":   "💰",
+    "金運": "💰",
     "恋愛運": "💕",
     "仕事運": "💼",
     "健康運": "💪",
     "対人運": "🤝",
 }
-
-
-def get_user(user_id):
-    if user_id not in user_data:
-        set_user(user_id, {"state": "new", "birthday": None, "name": None, "birthplace": None, "birth_time": None})
-    return user_data[user_id]
-
 
 def parse_birthday(text):
     import re as _re
@@ -156,8 +149,6 @@ def parse_birthday(text):
                 pass
     return None
 
-
-
 def parse_birth_time(text):
     import re as _re
     m = _re.search(r'午前\s*(\d{1,2})時(?:\s*(\d{1,2})分)?', text)
@@ -173,29 +164,29 @@ def parse_birth_time(text):
         return str(int(m.group(1))) + "時" + str(int(m.group(2))) + "分"
     return None
 
-
 def parse_extra_info(text):
     import re as _re
     result = {}
     cleaned = _re.sub(r'\d{2,4}[年/\-.]+\d{1,2}[月/\-.]+\d{1,2}日?', '', text)
     cleaned = _re.sub(r'午前|午後|\d{1,2}時\d*分?|\d{1,2}:\d{2}', '', cleaned)
-    cleaned = _re.sub(r'[\s\u3000]+', ' ', cleaned).strip()
-    kana_paren = _re.search(r'[（(]([\u3040-\u309f\u30fc]{2,})[）)]', cleaned)
+    cleaned = _re.sub(r'[\s　]+', ' ', cleaned).strip()
+    kana_paren = _re.search(r'[（(]([぀-ゟー]{2,})[）)]', cleaned)
     if kana_paren:
         result["name_kana"] = kana_paren.group(1)
         cleaned = cleaned.replace(kana_paren.group(0), '').strip()
-    bp = _re.search(r'[\u3040-\u9fff\u30a0-\u30ff]+[都道府県市区町村]', cleaned)
+    bp = _re.search(r'[぀-鿿゠-ヿ]+[都道府県市区町村]', cleaned)
     if bp:
         result["birthplace"] = bp.group(0)
         cleaned = cleaned.replace(bp.group(0), '').strip()
-    nm = _re.search(r'[\u4e00-\u9fff\u30a0-\u30ff][\u3040-\u9fff\u30a0-\u30ff]{1,7}', cleaned)
+    nm = _re.search(r'[一-鿿゠-ヿ][぀-鿿゠-ヿ]{1,7}', cleaned)
     if nm:
         result["name"] = nm.group(0)
     if "name_kana" not in result:
-        kana_only = _re.search(r'^[\u3040-\u309f\u30fc]{2,}$', cleaned.strip())
+        kana_only = _re.search(r'^[぀-ゟー]{2,}$', cleaned.strip())
         if kana_only:
             result["name_kana"] = kana_only.group(0)
     return result
+
 def build_user_context(user):
     bd = user.get("birthday", "")
     bt = user.get("birth_time")
@@ -215,38 +206,32 @@ def birthday_to_iso(bday):
     except Exception:
         return bday
 
-
 def iso_to_birthday(iso):
     try:
-        return datetime.strptime(iso, "%Y-%m-%d").strftime("%Y年%m月%d日")
+        return datetime.strptime(iso, "%Y-%m-%d").strftime("%Y-%m-%d").strftime("%Y年%m月%d日")
     except Exception:
         return iso
-
 
 def bot_base_url():
     domain = os.environ.get("RAILWAY_PUBLIC_DOMAIN", "")
     return f"https://{domain}" if domain else ""
 
-
 def score_bar(score):
     filled = max(0, min(5, round(score / 10 * 5)))
     return "⭐" * filled + "☆" * (5 - filled)
-
 
 def block_bar(score):
     filled = max(0, min(5, round(score / 2)))
     return "█" * filled + "░" * (5 - filled)
 
-
 def main_menu_qr():
     return QuickReply(items=[
-        QuickReplyItem(action=MessageAction(label="📅 今日の運勢",  text="今日の運勢")),
-        QuickReplyItem(action=MessageAction(label="📆 今月の運勢",  text="今月の運勢")),
-        QuickReplyItem(action=MessageAction(label="🔮 占術別診断",  text="占術別診断")),
-        QuickReplyItem(action=MessageAction(label="📊 今年/12年推移グラフ",  text="今年/12年推移グラフ")),
-        QuickReplyItem(action=MessageAction(label="✏️ 誕生日変更",  text="誕生日変更")),
+        QuickReplyItem(action=MessageAction(label="📅 今日の運勢", text="今日の運勢")),
+        QuickReplyItem(action=MessageAction(label="📆 今月の運勢", text="今月の運勢")),
+        QuickReplyItem(action=MessageAction(label="🔮 占術別診断", text="占術別診断")),
+        QuickReplyItem(action=MessageAction(label="📊 今年/12年推移グラフ", text="今年/12年推移グラフ")),
+        QuickReplyItem(action=MessageAction(label="✏️ 誕生日変更", text="誕生日変更")),
     ])
-
 
 def push(user_id, text, with_menu=True):
     with ApiClient(configuration) as api_client:
@@ -254,7 +239,6 @@ def push(user_id, text, with_menu=True):
         MessagingApi(api_client).push_message(
             PushMessageRequest(to=user_id, messages=[msg])
         )
-
 
 def push_image(user_id, img_url):
     with ApiClient(configuration) as api_client:
@@ -268,14 +252,12 @@ def push_image(user_id, img_url):
             )
         )
 
-
 def reply_msg(reply_token, text, with_menu=False):
     with ApiClient(configuration) as api_client:
         msg = TextMessage(text=text, quick_reply=main_menu_qr() if with_menu else None)
         MessagingApi(api_client).reply_message(
             ReplyMessageRequest(reply_token=reply_token, messages=[msg])
         )
-
 
 def store_image(img_id, img_bytes):
     image_cache[img_id] = img_bytes
@@ -297,8 +279,6 @@ def ask_claude(prompt, max_tokens=2000):
         return json.loads(m.group())
     return None
 
-
-
 # ── 占術計算ヘルパー ─────────────────────────────────────────────
 
 def _digit_reduce(n):
@@ -311,13 +291,13 @@ def _five_elem(kan):
 
 def _stem_harmony(bkan, tkan):
     be, te = _five_elem(bkan), _five_elem(tkan)
-    gen  = {(0,1),(1,2),(2,3),(3,4),(4,0)}
+    gen = {(0,1),(1,2),(2,3),(3,4),(4,0)}
     ctrl = {(0,2),(2,4),(4,1),(1,3),(3,0)}
-    if be == te:          return 7
-    if (be, te) in gen:   return 9
-    if (te, be) in gen:   return 7
-    if (be, te) in ctrl:  return 3
-    if (te, be) in ctrl:  return 2
+    if be == te: return 7
+    if (be, te) in gen: return 9
+    if (te, be) in gen: return 7
+    if (be, te) in ctrl: return 3
+    if (te, be) in ctrl: return 2
     return 5
 
 def _date_day_kan(d):
@@ -357,8 +337,8 @@ def _zwds_daily(zwds_base, d):
 
 def _parse_bdata(user):
     import re as _re
-    birthday   = user.get("birthday", "")
-    name_kana  = user.get("name_kana") or ""
+    birthday = user.get("birthday", "")
+    name_kana = user.get("name_kana") or ""
     birth_time = user.get("birth_time") or ""
     bday_iso = birthday_to_iso(birthday) or "1990-01-01"
     try:
@@ -399,16 +379,16 @@ def _parse_bdata(user):
 
 def _calc_scores(bdata, d):
     return {
-        "四柱推命":   _stem_harmony(bdata["bday_kan"], _date_day_kan(d)),
-        "算命学":     _kyusei_harmony(bdata["personal_star"], _kyusei_daily(d)),
+        "四柱推命": _stem_harmony(bdata["bday_kan"], _date_day_kan(d)),
+        "算命学": _kyusei_harmony(bdata["personal_star"], _kyusei_daily(d)),
         "西洋占星術": _western_daily(bdata["sun_sign"], d),
-        "数秘術":     _numerology_daily(bdata["life_path"], bdata["name_num"], d),
-        "紫微斗数":   _zwds_daily(bdata["zwds_base"], d),
+        "数秘術": _numerology_daily(bdata["life_path"], bdata["name_num"], d),
+        "紫微斗数": _zwds_daily(bdata["zwds_base"], d),
     }
 
 _MSG = {
     "全体運": [["静かに過ごすのが吉","無理をせず休養を"],["慎重な行動が◎","焦らずゆっくりと"],["穏やかな運気です","平穏な一日に"],["好調な運気！積極的に","良い流れに乗って"],["絶好調！チャンスを","最高の運気です"]],
-    "金運":   [["支出に注意を","節約を心がけて"],["衝動買いは控えて","慎重な金銭管理を"],["安定した金運です","普通の一日"],["臨時収入の兆し","金運上昇中"],["絶好の金運！大きな","チャンスを活かして"]],
+    "金運": [["支出に注意を","節約を心がけて"],["衝動買いは控えて","慎重な金銭管理を"],["安定した金運です","普通の一日"],["臨時収入の兆し","金運上昇中"],["絶好の金運！大きな","チャンスを活かして"]],
     "恋愛運": [["一人の時間を大切に","自分磨きの日"],["素直な気持ちを大切に","焦らずゆっくり"],["穏やかな恋愛運","良い関係を維持"],["出会いのチャンス！","気持ちを伝えるのに◎"],["恋愛最高潮！積極的に","運命的な出会いも"]],
     "仕事運": [["守りに徹して","重要な決断は避けて"],["慎重に進めること","丁寧な仕事ぶりを"],["コツコツ積み上げる日","着実な仕事が◎"],["仕事運好調！リーダーを","成果が出やすい日"],["大きな成果が期待◎","絶好のビジネスチャンス"]],
     "健康運": [["無理は禁物","体のサインに敏感に"],["睡眠を十分に","疲れをためないよう"],["体調は安定","バランスを保てそう"],["エネルギッシュな日","活動的に過ごせそう"],["最高のコンディション！","体も心も絶好調"]],
@@ -416,7 +396,7 @@ _MSG = {
 }
 _LUCKY = {
     "全体運": [["休息","瞑想"],["柔軟な発想","静観"],["散歩","温かい飲み物"],["積極的な行動","旅の計画"],["大きな決断","直感を信じて"]],
-    "金運":   [["財布を整理","節約"],["家計管理","貯蓄"],["黄色いアイテム","財布の整理"],["投資・副業","臨時収入を活用"],["大きな契約","ビジネス展開"]],
+    "金運": [["財布を整理","節約"],["家計管理","貯蓄"],["黄色いアイテム","財布の整理"],["投資・副業","臨時収入を活用"],["大きな契約","ビジネス展開"]],
     "恋愛運": [["自己理解","内面を磨く"],["ピンク","心温まる言葉"],["青","落ち着いた場所"],["赤いアイテム","積極的なアプローチ"],["赤・ピンク","告白・プロポーズ"]],
     "仕事運": [["業務の見直し","準備"],["メモ・ノート","集中"],["コーヒー","整理整頓"],["新プロジェクト","プレゼン"],["重要な会議","大型案件"]],
     "健康運": [["休息","早寝"],["ストレッチ","水分補給"],["ウォーキング","バランス食"],["運動","アウトドア"],["スポーツ","挑戦"]],
@@ -434,7 +414,7 @@ def gen_daily(user):
     def wt(a, b, c, d, e): return max(1, min(10, round(s["四柱推命"]*a + s["算命学"]*b + s["西洋占星術"]*c + s["数秘術"]*d + s["紫微斗数"]*e)))
     cat_sc = {
         "全体運": wt(0.2, 0.2, 0.2, 0.2, 0.2),
-        "金運":   wt(0.4, 0.2, 0.1, 0.2, 0.1),
+        "金運": wt(0.4, 0.2, 0.1, 0.2, 0.1),
         "恋愛運": wt(0.1, 0.1, 0.4, 0.2, 0.2),
         "仕事運": wt(0.4, 0.3, 0.1, 0.1, 0.1),
         "健康運": wt(0.2, 0.3, 0.1, 0.1, 0.3),
@@ -454,8 +434,8 @@ def gen_daily(user):
     for cat in ["全体運","金運","恋愛運","仕事運","健康運","対人運"]:
         sc = cat_sc[cat]
         v = lv(sc)
-        msg  = pick(_MSG[cat][v], cat + "_msg")
-        lucky_list = _LUCKY.get(cat, [["",""],["",""],["",""],["",""],["",""]])[v]
+        msg = pick(_MSG[cat][v], cat + "_msg")
+        lucky_list = _LUCKY.get(cat, [["",""],[""  ,""],["" ,""],["" ,""],["" ,""]])[v]
         lucky = pick(lucky_list, cat + "_lucky") if cat not in ("健康運","対人運") else ""
         categories[cat] = {"score": sc, "message": msg, "lucky": lucky}
     return {"date": date_str, "overall_message": overall_msg, "categories": categories}
@@ -468,7 +448,6 @@ def gen_monthly(user):
     bdata = _parse_bdata(user)
     _, last_day = _cal.monthrange(year, month)
 
-    # 全日のスコアを計算して月間平均と吉凶日を特定
     day_avgs = []
     for day in range(1, last_day + 1):
         try:
@@ -478,13 +457,12 @@ def gen_monthly(user):
         except Exception:
             pass
 
-    # 月全体のカテゴリスコア（全日の加重平均）
     def wt(a,b,c,d,e):
         vals = [sum(ds["四柱推命"]*a + ds["算命学"]*b + ds["西洋占星術"]*c + ds["数秘術"]*d + ds["紫微斗数"]*e for _, _, ds in day_avgs) / len(day_avgs)]
         return max(1, min(10, round(vals[0])))
     cat_sc = {
         "全体運": round(sum(v for _,v,_ in day_avgs)/len(day_avgs)),
-        "金運":   wt(0.4,0.2,0.1,0.2,0.1),
+        "金運": wt(0.4,0.2,0.1,0.2,0.1),
         "恋愛運": wt(0.1,0.1,0.4,0.2,0.2),
         "仕事運": wt(0.4,0.3,0.1,0.1,0.1),
         "健康運": wt(0.2,0.3,0.1,0.1,0.3),
@@ -492,21 +470,18 @@ def gen_monthly(user):
     }
     cat_sc = {k: max(1, min(10, v)) for k, v in cat_sc.items()}
 
-    # 前半・後半でトレンドを判定
     mid = last_day // 2
-    first_half  = sum(v for d,v,_ in day_avgs if d <= mid) / max(1, mid)
-    second_half = sum(v for d,v,_ in day_avgs if d >  mid) / max(1, last_day - mid)
+    first_half = sum(v for d,v,_ in day_avgs if d <= mid) / max(1, mid)
+    second_half = sum(v for d,v,_ in day_avgs if d > mid) / max(1, last_day - mid)
     diff = second_half - first_half
     trend_map = {cat: ("上昇" if diff > 0.3 else "下降" if diff < -0.3 else "安定") for cat in cat_sc}
-    # 個別カテゴリのトレンドをスコアで微調整
     for cat in ["金運","恋愛運","仕事運","健康運","対人運"]:
         sc = cat_sc[cat]
         if sc >= 7: trend_map[cat] = "上昇" if trend_map["全体運"] != "下降" else "安定"
         elif sc <= 4: trend_map[cat] = "下降" if trend_map["全体運"] != "上昇" else "安定"
 
-    # 吉日・注意日（上位3日・下位3日）
     sorted_days = sorted(day_avgs, key=lambda x: -x[1])
-    best_days    = "・".join(str(d) + "日" for d,_,_ in sorted_days[:3])
+    best_days = "・".join(str(d) + "日" for d,_,_ in sorted_days[:3])
     caution_days = "・".join(str(d) + "日" for d,_,_ in sorted_days[-3:])
 
     def lv(sc): return min(4, max(0, (sc-1)*4//9))
@@ -520,7 +495,7 @@ def gen_monthly(user):
     categories = {}
     for cat in ["全体運","金運","恋愛運","仕事運","健康運","対人運"]:
         sc = cat_sc[cat]
-        v  = lv(sc)
+        v = lv(sc)
         msg = pick(_MSG[cat][v], cat + "_monthly")
         categories[cat] = {"score": sc, "trend": trend_map[cat], "message": msg}
     return {
@@ -540,14 +515,13 @@ def gen_divination(user):
 
 5つの占術でこの人物を診断してJSON形式で返してください。
 {{
-  "四柱推命": {{"score": 1, "element": "五行属性", "lucky_direction": "吉方位", "description": "特徴50文字以内", "current_luck": "現在の運気30文字以内"}},
-  "算命学": {{"score": 1, "star": "主星名", "description": "特徴50文字以内", "current_luck": "現在の運気30文字以内"}},
-  "西洋占星術": {{"score": 1, "sign": "太陽星座名", "planet": "支配星", "description": "特徴50文字以内", "current_luck": "現在の運気30文字以内"}},
-  "数秘術": {{"score": 1, "life_path": "ライフパスナンバー1-9", "destiny": "運命数1-9", "description": "特徴50文字以内", "current_luck": "現在の運気30文字以内"}},
-  "紫微斗数": {{"score": 1, "main_star": "主星名", "description": "特徴50文字以内", "current_luck": "現在の運気30文字以内"}}
+"四柱推命": {{"score": 1, "element": "五行属性", "lucky_direction": "吉方位", "description": "特徴50文字以内", "current_luck": "現在の運気30文字以内"}},
+"算命学": {{"score": 1, "star": "主星名", "description": "特徴50文字以内", "current_luck": "現在の運気30文字以内"}},
+"西洋占星術": {{"score": 1, "sign": "太陽星座名", "planet": "支配星", "description": "特徴50文字以内", "current_luck": "現在の運気30文字以内"}},
+"数秘術": {{"score": 1, "life_path": "ライフパスナンバー1-9", "destiny": "運命数1-9", "description": "特徴50文字以内", "current_luck": "現在の運気30文字以内"}},
+"紫微斗数": {{"score": 1, "main_star": "主星名", "description": "特徴50文字以内", "current_luck": "現在の運気30文字以内"}}
 }}"""
     return ask_claude(prompt, max_tokens=2500)
-
 
 def gen_yearly(user):
     current_year = datetime.now().year
@@ -559,28 +533,26 @@ def gen_yearly(user):
 
 {start}年から{end}年までの13年間の運勢推移をJSON形式で返してください。
 {{
-  "overall_trend": "全体的な運気の流れ（50文字以内）",
-  "peak_year": 2026,
-  "caution_year": 2028,
-  "years": [
-    {{"year": 2024, "score": 1, "trend": "上昇かピークか下降か安定", "theme": "テーマ12文字以内"}}
-  ]
+"overall_trend": "全体的な運気の流れ（50文字以内）",
+"peak_year": 2026,
+"caution_year": 2028,
+"years": [
+{{"year": 2024, "score": 1, "trend": "上昇かピークか下降か安定", "theme": "テーマ12文字以内"}}
+]
 }}"""
     return ask_claude(prompt, max_tokens=2500)
-
 
 def gen_graph_data(user):
     import hashlib, math
     from datetime import datetime, date as _date
     import re as _re
 
-    birthday   = user.get("birthday", "")
-    name       = user.get("name") or ""
-    name_kana  = user.get("name_kana") or ""
+    birthday = user.get("birthday", "")
+    name = user.get("name") or ""
+    name_kana = user.get("name_kana") or ""
     birthplace = user.get("birthplace") or ""
     birth_time = user.get("birth_time") or ""
 
-    # Parse birth date
     bday_iso = birthday_to_iso(birthday) or ""
     by, bm, bd_num = 1990, 1, 1
     if bday_iso:
@@ -590,7 +562,6 @@ def gen_graph_data(user):
         except Exception:
             pass
 
-    # Parse birth hour
     birth_hour = 12
     if birth_time:
         h = _re.search(r'午前(\d+)', birth_time)
@@ -602,7 +573,6 @@ def gen_graph_data(user):
         h2 = _re.search(r'(\d{1,2})時', birth_time)
         if h2 and birth_hour == 12: birth_hour = int(h2.group(1))
 
-    # 1. 数秘術: ライフパスナンバー + 名前数
     def digit_reduce(n):
         while n > 9 and n not in (11, 22, 33):
             n = sum(int(c) for c in str(n))
@@ -623,11 +593,9 @@ def gen_graph_data(user):
     raw_name_num = sum(KANA_VAL.get(c, 0) for c in name_kana)
     name_num = digit_reduce(raw_name_num) if raw_name_num else life_path
 
-    # 2. 算命学: 九星
     adj_year = by - 1 if (bm == 1 or (bm == 2 and bd_num < 4)) else by
     kyusei = ((11 - adj_year) % 9) or 9
 
-    # 3. 四柱推命: 日干 (天干 0-9)
     try:
         delta = (_date(by, bm, bd_num) - _date(2000, 1, 1)).days
     except Exception:
@@ -635,7 +603,6 @@ def gen_graph_data(user):
     day_kan = ((delta % 10) + 10) % 10
     hour_branch = (birth_hour + 1) // 2 % 12
 
-    # 4. 西洋占星術: 太陽星座 (0=牡羊 ... 11=魚)
     sign_starts = [(3,21),(4,20),(5,21),(6,21),(7,23),(8,23),
                    (9,23),(10,23),(11,22),(12,22),(1,20),(2,19)]
     sun_sign = 11
@@ -646,33 +613,30 @@ def gen_graph_data(user):
         if bm == nxt[0] and bd_num < nxt[1]:
             sun_sign = i; break
 
-    # 5. 紫微斗数: 命宮ベース (1-9)
     zwds_base = (by * 12 + bm * 30 + bd_num + hour_branch) % 9 + 1
 
-    # 各占術のベーススコア (実際の占術値から算出)
     base_scores = {
-        "四柱推命":   5.0 + (day_kan   - 4.5) * 0.45,
-        "算命学":     5.0 + (kyusei    - 5.0) * 0.50,
+        "四柱推命": 5.0 + (day_kan - 4.5) * 0.45,
+        "算命学": 5.0 + (kyusei - 5.0) * 0.50,
         "西洋占星術": 5.0 + math.sin(sun_sign * math.pi / 6.0) * 2.0,
-        "数秘術":     5.0 + (name_num  - 5.0) * 0.35 + (life_path - 5.0) * 0.20,
-        "紫微斗数":   5.0 + (zwds_base - 5.0) * 0.50,
+        "数秘術": 5.0 + (name_num - 5.0) * 0.35 + (life_path - 5.0) * 0.20,
+        "紫微斗数": 5.0 + (zwds_base - 5.0) * 0.50,
     }
 
-    # SHA256 由来の波形パラメータ (位相・振幅)
     def art_hash(art, tag):
         seed = f"{birthday}|{name}|{name_kana}|{birthplace}|{birth_time}|{art}|{tag}"
         return int(hashlib.sha256(seed.encode()).hexdigest(), 16)
 
     def wave_score(art, t, tag):
         hv = art_hash(art, tag)
-        b  = base_scores[art]
+        b = base_scores[art]
         f1 = 1.0 + (hv % 100) / 200.0
-        f2 = 2.0 + (hv % 50)  / 100.0
+        f2 = 2.0 + (hv % 50) / 100.0
         p1 = (hv % 628) / 100.0
         p2 = ((hv >> 8) % 628) / 100.0
         a1 = 1.6 + (hv % 30) / 20.0
         a2 = 0.9 + (hv % 20) / 25.0
-        s  = b + a1 * math.sin(f1 * t + p1) + a2 * math.sin(f2 * t + p2)
+        s = b + a1 * math.sin(f1 * t + p1) + a2 * math.sin(f2 * t + p2)
         return max(1.0, min(10.0, s))
 
     current_year = datetime.now().year
@@ -681,10 +645,11 @@ def gen_graph_data(user):
     for art in arts:
         monthly = [round(wave_score(art, (m / 12.0) * 2 * math.pi, "monthly"), 1)
                    for m in range(12)]
-        yearly  = [round(wave_score(art, (y / 13.0) * 2 * math.pi, "yearly"), 1)
-                   for y in range(13)]
+        yearly = [round(wave_score(art, (y / 13.0) * 2 * math.pi, "yearly"), 1)
+                  for y in range(13)]
         result[art] = {"monthly": monthly, "yearly": yearly}
     return result
+
 def get_graph_data_cached(user):
     birthday = user.get("birthday", "")
     name = user.get("name") or ""
@@ -711,7 +676,7 @@ def generate_fortune_image(graph_data, user):
     bday_disp = iso_to_birthday(birthday_iso) if birthday_iso else birthday
 
     fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(10, 11), facecolor='#0c0c22')
-    fig.suptitle(f'Hoshiyorudou Fortune  ({bday_disp})',
+    fig.suptitle(f'Hoshiyorudou Fortune ({bday_disp})',
                  color='#c8a8ff', fontsize=11, y=0.99)
 
     month_labels = ['Jan','Feb','Mar','Apr','May','Jun',
@@ -772,7 +737,6 @@ def generate_fortune_image(graph_data, user):
     buf.seek(0)
     return buf.getvalue()
 
-
 def fmt_daily(data):
     if not data:
         return "⚠️ 運勢の計算に失敗しました。もう一度お試しください。"
@@ -782,12 +746,11 @@ def fmt_daily(data):
     for cat, emoji in CAT_EMOJI.items():
         d = data.get("categories", {}).get(cat, {})
         score = d.get("score", 5)
-        lines.append(f"  {cat}  {score}/10")
-        lines.append(f"  {d.get('message','')}")
+        lines.append(f" {cat} {score}/10")
+        lines.append(f" {d.get('message','')}")
         if d.get("lucky"):
-            lines.append(f"  → {d['lucky']}")
+            lines.append(f" → {d['lucky']}")
     return "\n".join(lines)
-
 
 def fmt_monthly(data):
     if not data:
@@ -800,13 +763,12 @@ def fmt_monthly(data):
         d = data.get("categories", {}).get(cat, {})
         score = d.get("score", 5)
         trend = d.get("trend", "安定")
-        lines.append(f"  {cat}  {score}/10  {trend_icon.get(trend,'→')}")
-        lines.append(f"   {d.get('message','')}")
+        lines.append(f" {cat} {score}/10 {trend_icon.get(trend,'→')}")
+        lines.append(f" {d.get('message','')}")
     lines += ["━━━━━━━━━━━━━━━━━━",
               f"吉日：{data.get('best_days','-')}",
               f"⚠️ 注意日：{data.get('caution_days','-')}"]
     return "\n".join(lines)
-
 
 def fmt_divination(data):
     if not data:
@@ -817,22 +779,21 @@ def fmt_divination(data):
     for sys_name, emoji in sys_emoji.items():
         d = data.get(sys_name, {})
         score = d.get("score", 5)
-        lines.append(f"{emoji} 【{sys_name}】 {score_bar(score)}  {score}/10")
+        lines.append(f"{emoji} 【{sys_name}】 {score_bar(score)} {score}/10")
         if sys_name == "四柱推命":
-            lines.append(f"   五行: {d.get('element','-')}  吉方位: {d.get('lucky_direction','-')}")
+            lines.append(f" 五行: {d.get('element','-')} 吉方位: {d.get('lucky_direction','-')}")
         elif sys_name == "算命学":
-            lines.append(f"   主星: {d.get('star','-')}")
+            lines.append(f" 主星: {d.get('star','-')}")
         elif sys_name == "西洋占星術":
-            lines.append(f"   {d.get('sign','-')}  支配星: {d.get('planet','-')}")
+            lines.append(f" {d.get('sign','-')} 支配星: {d.get('planet','-')}")
         elif sys_name == "数秘術":
-            lines.append(f"   ライフパス: {d.get('life_path','-')}  運命数: {d.get('destiny','-')}")
+            lines.append(f" ライフパス: {d.get('life_path','-')} 運命数: {d.get('destiny','-')}")
         elif sys_name == "紫微斗数":
-            lines.append(f"   主星: {d.get('main_star','-')}")
-        lines.append(f"   {d.get('description','')}")
-        lines.append(f"   ▶ {d.get('current_luck','')}")
+            lines.append(f" 主星: {d.get('main_star','-')}")
+        lines.append(f" {d.get('description','')}")
+        lines.append(f" ▶ {d.get('current_luck','')}")
         lines.append("")
     return "\n".join(lines).rstrip()
-
 
 def fmt_yearly(data):
     if not data:
@@ -842,7 +803,7 @@ def fmt_yearly(data):
     lines = ["📊 12年間の運勢推移 📊",
              f"✨ {data.get('overall_trend','')}",
              "━━━━━━━━━━━━━━━━━━",
-             "年     バー      点  傾向  テーマ",
+             "年 バー 点 傾向 テーマ",
              "━━━━━━━━━━━━━━━━━━"]
     for yd in data.get("years", []):
         year = yd.get("year", "")
@@ -870,7 +831,6 @@ def fortune_thread(user_id, user, fortune_type):
             push(user_id, fmt_yearly(gen_yearly(user)))
     except Exception as e:
         push(user_id, f"⚠️ エラーが発生しました。もう一度お試しください。\n({e})")
-
 
 def graph_image_thread(user_id, user):
     try:
@@ -903,7 +863,6 @@ def graph_image_thread(user_id, user):
     except Exception as e:
         push(user_id, f"⚠️ グラフの生成に失敗しました。\n({e})")
 
-
 WELCOME_TEXT = """🌙 星夜堂へようこそ ✨
 
 星夜堂は、複数の占術を組み合わせた
@@ -911,25 +870,24 @@ WELCOME_TEXT = """🌙 星夜堂へようこそ ✨
 
 【できること】
 📅 今日の運勢
-  全体運・金運・恋愛運・仕事運・
-  健康運・対人運の6カテゴリを
-  スコア付き一覧表示
+全体運・金運・恋愛運・仕事運・
+健康運・対人運の6カテゴリを
+スコア付き一覧表示
 
 📆 今月の運勢
-  カテゴリ別スコア＋上昇/安定/下降の
-  トレンドと吉日・注意日をお知らせ
+カテゴリ別スコア＋上昇/安定/下降の
+トレンドと吉日・注意日をお知らせ
 
 🔮 占術別診断
-  四柱推命・算命学・西洋占星術・
-  数秘術・紫微斗数の5占術の結果を
-  スコア付きで一覧できます
+四柱推命・算命学・西洋占星術・
+数秘術・紫微斗数の5占術の結果を
+スコア付きで一覧できます
 
 📊 今年/12年推移グラフ
-  5占術の全体運を折れ線グラフ画像で
-  チャットに直接送信します
+5占術の全体運を折れ線グラフ画像で
+チャットに直接送信します"""
 
-━━━━━━━━━━━━━━━━━━
-まず、以下を教えてください。
+REGISTRATION_PROMPT = """📝 まず、以下を教えてください。
 
 📅 生年月日（分かれば時刻も）
 👤 名前と読み方（平仮名） ※数秘術の精度向上
@@ -939,15 +897,18 @@ WELCOME_TEXT = """🌙 星夜堂へようこそ ✨
 1990年3月15日 午前10時
 田中太郎（たなかたろう） 東京都"""
 
-
 @handler.add(FollowEvent)
 def handle_follow(event):
     user_id = event.source.user_id
     # ブロック解除時も含め、フォロー時は常にユーザーデータをリセットして登録フローを再スタート
-    set_user(user_id, {})
+    set_user(user_id, {"state": "waiting_birthday", "birthday": None, "name": None, "birthplace": None, "birth_time": None})
     user_data.pop(user_id, None)  # インメモリキャッシュもリセット
     reply_msg(event.reply_token, WELCOME_TEXT)
-
+    # 登録プロンプトを別メッセージとして送信
+    threading.Thread(
+        target=lambda: push(user_id, REGISTRATION_PROMPT, with_menu=False),
+        daemon=True
+    ).start()
 
 @handler.add(MessageEvent, message=TextMessageContent)
 def handle_message(event):
@@ -957,10 +918,11 @@ def handle_message(event):
 
     if text == "誕生日変更":
         user["state"] = "waiting_birthday"
+        set_user(user_id, user)
         reply_msg(event.reply_token, "新しい生年月日を入力してください。\n（例: 1990年3月15日）")
         return
 
-    if user["state"] == "waiting_birthday" or not user.get("birthday"):
+    if user.get("state") == "waiting_birthday" or not user.get("birthday"):
         birthday = parse_birthday(text)
         if birthday:
             user["birthday"] = birthday
@@ -973,6 +935,7 @@ def handle_message(event):
                 user["name"] = extra["name"]
             if extra.get("birthplace"):
                 user["birthplace"] = extra["birthplace"]
+            set_user(user_id, user)  # Redisに永続化
             detail = ""
             if user.get("birth_time"): detail += f" {user['birth_time']}"
             if user.get("name"): detail += f"\n👤 {user['name']}"
@@ -1034,7 +997,6 @@ def handle_message(event):
             reply_text = "申し訳ございません。只今、星の導きが乱れております。しばらくお待ちくださいませ。🌙"
         reply_msg(event.reply_token, reply_text, with_menu=True)
 
-
 @app.route("/callback", methods=["POST"])
 def callback():
     signature = request.headers.get("X-Line-Signature", "")
@@ -1045,7 +1007,6 @@ def callback():
         abort(400)
     return "OK"
 
-
 @app.route("/img/<img_id>")
 def serve_image(img_id):
     if img_id in image_cache:
@@ -1055,16 +1016,10 @@ def serve_image(img_id):
         return resp
     abort(404)
 
-
 @app.route("/", methods=["GET"])
 def health_check():
     return "星夜堂 LINE Bot is running ✨"
 
-
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
-
-Claude is active in this tab group
-Open chat
-Dismiss
