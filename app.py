@@ -943,7 +943,9 @@ WELCOME_TEXT = """🌙 星夜堂へようこそ ✨
 @handler.add(FollowEvent)
 def handle_follow(event):
     user_id = event.source.user_id
-    set_user(user_id, {"state": "waiting_birthday", "birthday": None})
+    # ブロック解除時も含め、フォロー時は常にユーザーデータをリセットして登録フローを再スタート
+    set_user(user_id, {})
+    user_data.pop(user_id, None)  # インメモリキャッシュもリセット
     reply_msg(event.reply_token, WELCOME_TEXT)
 
 
