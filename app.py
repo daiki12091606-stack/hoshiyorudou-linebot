@@ -10,7 +10,7 @@ from io import BytesIO
 from flask import Flask, request, abort, make_response, jsonify
 import anthropic
 
-import matplotlibh
+import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import matplotlib.font_manager as fm
