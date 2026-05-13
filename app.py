@@ -116,11 +116,11 @@ SYSTEM_EN = {
 }
 LEGEND_TEXT = (
     "━" * 14 + "\n"
-    "U0001F7E6 4Pillars = 四柱推命\n"
-    "U0001F7E1 9-Star = 算命学\n"
-    "U0001F534 Western = 西洋占星術\n"
-    "U0001F7E2 Numerol. = 数秘術\n"
-    "U0001F7E3 ZWDS = 紫微斗数"
+    "\U0001F7E6 4Pillars = 四柱推命\n"
+    "\U0001F7E1 9-Star = 算命学\n"
+    "\U0001F534 Western = 西洋占星術\n"
+    "\U0001F7E2 Numerol. = 数秘術\n"
+    "\U0001F7E3 ZWDS = 紫微斗数"
 )
 CAT_EMOJI = {
     "全体運": "🌟",
@@ -435,7 +435,7 @@ def gen_daily(user):
         sc = cat_sc[cat]
         v = lv(sc)
         msg = pick(_MSG[cat][v], cat + "_msg")
-        lucky_list = _LUCKY.get(cat, [["",""],[""  ,""],["" ,""],["" ,""],["" ,""]])[v]
+        lucky_list = _LUCKY.get(cat, [["",""],["" ,""],["" ,""],["" ,""],["" ,""]])[v]
         lucky = pick(lucky_list, cat + "_lucky") if cat not in ("健康運","対人運") else ""
         categories[cat] = {"score": sc, "message": msg, "lucky": lucky}
     return {"date": date_str, "overall_message": overall_msg, "categories": categories}
@@ -489,14 +489,14 @@ def gen_monthly(user):
         h = int(_hs.sha256(f"{user.get('birthday','')}|{year}{month:02d}|{key}".encode()).hexdigest(),16)
         return lst[h % len(lst)]
 
-    month_str = now.strftime("%Y年%m月")
+    month_str = now.strftime("%Y年%[月")
     ov = cat_sc["全体運"]
     om_list = ["慎重に過ごす月です","一歩一歩着実に","穏やかな運気の月","好調な月！積極的に","絶好調の月。大きな挑戦を"]
     categories = {}
     for cat in ["全体運","金運","恋愛運","仕事運","健康運","対人運"]:
         sc = cat_sc[cat]
         v = lv(sc)
-        msg = pick(_MSG[cat][v], cat + "_monthly")
+        msg = pich(_MSG[cat][v], cat + "_monthly")
         categories[cat] = {"score": sc, "trend": trend_map[cat], "message": msg}
     return {
         "month": month_str,
@@ -507,7 +507,7 @@ def gen_monthly(user):
     }
 
 def gen_divination(user):
-    today = datetime.now().strftime("%Y年%m月%d日")
+    today = datetime.now().strftime("%Y年%[月%d日")
     ctx = build_user_context(user)
     birthday = user.get("birthday", "")
     prompt = f"""{ctx}
@@ -647,7 +647,9 @@ def gen_graph_data(user):
                    for m in range(12)]
         yearly = [round(wave_score(art, (y / 13.0) * 2 * math.pi, "yearly"), 1)
                   for y in range(13)]
-        result[art] = {"monthly": monthly, "yearly": yearly}
+        past_yearly = [round(wave_score(art, ((i - 10) / 13.0) * 2 * math.pi, "yearly"), 1)
+                       for i in range(13)]
+        result[art] = {"monthly": monthly, "yearly": yearly, "past_yearly": past_yearly}
     return result
 
 def get_graph_data_cached(user):
@@ -736,6 +738,59 @@ def generate_fortune_image(graph_data, user):
     buf.seek(0)
     return buf.getvalue()
 
+
+def generate_past_fortune_image(graph_data, user):
+    current_year = datetime.now().year
+    start_year = current_year - 12
+
+    birthday = user.get("birthday", "")
+    birthday_iso = birthday_to_iso(birthday) or ""
+    bday_disp = iso_to_birthday(birthday_iso) if birthday_iso else birthday
+
+    fig, ax = plt.subplots(1, 1, figsize=(10, 5.5), facecolor='#0c0c22')
+    fig.suptitle(f'Hoshiyorudou Past 12-Year Trend ({bday_disp})',
+                 color='#c8a8ff', fontsize=11, y=0.99)
+
+    ax.set_facecolor('#10102c')
+    ax.set_title('Past 12-Year Fortune Trend', color='#a0c8ff', fontsize=10, pad=7)
+    ax.set_ylim(1, 10)
+    ax.set_yticks(range(1, 11))
+    ax.set_yticklabels([str(i) for i in range(1, 11)], fontsize=9)
+    ax.tick_params(colors='#8888bb', labelsize=9)
+    ax.grid(color='#1e1e44', linewidth=0.7, alpha=0.8)
+    for spine in ax.spines.values():
+        spine.set_color('#2a2a54')
+
+    target_systems = ["四柱推命", "算命学", "西洋占星術", "数秘術"]
+    for system in target_systems:
+        scores = graph_data.get(system, {}).get("past_yearly", [])
+        if scores:
+            ax.plot(scores,
+                    color=COLORS[system],
+                    linewidth=2.2,
+                    marker='o',
+                    markersize=3.5,
+                    label=SYSTEM_EN[system],
+                    alpha=0.92)
+
+    labels = [str(start_year + i) for i in range(13)]
+    ax.set_xticks(range(13))
+    ax.set_xticklabels(labels, fontsize=8, color='#9999cc', rotation=40, ha='right')
+    ax.axvline(x=12, color='#ffffff', alpha=0.4, linestyle='--', linewidth=1.5)
+    ax.legend(loc='upper right', fontsize=7.5,
+              facecolor='#1c1c3c', labelcolor='#ddddff',
+              framealpha=0.9, edgecolor='#3a3a64',
+              handlelength=1.5, handletextpad=0.5)
+
+    plt.tight_layout(rect=[0, 0, 1, 0.95])
+    buf = BytesIO()
+    fig.savefig(buf, format='png', dpi=150,
+                bbox_inches='tight', facecolor='#0c0c22')
+    plt.close(fig)
+    buf.seek(0)
+    return buf.getvalue()
+
+
 def fmt_daily(data):
     if not data:
         return "⚠️ 運勢の計算に失敗しました。もう一度お試しください。"
@@ -745,10 +800,10 @@ def fmt_daily(data):
     for cat, emoji in CAT_EMOJI.items():
         d = data.get("categories", {}).get(cat, {})
         score = d.get("score", 5)
-        lines.append(f" {cat} {score}/10")
-        lines.append(f" {d.get('message','')}")
+        lines.append(f"  {cat} {score}/10")
+        lines.append(f"  {d.get('message','')}")
         if d.get("lucky"):
-            lines.append(f" → {d['lucky']}")
+            lines.append(f"  → {d['lucky']}")
     return "\n".join(lines)
 
 def fmt_monthly(data):
@@ -762,8 +817,8 @@ def fmt_monthly(data):
         d = data.get("categories", {}).get(cat, {})
         score = d.get("score", 5)
         trend = d.get("trend", "安定")
-        lines.append(f" {cat} {score}/10 {trend_icon.get(trend,'→')}")
-        lines.append(f" {d.get('message','')}")
+        lines.append(f"  {cat} {score}/10 {trend_icon.get(trend,'→')}")
+        lines.append(f"  {d.get('message','')}")
     lines += ["━━━━━━━━━━━━━━━━━━",
               f"吉日：{data.get('best_days','-')}",
               f"⚠️ 注意日：{data.get('caution_days','-')}"]
@@ -780,17 +835,17 @@ def fmt_divination(data):
         score = d.get("score", 5)
         lines.append(f"{emoji} 【{sys_name}】 {score_bar(score)} {score}/10")
         if sys_name == "四柱推命":
-            lines.append(f" 五行: {d.get('element','-')} 吉方位: {d.get('lucky_direction','-')}")
+            lines.append(f"  五行: {d.get('element','-')} 吉方位: {d.get('lucky_direction','-')}")
         elif sys_name == "算命学":
-            lines.append(f" 主星: {d.get('star','-')}")
+            lines.append(f"  主星: {d.get('star','-')}")
         elif sys_name == "西洋占星術":
-            lines.append(f" {d.get('sign','-')} 支配星: {d.get('planet','-')}")
+            lines.append(f"  {d.get('sign','-')} 支配星: {d.get('planet','-')}")
         elif sys_name == "数秘術":
-            lines.append(f" ライフパス: {d.get('life_path','-')} 運命数: {d.get('destiny','-')}")
+            lines.append(f"  ライフパス: {d.get('life_path','-')} 運命数: {d.get('destiny','-')}")
         elif sys_name == "紫微斗数":
-            lines.append(f" 主星: {d.get('main_star','-')}")
-        lines.append(f" {d.get('description','')}")
-        lines.append(f" ▶ {d.get('current_luck','')}")
+            lines.append(f"  主星: {d.get('main_star','-')}")
+        lines.append(f"  {d.get('description','')}")
+        lines.append(f"  ▶ {d.get('current_luck','')}")
         lines.append("")
     return "\n".join(lines).rstrip()
 
@@ -802,7 +857,7 @@ def fmt_yearly(data):
     lines = ["📊 12年間の運勢推移 📊",
              f"✨ {data.get('overall_trend','')}",
              "━━━━━━━━━━━━━━━━━━",
-             "年 バー 点 傾向 テーマ",
+             "年  バー      点 傾向 テーマ",
              "━━━━━━━━━━━━━━━━━━"]
     for yd in data.get("years", []):
         year = yd.get("year", "")
@@ -862,20 +917,47 @@ def graph_image_thread(user_id, user):
     except Exception as e:
         push(user_id, f"⚠️ グラフの生成に失敗しました。\n({e})")
 
+
+def past_graph_image_thread(user_id, user):
+    try:
+        data = get_graph_data_cached(user)
+        if not data:
+            push(user_id, "⚠️ グラフデータの生成に失敗しました。もう一度お試しください。")
+            return
+
+        img_bytes = generate_past_fortune_image(data, user)
+        img_id = uuid.uuid4().hex
+        store_image(img_id, img_bytes)
+
+        base = bot_base_url()
+        if not base:
+            push(user_id, "⚠️ サーバーURLが取得できませんでした。")
+            return
+
+        img_url = f"{base}/img/{img_id}"
+        push_image(user_id, img_url)
+        push(user_id,
+             "📊 過去12年の運勢推移です。\n\n実際に良かった年・大変だった年と、どの占術の山谷が一致しているか確認してみてください。\n一番一致している占術があなたとの相性が高い占術です✨",
+             with_menu=True)
+
+    except Exception as e:
+        push(user_id, f"⚠️ グラフの生成に失敗しました。\n({e})")
+
+
 WELCOME_TEXT = """🌙 星夜堂へようこそ ✨
 
 星夜堂は、複数の占術を組み合わせた
 本格的な占いサービスです。
 
 【できること】
-📅 今日の運勢
+📅 $��日の運勢
 全体運・金運・恋愛運・仕事運・
 健康運・対人運の6カテゴリを
 スコア付き一覧表示
 
 📆 今月の運勢
 カテゴリ別スコア＋上昇/安定/下降の
-トレンドと吉日・注意日をお知らせ
+トルンドと吉日・注意日をお知らせ
 
 🔮 占術別診断
 四柱推命・算命学・西洋占星術・
@@ -888,7 +970,7 @@ WELCOME_TEXT = """🌙 星夜堂へようこそ ✨
 
 REGISTRATION_PROMPT = """📝 まず、以下を教えてください。
 
-📅 生年月日（分かれば時刻も）
+📅 '��年月日（分かれば時刻も）
 👤 名前と読み方（平仮名） ※数秘術の精度向上
 📍 出生地 ※精度向上
 
@@ -901,7 +983,7 @@ def handle_follow(event):
     user_id = event.source.user_id
     # ブロック解除時も含め、フォロー時は常にユーザーデータをリセットして登録フローを再スタート
     set_user(user_id, {"state": "waiting_birthday", "birthday": None, "name": None, "birthplace": None, "birth_time": None})
-    user_data.pop(user_id, None)  # インメモリキャッシュもリセット
+    user_data.pop(user_id, None) # インメモリキャッシュもリセット
     reply_msg(event.reply_token, WELCOME_TEXT)
     # 登録プロンプトを別メッセージとして送信
     threading.Thread(
@@ -934,7 +1016,7 @@ def handle_message(event):
                 user["name"] = extra["name"]
             if extra.get("birthplace"):
                 user["birthplace"] = extra["birthplace"]
-            set_user(user_id, user)  # Redisに永続化
+            set_user(user_id, user) # Redisに永続化
             detail = ""
             if user.get("birth_time"): detail += f" {user['birth_time']}"
             if user.get("name"): detail += f"\n👤 {user['name']}"
@@ -960,6 +1042,16 @@ def handle_message(event):
         "今月の運勢": "monthly",
         "占術別診断": "divination",
     }
+
+    if text in ("過去12年", "過去の運勢", "相性診断"):
+        reply_msg(event.reply_token,
+                  "📈 過去12年の折れ線グラフを生成中です...\nしばらくお待ちください 🌌")
+        threading.Thread(
+            target=past_graph_image_thread,
+            args=(user_id, user),
+            daemon=True,
+        ).start()
+        return
 
     if text == "今年/12年推移グラフ":
         reply_msg(event.reply_token,
@@ -993,7 +1085,7 @@ def handle_message(event):
             )
             reply_text = resp.content[0].text
         except Exception:
-            reply_text = "申し訳ございません。只今、星の導きが乱れております。しばらくお待ちくださいませ。🌙"
+            reply_text = "申し訳ございません。只今、星の導きが乱れてえります。しばらくお待ちくださいませ。🌙"
         reply_msg(event.reply_token, reply_text, with_menu=True)
 
 @app.route("/callback", methods=["POST"])
