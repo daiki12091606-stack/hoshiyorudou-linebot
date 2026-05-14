@@ -404,6 +404,126 @@ _LUCKY = {
     "対人運": [["読書","内省"],["傾聴","穏やかな言葉"],["お礼メッセージ","笑顔"],["新しい出会い","交流会"],["パーティー","積極的な交流"]],
 }
 
+_PRIORITY_MAP = {
+    "career":"キャリア・仕事","love":"恋愛・パートナー","wealth":"お金・経済的自由",
+    "health":"健康","family":"家族・家庭","creative":"創作・自己表現","spiritual":"精神的成長",
+}
+_ADVICE_MAP = {
+    "action":"具体的な行動指針を求めている","caution":"リスク・注意点を知りたい",
+    "confirmation":"自分の選択の後押しが欲しい","self_insight":"自己理解を深めたい",
+}
+_YEAR_THEME_MAP = {
+    "leap":"大きな変化・飛躍の年","consolidation":"安定・基盤固めの年",
+    "growth":"自己成長の年","healing":"癒し・回復の年",
+}
+_MOOD_MAP = {
+    "high":"充実・エネルギー高め","neutral":"普通","low":"疲れ気味・停滞感",
+    "expansive":"拡張期","stable":"安定期","developmental":"成長期","restorative":"回復期",
+}
+
+def _build_persona_summary(tags):
+    if not tags:
+        return ""
+    parts = []
+    if tags.get("priority") in _PRIORITY_MAP:
+        parts.append("最優先事項: " + _PRIORITY_MAP[tags["priority"]])
+    if tags.get("priority2") in _PRIORITY_MAP:
+        parts.append("次の優先: " + _PRIORITY_MAP[tags["priority2"]])
+    if tags.get("advice_style") in _ADVICE_MAP:
+        parts.append("占いへの期待: " + _ADVICE_MAP[tags["advice_style"]])
+    if tags.get("year_theme") in _YEAR_THEME_MAP:
+        parts.append("今年のテーマ: " + _YEAR_THEME_MAP[tags["year_theme"]])
+    m = tags.get("mood") or tags.get("vitality")
+    if m in _MOOD_MAP:
+        parts.append("現在の状態: " + _MOOD_MAP[m])
+    _cm = {"money":"収入アップ・副業中","career":"転職・キャリアチェンジ中","love":"新しい恋愛・結婚を求めている","health":"健康改善中"}
+    if tags.get("challenge") in _cm:
+        parts.append("現在の挑戦: " + _cm[tags["challenge"]])
+    _lm = {"stable_partner":"パートナーがいて安定","challenging_partner":"パートナーとの課題あり","seeking":"恋愛を積極的に求めている","single_focused":"今は恋愛以外を優先"}
+    if tags.get("love_status") in _lm:
+        parts.append("恋愛状況: " + _lm[tags["love_status"]])
+    _lcm = {"red_orange":"赤・オレンジ","blue":"青・紺","yellow_gold":"黄・金","green":"緑"}
+    if tags.get("lucky_color") in _lcm:
+        parts.append("好きな色: " + _lcm[tags["lucky_color"]])
+    _lam = {"physical":"体を動かす","creative":"創作活動","social":"人と交流","intellectual":"読書・学習"}
+    if tags.get("lucky_action") in _lam:
+        parts.append("気分が上がる行動: " + _lam[tags["lucky_action"]])
+    return "\n".join(parts)
+
+_CAT_PRIMARY_SYS = {
+    "金運": "四柱推命", "恋愛運": "西洋占星術",
+    "仕事運": "算命学", "健康運": "紫微斗数", "対人運": "西洋占星術",
+}
+
+def _gen_personalized_text(user, cat_sc, sys_scores, date_label, mode):
+    tags = user.get("diagnosis_tags") or {}
+    name = user.get("name") or "あなた"
+    persona = _build_persona_summary(tags)
+    birthday = user.get("birthday", "")
+    today_key = datetime.now().strftime("%Y%m%d") if mode == "daily" else datetime.now().strftime("%Y%m")
+    cache_key = f"fortune_text_{mode}:{abs(hash(birthday + name)) % 10**12}:{today_key}"
+    r = _get_redis()
+    if r:
+        try:
+            cached = r.get(cache_key)
+            if cached:
+                return json.loads(cached)
+        except Exception:
+            pass
+    score_lines = []
+    for cat in ["全体運", "金運", "恋愛運", "仕事運", "健康運", "対人運"]:
+        sc = cat_sc.get(cat, 5)
+        if cat in _CAT_PRIMARY_SYS:
+            sn = _CAT_PRIMARY_SYS[cat]
+            score_lines.append(f"{cat}: {sc}/10（{sn}ベース {sys_scores.get(sn, 5)}/10）")
+        else:
+            score_lines.append(f"{cat}: {sc}/10（5占術平均）")
+    period = f"今日（{date_label}）" if mode == "daily" else f"今月（{date_label}）"
+    guidance = "今日1日の具体的なアドバイスを含めてください" if mode == "daily" else "今月の前半・後半の流れを意識したアドバイスを含めてください"
+    prompt = f"""あなたは星夜堂の占い師AIです。以下のユーザー情報と運勢スコアをもとに、パーソナライズされた運勢メッセージを生成してください。
+
+【ユーザー情報】
+名前: {name}さん
+{persona if persona else "（診断情報なし）"}
+
+【{period}の運勢スコア】
+{chr(10).join(score_lines)}
+
+【生成ルール】
+・各カテゴリのメッセージは主担当占術の解釈を中心に書く
+・ユーザーの優先事項・現在の状況・占いへの期待スタイルを必ず反映する
+・スコア7以上：具体的な好機や行動を示す / スコア4以下：優しく注意を促す（責めない）
+・{guidance}
+・ラッキー情報はユーザーの好む色・行動を自然に活かす
+・トーン：神秘的かつ温かく、押しつけがましくない
+
+以下のJSON形式のみで返してください：
+{{
+  "overall_message": "{period}を一言で表す文（40文字以内）",
+  "categories": {{
+    "全体運": {{"message": "25文字以内"}},
+    "金運": {{"message": "25文字以内"}},
+    "恋愛運": {{"message": "25文字以内"}},
+    "仕事運": {{"message": "25文字以内"}},
+    "健康運": {{"message": "25文字以内"}},
+    "対人運": {{"message": "25文字以内"}}
+  }},
+  "lucky": {{
+    "color": "10文字以内",
+    "action": "20文字以内",
+    "item": "10文字以内",
+    "word": "10文字以内"
+  }}
+}}"""
+    result = ask_claude(prompt, max_tokens=900)
+    if result and r:
+        try:
+            ttl = 86400 if mode == "daily" else 86400 * 7
+            r.setex(cache_key, ttl, json.dumps(result, ensure_ascii=False))
+        except Exception:
+            pass
+    return result
+
 def gen_daily(user):
     import hashlib as _hs
     from datetime import datetime, date as _dc
@@ -415,19 +535,31 @@ def gen_daily(user):
     def wt(a, b, c, d, e): return max(1, min(10, round(s["四柱推命"]*a + s["算命学"]*b + s["西洋占星術"]*c + s["数秘術"]*d + s["紫微斗数"]*e)))
     cat_sc = {
         "全体運": wt(0.2, 0.2, 0.2, 0.2, 0.2),
-        "金運": wt(0.4, 0.2, 0.1, 0.2, 0.1),
-        "恋愛運": wt(0.1, 0.1, 0.4, 0.2, 0.2),
-        "仕事運": wt(0.4, 0.3, 0.1, 0.1, 0.1),
-        "健康運": wt(0.2, 0.3, 0.1, 0.1, 0.3),
-        "対人運": wt(0.1, 0.2, 0.4, 0.2, 0.1),
+        "金運":   wt(0.75, 0.1, 0.05, 0.05, 0.05),
+        "恋愛運": wt(0.05, 0.05, 0.75, 0.1, 0.05),
+        "仕事運": wt(0.1, 0.75, 0.05, 0.05, 0.05),
+        "健康運": wt(0.05, 0.1, 0.05, 0.05, 0.75),
+        "対人運": wt(0.05, 0.1, 0.75, 0.05, 0.05),
     }
+
+    date_str = now.strftime("%Y年%m月%d日")
+    if user.get("diagnosis_done"):
+        personalized = _gen_personalized_text(user, cat_sc, s, date_str, "daily")
+        if personalized:
+            categories = {
+                cat: {"score": cat_sc[cat],
+                      "message": personalized.get("categories", {}).get(cat, {}).get("message", ""),
+                      "lucky": ""}
+                for cat in ["全体運", "金運", "恋愛運", "仕事運", "健康運", "対人運"]
+            }
+            return {"date": date_str, "overall_message": personalized.get("overall_message", ""),
+                    "categories": categories, "lucky_summary": personalized.get("lucky", {})}
 
     def lv(sc): return min(4, max(0, (sc - 1) * 4 // 9))
     def pick(lst, key):
         h = int(_hs.sha256(f"{user.get('birthday','')}|{now.strftime('%Y%m%d')}|{key}".encode()).hexdigest(), 16)
         return lst[h % len(lst)]
 
-    date_str = now.strftime("%Y年%m月%d日")
     ov = cat_sc["全体運"]
     om_list = ["今日はゆっくり休んで体を整えましょう","慎重に一歩ずつ進む日です","穏やかで安定した一日になりそう","運気が上昇中！積極的に動いて","最高の運気。大きな一歩を踏み出して"]
     overall_msg = om_list[lv(ov)]
@@ -463,13 +595,29 @@ def gen_monthly(user):
         return max(1, min(10, round(vals[0])))
     cat_sc = {
         "全体運": round(sum(v for _,v,_ in day_avgs)/len(day_avgs)),
-        "金運": wt(0.4,0.2,0.1,0.2,0.1),
-        "恋愛運": wt(0.1,0.1,0.4,0.2,0.2),
-        "仕事運": wt(0.4,0.3,0.1,0.1,0.1),
-        "健康運": wt(0.2,0.3,0.1,0.1,0.3),
-        "対人運": wt(0.1,0.2,0.4,0.2,0.1),
+        "金運":   wt(0.75,0.1,0.05,0.05,0.05),
+        "恋愛運": wt(0.05,0.05,0.75,0.1,0.05),
+        "仕事運": wt(0.1,0.75,0.05,0.05,0.05),
+        "健康運": wt(0.05,0.1,0.05,0.05,0.75),
+        "対人運": wt(0.05,0.1,0.75,0.05,0.05),
     }
     cat_sc = {k: max(1, min(10, v)) for k, v in cat_sc.items()}
+
+    month_str = now.strftime("%Y年%m月")
+    if user.get("diagnosis_done"):
+        sys_avg = {sys: round(sum(ds[sys] for _,_,ds in day_avgs) / len(day_avgs), 1)
+                   for sys in ["四柱推命","算命学","西洋占星術","数秘術","紫微斗数"]}
+        personalized = _gen_personalized_text(user, cat_sc, sys_avg, month_str, "monthly")
+        if personalized:
+            categories = {
+                cat: {"score": cat_sc[cat],
+                      "message": personalized.get("categories", {}).get(cat, {}).get("message", ""),
+                      "trend": "安定"}
+                for cat in ["全体運", "金運", "恋愛運", "仕事運", "健康運", "対人運"]
+            }
+            return {"month": month_str, "overall_message": personalized.get("overall_message", ""),
+                    "categories": categories, "best_days": "", "caution_days": "",
+                    "lucky_summary": personalized.get("lucky", {})}
 
     mid = last_day // 2
     first_half = sum(v for d,v,_ in day_avgs if d <= mid) / max(1, mid)
@@ -805,6 +953,14 @@ def fmt_daily(data):
         lines.append(f"  {d.get('message','')}")
         if d.get("lucky"):
             lines.append(f"  → {d['lucky']}")
+    lucky = data.get("lucky_summary")
+    if lucky:
+        lines.append("━━━━━━━━━━━━━━━━━━")
+        lines.append("✨ 今日のラッキー")
+        if lucky.get("color"):  lines.append(f"U0001f3a8 カラー：{lucky['color']}")
+        if lucky.get("action"): lines.append(f"U0001f3af 行動：{lucky['action']}")
+        if lucky.get("item"):   lines.append(f"U0001f48e アイテム：{lucky['item']}")
+        if lucky.get("word"):   lines.append(f"U0001f511 キーワード：{lucky['word']}")
     return "\n".join(lines)
 
 def fmt_monthly(data):
@@ -823,6 +979,14 @@ def fmt_monthly(data):
     lines += ["━━━━━━━━━━━━━━━━━━",
               f"吉日：{data.get('best_days','-')}",
               f"⚠️ 注意日：{data.get('caution_days','-')}"]
+    lucky = data.get("lucky_summary")
+    if lucky:
+        lines.append("━━━━━━━━━━━━━━━━━━")
+        lines.append("✨ 今月のラッキー")
+        if lucky.get("color"):  lines.append(f"🎨 カラー：{lucky['color']}")
+        if lucky.get("action"): lines.append(f"🎯 行動：{lucky['action']}")
+        if lucky.get("item"):   lines.append(f"💎 アイテム：{lucky['item']}")
+        if lucky.get("word"):   lines.append(f"🔑 キーワード：{lucky['word']}")
     return "\n".join(lines)
 
 def fmt_divination(data):
