@@ -1147,8 +1147,7 @@ def liff_result():
     set_user(line_user_id, user)
     try:
         name = profile.get('name', '')
-        msg = f"( {name}U�:�L��W~W_\n\n��K�Bj_`Qk���ޤ�U�_`D�JJQW~Y<\n\n��nK�
-�cffO`UD=�"
+        msg = f"✨ {name}さん、診断が完了しました！\n\n今日から、あなただけにカスタマイズされた占いをお届けします🌙\n\n「今日の運勢」を送ってみてください📅"
         push(line_user_id, msg, with_menu=False)
     except Exception as e:
         print(f"Push error: {e}")
