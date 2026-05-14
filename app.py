@@ -951,7 +951,7 @@ WELCOME_TEXT = """🌙 星夜堂へようこそ ✨
 本格的な占いサービスです。
 
 【できること】
-📅 $��日の運勢
+📅 今日の運勢
 全体運・金運・恋愛運・仕事運・
 健康運・対人運の6カテゴリを
 スコア付き一覧表示
@@ -971,7 +971,7 @@ WELCOME_TEXT = """🌙 星夜堂へようこそ ✨
 
 REGISTRATION_PROMPT = """📝 まず、以下を教えてください。
 
-📅 '��年月日（分かれば時刻も）
+📅 生年月日（分かれば時刻も）
 👤 名前と読み方（平仮名） ※数秘術の精度向上
 📍 出生地 ※精度向上
 
@@ -986,11 +986,11 @@ def handle_follow(event):
     LIFF_URL = "https://liff.line.me/2010080648-3clhj7zs"
     combined = (
         WELCOME_TEXT +
-        "\n\n\n\n"
-        "=� ~ZBj_nSh�YHfO`UD\n"
-        "�n��K�!Xj:�57	��Q�h"
-        "Bj_`Qk���ޤ�U�_`DLJO�Fkj�~Y(\n\n"
-        f"=. :�oSa�\n{LIFF_URL}"
+        "\n\n━━━━━━━━━━━━━━━━━━\n\n"
+        "📝 まず、あなたのことを教えてください！\n"
+        "以下のリンクから簡単な診断（約5〜7分）を受けると、"
+        "あなただけにカスタマイズされた占いが届くようになります✨\n\n"
+        f"🔮 診断はこちら\n{LIFF_URL}"
     )
     reply_msg(event.reply_token, combined)
 @handler.add(MessageEvent, message=TextMessageContent)
