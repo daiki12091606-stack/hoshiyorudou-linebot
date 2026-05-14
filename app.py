@@ -1148,8 +1148,7 @@ def liff_result():
     try:
         name = profile.get('name', '')
         msg = f"✨ {name}さん、診断が完了しました！\n\n今日から、あなただけにカスタマイズされた占いをお届けします🌙\n\n「今日の運勢」を送ってみてください📅"
-        line_bot_api.push_message(line_user_id, TextSendMessage(text=msg))
-    except Exception as e:
+        push(line_user_id, msg, with_menu=False)
         print(f"Push error: {e}")
     return jsonify({"status": "ok"})
 
