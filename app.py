@@ -983,7 +983,7 @@ REGISTRATION_PROMPT = """📝 まず、以下を教えてください。
 def handle_follow(event):
     user_id = event.source.user_id
     set_user(user_id, {"state": "waiting_diagnosis", "birthday": None, "name": None, "birthplace": None, "birth_time": None, "diagnosis_done": False})
-    LIFF_URL = "https://liff.line.me/2010080648-3clhj7zs"
+    LIFF_URL = "https://liff.line.me/2010080648-3cltj7zs"
     combined = (
         WELCOME_TEXT +
         "\n\n━━━━━━━━━━━━━━━━━━\n\n"
