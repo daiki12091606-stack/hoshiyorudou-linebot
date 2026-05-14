@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>星夜堂 - あなたを知る診断</title>
+<script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', 'Yu Gothic', sans-serif;
+    background: #0a0a1a;
+    color: #e8e0ff;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Stars background */
+  .stars {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    background:
+      radial-gradient(ellipse at 20% 20%, rgba(100,60,180,0.15) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 80%, rgba(60,100,180,0.1) 0%, transparent 60%);
+  }
+  .stars::before {
+    content: '';
+    position: absolute;
+    width: 100%; height: 100%;
+    background-image:
+      radial-gradient(1px 1px at 10% 15%, rgba(255,255,255,0.8), transparent),
+      radial-gradient(1px 1px at 25% 35%, rgba(255,255,255,0.6), transparent),
+      radial-gradient(1px 1px at 40% 10%, rgba(255,255,255,0.9), transparent),
+      radial-gradient(1px 1px at 55% 50%, rgba(255,255,255,0.7), transparent),
+      radial-gradient(1px 1px at 70% 25%, rgba(255,255,255,0.8), transparent),
+      radial-gradient(1px 1px at 85% 60%, rgba(255,255,255,0.6), transparent),
+      radial-gradient(1px 1px at 15% 70%, rgba(255,255,255,0.7), transparent),
+      radial-gradient(1px 1px at 30% 85%, rgba(255,255,255,0.5), transparent),
+      radial-gradient(1px 1px at 60% 75%, rgba(255,255,255,0.8), transparent),
+      radial-gradient(1px 1px at 90% 40%, rgba(255,255,255,0.9), transparent),
+      radial-gradient(1.5px 1.5px at 5% 45%, rgba(200,180,255,0.9), transparent),
+      radial-gradient(1.5px 1.5px at 75% 90%, rgba(200,180,255,0.7), transparent),
+      radial-gradient(1px 1px at 45% 60%, rgba(255,255,255,0.6), transparent),
+      radial-gradient(1px 1px at 95% 15%, rgba(255,255,255,0.8), transparent),
+      radial-gradient(1px 1px at 35% 55%, rgba(255,255,255,0.5), transparent);
+  }
+
+  /* App container */
+  #app {
+    position: relative;
+    z-index: 1;
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 0 0 40px 0;
+    min-height: 100vh;
+  }
+
+  /* Progress bar */
+  .progress-wrap {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: rgba(10,10,26,0.95);
+    padding: 12px 20px 10px;
+    border-bottom: 1px solid rgba(130,80,200,0.2);
+  }
+  .progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .progress-title {
+    font-size: 12px;
+    color: rgba(200,180,255,0.7);
+    letter-spacing: 1px;
+  }
+  .progress-count {
+    font-size: 12px;
+    color: rgba(200,180,255,0.7);
+  }
+  .progress-bar {
+    width: 100%;
+    height: 3px;
+    background: rgba(130,80,200,0.2);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #7b4fc7, #c084fc);
+    border-radius: 2px;
+    transition: width 0.4s ease;
+  }
+
+  /* Screen transitions */
+  .screen {
+    display: none;
+    animation: fadeIn 0.4s ease;
+  }
+  .screen.active { display: block; }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Welcome screen */
+  #screen-welcome {
+    padding: 60px 24px 40px;
+    text-align: center;
+  }
+  .welcome-moon {
+    font-size: 56px;
+    margin-bottom: 20px;
+    display: block;
+    animation: float 3s ease-in-out infinite;
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+  .welcome-title {
+    font-size: 26px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #c084fc, #fbbf24);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 12px;
+    letter-spacing: 2px;
+  }
+  .welcome-subtitle {
+    font-size: 15px;
+    color: rgba(200,180,255,0.8);
+    margin-bottom: 32px;
+    line-height: 1.7;
+  }
+  .welcome-info {
+    background: rgba(130,80,200,0.1);
+    border: 1px solid rgba(130,80,200,0.25);
+    border-radius: 14px;
+    padding: 18px 20px;
+    margin-bottom: 36px;
+    text-align: left;
+  }
+  .welcome-info-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    color: rgba(200,180,255,0.85);
+    margin-bottom: 10px;
+  }
+  .welcome-info-item:last-child { margin-bottom: 0; }
+  .welcome-info-item span:first-child { font-size: 16px; }
+
+  /* Question screen */
+  #screen-question {
+    padding: 28px 20px 100px;
+  }
+  .q-category {
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    color: #c084fc;
+    margin-bottom: 14px;
+    text-transform: uppercase;
+  }
+  .q-text {
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.55;
+    color: #f0ebff;
+    margin-bottom: 28px;
+  }
+  .options-list {
+    display: flex;
+    flex-direction: column;
+    gap: 11px;
+  }
+  .option-btn {
+    background: rgba(130,80,200,0.08);
+    border: 1.5px solid rgba(130,80,200,0.25);
+    border-radius: 14px;
+    padding: 15px 18px;
+    text-align: left;
+    color: #e8e0ff;
+    font-size: 14px;
+    line-height: 1.5;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .option-btn:active {
+    transform: scale(0.98);
+  }
+  .option-btn.selected {
+    background: rgba(130,80,200,0.3);
+    border-color: #c084fc;
+    color: #fff;
+    box-shadow: 0 0 14px rgba(192,132,252,0.2);
+  }
+  .option-label {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .option-circle {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(130,80,200,0.5);
+    flex-shrink: 0;
+    margin-top: 1px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+  .option-btn.selected .option-circle {
+    background: #c084fc;
+    border-color: #c084fc;
+  }
+  .option-btn.selected .option-circle::after {
+    content: '✓';
+    font-size: 11px;
+    color: white;
+    font-weight: 700;
+  }
+
+  /* Nav buttons */
+  .nav-wrap {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 480px;
+    padding: 16px 20px;
+    background: linear-gradient(transparent, rgba(10,10,26,0.98) 40%);
+    display: flex;
+    gap: 12px;
+    z-index: 10;
+  }
+  .btn-back {
+    flex: 0 0 auto;
+    padding: 14px 20px;
+    background: rgba(130,80,200,0.1);
+    border: 1.5px solid rgba(130,80,200,0.3);
+    border-radius: 14px;
+    color: rgba(200,180,255,0.7);
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-back:active { opacity: 0.7; }
+  .btn-next {
+    flex: 1;
+    padding: 14px;
+    background: linear-gradient(135deg, #7b4fc7, #a855f7);
+    border: none;
+    border-radius: 14px;
+    color: white;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.5px;
+  }
+  .btn-next:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+  .btn-next:not(:disabled):active { transform: scale(0.97); }
+
+  /* Profile screen */
+  #screen-profile {
+    padding: 28px 20px 120px;
+  }
+  .profile-header {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+  .profile-icon { font-size: 40px; margin-bottom: 12px; display: block; }
+  .profile-title {
+    font-size: 20px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #c084fc, #fbbf24);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 8px;
+  }
+  .profile-desc {
+    font-size: 13px;
+    color: rgba(200,180,255,0.7);
+    line-height: 1.6;
+  }
+  .form-group {
+    margin-bottom: 20px;
+  }
+  .form-label {
+    font-size: 13px;
+    color: rgba(200,180,255,0.8);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .badge-required {
+    font-size: 10px;
+    background: rgba(192,132,252,0.25);
+    color: #c084fc;
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+  .badge-optional {
+    font-size: 10px;
+    background: rgba(130,80,200,0.1);
+    color: rgba(200,180,255,0.5);
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+  .form-input {
+    width: 100%;
+    padding: 14px 16px;
+    background: rgba(130,80,200,0.08);
+    border: 1.5px solid rgba(130,80,200,0.25);
+    border-radius: 14px;
+    color: #f0ebff;
+    font-size: 15px;
+    outline: none;
+    transition: border-color 0.2s;
+    -webkit-appearance: none;
+  }
+  .form-input::placeholder { color: rgba(200,180,255,0.3); }
+  .form-input:focus { border-color: #c084fc; }
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .form-hint {
+    font-size: 11px;
+    color: rgba(200,180,255,0.4);
+    margin-top: 6px;
+  }
+
+  /* Complete screen */
+  #screen-complete {
+    padding: 80px 24px 40px;
+    text-align: center;
+  }
+  .complete-icon { font-size: 64px; margin-bottom: 24px; display: block; animation: float 3s ease-in-out infinite; }
+  .complete-title {
+    font-size: 24px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #c084fc, #fbbf24);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 16px;
+  }
+  .complete-text {
+    font-size: 15px;
+    color: rgba(200,180,255,0.8);
+    line-height: 1.7;
+    margin-bottom: 36px;
+  }
+  .complete-card {
+    background: rgba(130,80,200,0.1);
+    border: 1px solid rgba(130,80,200,0.25);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 28px;
+    text-align: left;
+  }
+  .complete-card-title {
+    font-size: 12px;
+    color: #c084fc;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+  }
+  .complete-card-item {
+    font-size: 13px;
+    color: rgba(200,180,255,0.8);
+    margin-bottom: 8px;
+    display: flex;
+    gap: 8px;
+  }
+  .btn-close {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, #7b4fc7, #a855f7);
+    border: none;
+    border-radius: 16px;
+    color: white;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+  }
+
+  /* Loading / Error */
+  #screen-loading {
+    padding: 80px 24px;
+    text-align: center;
+  }
+  .loading-spinner {
+    width: 40px; height: 40px;
+    border: 3px solid rgba(130,80,200,0.2);
+    border-top-color: #c084fc;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 20px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-text { color: rgba(200,180,255,0.6); font-size: 14px; }
+
+  #screen-error {
+    padding: 80px 24px;
+    text-align: center;
+  }
+  .error-icon { font-size: 48px; margin-bottom: 16px; display: block; }
+  .error-text { color: rgba(200,180,255,0.7); font-size: 14px; line-height: 1.7; }
+
+  /* Primary button (shared) */
+  .btn-primary {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, #7b4fc7, #a855f7);
+    border: none;
+    border-radius: 16px;
+    color: white;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.5px;
+  }
+  .btn-primary:active { transform: scale(0.97); }
+  .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+</style>
+</head>
+<body>
+
+<div class="stars"></div>
+
+<div id="app">
+  <!-- Loading -->
+  <div id="screen-loading" class="screen active">
+    <div class="loading-spinner"></div>
+    <p class="loading-text">読み込み中...</p>
+  </div>
+
+  <!-- Error -->
+  <div id="screen-error" class="screen">
+    <span class="error-icon">⚠️</span>
+    <p class="error-text">LINEアプリ内で開いてください。<br>ブラウザからは利用できません。</p>
+  </div>
+
+  <!-- Welcome -->
+  <div id="screen-welcome" class="screen">
+    <span class="welcome-moon">🌙</span>
+    <h1 class="welcome-title">星夜堂 初回診断</h1>
+    <p class="welcome-subtitle">あなたをより深く知るための診断です。<br>回答をもとに、毎日の占いが<br>あなただけの言葉に変わります。</p>
+    <div class="welcome-info">
+      <div class="welcome-info-item"><span>✨</span><span>全30問の性格・価値観診断</span></div>
+      <div class="welcome-info-item"><span>⏱</span><span>所要時間：約5〜7分</span></div>
+      <div class="welcome-info-item"><span>🔮</span><span>診断後、名前・生年月日を入力</span></div>
+      <div class="welcome-info-item"><span>🔒</span><span>回答は占いの精度向上のみに使用</span></div>
+    </div>
+    <button class="btn-primary" onclick="startQuiz()">診断をはじめる →</button>
+  </div>
+
+  <!-- Question -->
+  <div id="screen-question" class="screen">
+    <div class="progress-wrap">
+      <div class="progress-header">
+        <span class="progress-title">🌙 星夜堂 診断</span>
+        <span class="progress-count" id="progress-count">1 / 30</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progress-fill" style="width:3%"></div>
+      </div>
+    </div>
+    <div style="padding-top: 8px;">
+      <p class="q-category" id="q-category"></p>
+      <p class="q-text" id="q-text"></p>
+      <div class="options-list" id="options-list"></div>
+    </div>
+    <div class="nav-wrap">
+      <button class="btn-back" id="btn-back" onclick="prevQuestion()">← 戻る</button>
+      <button class="btn-next" id="btn-next" onclick="nextQuestion()" disabled>次へ →</button>
+    </div>
+  </div>
+
+  <!-- Profile -->
+  <div id="screen-profile" class="screen">
+    <div class="progress-wrap">
+      <div class="progress-header">
+        <span class="progress-title">🌙 星夜堂 診断</span>
+        <span class="progress-count">プロフィール入力</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" style="width:100%"></div>
+      </div>
+    </div>
+    <div style="padding-top: 8px;">
+      <div class="profile-header">
+        <span class="profile-icon">📝</span>
+        <h2 class="profile-title">あなたのプロフィール</h2>
+        <p class="profile-desc">占い精度を高めるために<br>以下の情報を教えてください。</p>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">お名前（読み方）<span class="badge-required">必須</span></label>
+        <input type="text" class="form-input" id="input-name" placeholder="例：たなか たろう" />
+        <p class="form-hint">数秘術の精度向上に使用します</p>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">生年月日<span class="badge-required">必須</span></label>
+        <input type="date" class="form-input" id="input-birthday" />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">出生時刻<span class="badge-optional">任意</span></label>
+        <input type="time" class="form-input" id="input-birthtime" />
+        <p class="form-hint">分かる場合のみ。占いの精度が上がります</p>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">出生地<span class="badge-optional">任意</span></label>
+        <input type="text" class="form-input" id="input-birthplace" placeholder="例：東京都、大阪府、北海道" />
+        <p class="form-hint">都道府県レベルで構いません</p>
+      </div>
+    </div>
+    <div class="nav-wrap">
+      <button class="btn-back" onclick="backToLastQuestion()">← 戻る</button>
+      <button class="btn-next" id="btn-submit" onclick="submitAll()">診断完了 ✨</button>
+    </div>
+  </div>
+
+  <!-- Complete -->
+  <div id="screen-complete" class="screen">
+    <span class="complete-icon">✨</span>
+    <h2 class="complete-title">診断完了！</h2>
+    <p class="complete-text">ありがとうございます。<br>あなたのプロフィールが星夜堂に登録されました。<br>今日から、あなただけの占いをお届けします。</p>
+    <div class="complete-card">
+      <p class="complete-card-title">🔮 これからできること</p>
+      <p class="complete-card-item"><span>📅</span><span>毎朝「今日の運勢」でパーソナライズされたアドバイス</span></p>
+      <p class="complete-card-item"><span>📆</span><span>「今月の運勢」であなたの傾向に合った月間指針</span></p>
+      <p class="complete-card-item"><span>📊</span><span>4占術の12年推移グラフで人生の流れを把握</span></p>
+    </div>
+    <button class="btn-close" onclick="closeLiff()">LINEに戻る →</button>
+  </div>
+</div>
+
+<script>
+// ========== LIFF設定 ==========
+const LIFF_ID = "2010080648-3clhj7zs";
+
+// ========== 質問データ ==========
+const QUESTIONS = [
+  // --- 人生の優先度 ---
+  { id:1, category:"人生の優先度", q:"今の人生で最も力を入れたいことは？",
+    opts:[
+      {l:"仕事・キャリアの成功", t:{priority:"career", fortune_emphasis:"work"}},
+      {l:"恋愛・パートナーシップ", t:{priority:"love", fortune_emphasis:"love"}},
+      {l:"お金・経済的な自由", t:{priority:"wealth", fortune_emphasis:"money"}},
+      {l:"健康・体・エネルギー", t:{priority:"health", fortune_emphasis:"health"}},
+      {l:"家族・子育て・家庭", t:{priority:"family", fortune_emphasis:"family"}},
+      {l:"創作・自己表現・趣味", t:{priority:"creative", fortune_emphasis:"creative"}},
+      {l:"精神的な成長・内面の充実", t:{priority:"spiritual", fortune_emphasis:"spiritual"}}
+    ]},
+  { id:2, category:"人生の優先度", q:"次に大切にしたいことは？",
+    opts:[
+      {l:"仕事・キャリアの成功", t:{priority2:"career"}},
+      {l:"恋愛・パートナーシップ", t:{priority2:"love"}},
+      {l:"お金・経済的な自由", t:{priority2:"wealth"}},
+      {l:"健康・体・エネルギー", t:{priority2:"health"}},
+      {l:"家族・子育て・家庭", t:{priority2:"family"}},
+      {l:"創作・自己表現・趣味", t:{priority2:"creative"}},
+      {l:"精神的な成長・内面の充実", t:{priority2:"spiritual"}}
+    ]},
+  { id:3, category:"占いへの期待", q:"占いを見るとき、一番欲しいものは？",
+    opts:[
+      {l:"今日・今月の具体的な行動指針", t:{advice_style:"action"}},
+      {l:"避けるべきことへの備え・注意点", t:{advice_style:"caution"}},
+      {l:"自分の選択への後押し・確認", t:{advice_style:"confirmation"}},
+      {l:"自分の本質・強みを深く知ること", t:{advice_style:"self_insight"}}
+    ]},
+  // --- 性格 ---
+  { id:4, category:"性格・思考スタイル", q:"エネルギーの向き方は？",
+    opts:[
+      {l:"外向き：人と会うほどエネルギーが増える", t:{personality:"extrovert"}},
+      {l:"どちらかというと外向き：外でも一人でもバランスよく", t:{personality:"ext_leaning"}},
+      {l:"どちらかというと内向き：一人の時間も定期的に必要", t:{personality:"int_leaning"}},
+      {l:"内向き：一人の時間でしっかり回復する", t:{personality:"introvert"}}
+    ]},
+  { id:5, category:"性格・思考スタイル", q:"判断するとき重視するのは？",
+    opts:[
+      {l:"直感・感覚：ピンときたら動く", t:{thinking:"intuitive"}},
+      {l:"どちらかというと直感派：感覚9割・根拠1割", t:{thinking:"int_leaning"}},
+      {l:"どちらかというとデータ派：裏付けがあると安心", t:{thinking:"log_leaning"}},
+      {l:"データ・論理・事実：根拠がないと動けない", t:{thinking:"logical"}}
+    ]},
+  { id:6, category:"性格・思考スタイル", q:"行動スタイルは？",
+    opts:[
+      {l:"事前に計画を立てて動く", t:{style:"planner"}},
+      {l:"流れを見ながら柔軟に動く", t:{style:"flexible"}},
+      {l:"ひらめきで即行動する", t:{style:"spontaneous"}}
+    ]},
+  { id:7, category:"性格・思考スタイル", q:"新しい挑戦に対して？",
+    opts:[
+      {l:"ワクワクして積極的に飛び込む", t:{openness:"high", risk:"bold"}},
+      {l:"慎重に準備してから始める", t:{openness:"moderate", risk:"cautious"}},
+      {l:"安定を優先して何もしない", t:{openness:"low", risk:"conservative"}}
+    ]},
+  { id:8, category:"性格・思考スタイル", q:"占いが「注意が必要な日」と出たら？",
+    opts:[
+      {l:"慎重に行動する", t:{risk_response:"cautious"}},
+      {l:"対策でカバーしようとする", t:{risk_response:"proactive"}},
+      {l:"気にせずいつも通り", t:{risk_response:"ignore"}}
+    ]},
+  // --- 現在の課題 ---
+  { id:9, category:"現在の課題", q:"今、人生で最もチャレンジしていることは？",
+    opts:[
+      {l:"収入アップ・副業・独立", t:{challenge:"money", caution_priority:"wealth"}},
+      {l:"転職・キャリアチェンジ", t:{challenge:"career", caution_priority:"work"}},
+      {l:"新しい恋愛・結婚", t:{challenge:"love", caution_priority:"love"}},
+      {l:"健康・生活習慣の改善", t:{challenge:"health", caution_priority:"health"}}
+    ]},
+  { id:10, category:"現在の課題", q:"心のどこかで不安に感じていることは？",
+    opts:[
+      {l:"将来のお金・経済的な不安", t:{anxiety:"money", caution_priority:"wealth"}},
+      {l:"仕事・キャリアの先行き", t:{anxiety:"career", caution_priority:"work"}},
+      {l:"孤独・人間関係・つながり", t:{anxiety:"loneliness", caution_priority:"people"}},
+      {l:"健康・体の変化", t:{anxiety:"health", caution_priority:"health"}}
+    ]},
+  { id:11, category:"現在の課題", q:"今年の自分のテーマは？",
+    opts:[
+      {l:"飛躍・大きな変化", t:{year_theme:"leap", mood:"expansive"}},
+      {l:"安定・基盤固め", t:{year_theme:"consolidation", mood:"stable"}},
+      {l:"自分磨き・成長", t:{year_theme:"growth", mood:"developmental"}},
+      {l:"回復・癒し・リセット", t:{year_theme:"healing", mood:"restorative"}}
+    ]},
+  { id:12, category:"現在の課題", q:"最近の気分・エネルギーレベルは？",
+    opts:[
+      {l:"充実していて上向き", t:{mood:"high", vitality:"full"}},
+      {l:"まあまあ普通", t:{mood:"neutral", vitality:"moderate"}},
+      {l:"やや疲れ気味・停滞感がある", t:{mood:"low", vitality:"tired"}}
+    ]},
+  // --- ラッキー要素 ---
+  { id:13, category:"ラッキー要素", q:"最も惹かれる色は？（直感で選んでください）",
+    opts:[
+      {l:"赤・オレンジ", t:{lucky_color:"red_orange", element:"fire"}},
+      {l:"青・紺", t:{lucky_color:"blue", element:"water"}},
+      {l:"黄・金", t:{lucky_color:"yellow_gold", element:"earth"}},
+      {l:"緑", t:{lucky_color:"green", element:"wood"}}
+    ]},
+  { id:14, category:"ラッキー要素", q:"心地よく感じる場所は？",
+    opts:[
+      {l:"海・川など水辺", t:{lucky_place:"water", element:"water"}},
+      {l:"山・森・緑豊かな場所", t:{lucky_place:"mountain_forest", element:"wood"}},
+      {l:"神社・お寺・パワースポット", t:{lucky_place:"sacred", element:"spirit"}},
+      {l:"都市・洗練された空間", t:{lucky_place:"urban", element:"metal"}}
+    ]},
+  { id:15, category:"ラッキー要素", q:"気分が上がる行動は？",
+    opts:[
+      {l:"体を動かす・スポーツ", t:{lucky_action:"physical", vitality:"active"}},
+      {l:"創作・音楽・料理", t:{lucky_action:"creative", vitality:"expressive"}},
+      {l:"人と話す・交流する", t:{lucky_action:"social", vitality:"relational"}},
+      {l:"読書・学習・情報収集", t:{lucky_action:"intellectual", vitality:"analytical"}}
+    ]},
+  { id:16, category:"ラッキー要素", q:"ストレス解消法は？",
+    opts:[
+      {l:"一人で静かに過ごす", t:{coping:"solitary"}},
+      {l:"信頼できる人に話す", t:{coping:"social"}},
+      {l:"体を動かす", t:{coping:"physical"}},
+      {l:"好きなことに没頭する", t:{coping:"immersion"}}
+    ]},
+  // --- お金・仕事 ---
+  { id:17, category:"お金・仕事", q:"お金のスタンスは？",
+    opts:[
+      {l:"積極的に増やしたい・投資に興味", t:{money_stance:"growth"}},
+      {l:"堅実に貯蓄・守りたい", t:{money_stance:"saving"}},
+      {l:"今を楽しむために使いたい", t:{money_stance:"spending"}}
+    ]},
+  { id:18, category:"お金・仕事", q:"お金の不安は？",
+    opts:[
+      {l:"かなり不安・毎月ギリギリ", t:{financial_stress:"high"}},
+      {l:"少し不安だが何とかなっている", t:{financial_stress:"moderate"}},
+      {l:"特に不安はない・安定している", t:{financial_stress:"low"}}
+    ]},
+  { id:19, category:"お金・仕事", q:"仕事・活動スタイルは？",
+    opts:[
+      {l:"デスクワーク・テレワーク", t:{work_style:"desk"}},
+      {l:"対面・サービス業", t:{work_style:"service"}},
+      {l:"クリエイティブ・フリー系", t:{work_style:"creative"}},
+      {l:"自営・独立・起業中", t:{work_style:"independent"}}
+    ]},
+  // --- 恋愛・人間関係 ---
+  { id:20, category:"恋愛・人間関係", q:"今の恋愛状況は？",
+    opts:[
+      {l:"パートナーがいて安定", t:{love_status:"stable_partner"}},
+      {l:"パートナーがいるが課題あり", t:{love_status:"challenging_partner"}},
+      {l:"恋愛を求めてアクティブ", t:{love_status:"seeking"}},
+      {l:"今は恋愛より別のことを優先", t:{love_status:"single_focused"}}
+    ]},
+  { id:21, category:"恋愛・人間関係", q:"人間関係で大切にしていることは？",
+    opts:[
+      {l:"少数でも深い信頼関係", t:{relationship_style:"deep_few"}},
+      {l:"広いネットワーク・多様なつながり", t:{relationship_style:"wide_network"}},
+      {l:"依存しない自立した関係", t:{relationship_style:"independent"}}
+    ]},
+  { id:22, category:"恋愛・人間関係", q:"人間関係で最も苦手なのは？",
+    opts:[
+      {l:"批判・対立・競争", t:{relationship_pain:"conflict"}},
+      {l:"気を使いすぎること", t:{relationship_pain:"over_accommodation"}},
+      {l:"孤立・つながりの薄さ", t:{relationship_pain:"isolation"}},
+      {l:"依存されること", t:{relationship_pain:"dependency"}}
+    ]},
+  { id:23, category:"恋愛・人間関係", q:"恋愛で一番大切にしていることは？",
+    opts:[
+      {l:"信頼・誠実さ・安心感", t:{love_value:"trust"}},
+      {l:"ときめき・情熱", t:{love_value:"passion"}},
+      {l:"お互いの自由・自立", t:{love_value:"independence"}},
+      {l:"深い精神的なつながり", t:{love_value:"deep_connection"}}
+    ]},
+  // --- 価値観 ---
+  { id:24, category:"価値観・信念", q:"「縁」について感じていることは？",
+    opts:[
+      {l:"近しい人からの後押し", t:{belief:"support_driven", spiritual_level:"high"}},
+      {l:"偶然や運", t:{belief:"fate", spiritual_level:"moderate"}},
+      {l:"自分から動かないと生まれない", t:{belief:"proactive", spiritual_level:"low"}}
+    ]},
+  { id:25, category:"価値観・信念", q:"好きな季節は？",
+    opts:[
+      {l:"春", t:{season:"spring", element:"wood"}},
+      {l:"夏", t:{season:"summer", element:"fire"}},
+      {l:"秋", t:{season:"autumn", element:"metal"}},
+      {l:"冬", t:{season:"winter", element:"water"}}
+    ]},
+  { id:26, category:"価値観・信念", q:"「幸運」とはどんな状態？",
+    opts:[
+      {l:"お金・財産が増えること", t:{ideal_life:"wealthy_free"}},
+      {l:"大切な人との関係が良くなること", t:{ideal_life:"loving_family"}},
+      {l:"やりたいことができる自由", t:{ideal_life:"authentic_life"}},
+      {l:"心身ともに健康なこと", t:{ideal_life:"healthy_vital"}}
+    ]},
+  { id:27, category:"価値観・信念", q:"人から相談されたとき、あなたがしがちなのは？",
+    opts:[
+      {l:"一緒に感情を受け止めて共感する", t:{support_style:"empathetic"}},
+      {l:"すぐに「こうしたらいい」と提案する", t:{support_style:"solution"}},
+      {l:"まず状況・事実を整理することから始める", t:{support_style:"objective"}}
+    ]},
+  { id:28, category:"価値観・信念", q:"物事が上手くいかないとき、思うことは？",
+    opts:[
+      {l:"タイミングや運の問題だと感じる", t:{attribution:"fate"}},
+      {l:"自分の努力が足りなかったと思う", t:{attribution:"self"}},
+      {l:"環境や周囲の影響が大きかったと思う", t:{attribution:"environment"}}
+    ]},
+  // --- 占い活用 ---
+  { id:29, category:"占いの活用スタイル", q:"占いを見るタイミングは？",
+    opts:[
+      {l:"毎朝、1日の指針として", t:{fortune_timing:"daily"}},
+      {l:"悩んでいるとき・迷っているとき", t:{fortune_timing:"troubled"}},
+      {l:"なんとなく気になったとき", t:{fortune_timing:"casual"}}
+    ]},
+  { id:30, category:"占いの活用スタイル", q:"占いで一番知りたいことは？",
+    opts:[
+      {l:"ラッキーアイテム・場所・色などの開運情報", t:{fortune_want:"lucky_items"}},
+      {l:"人間関係・相性・対人運", t:{fortune_want:"relationships"}},
+      {l:"自分の強み・弱み・本質", t:{fortune_want:"self_understanding"}},
+      {l:"長期的な人生の流れ", t:{fortune_want:"life_flow"}}
+    ]}
+];
+
+// ========== 状態管理 ==========
+let currentQ = 0;
+let answers = {};
+let lineUserId = null;
+
+// ========== LIFF初期化 ==========
+async function initLiff() {
+  try {
+    await liff.init({ liffId: LIFF_ID });
+    if (!liff.isLoggedIn()) {
+      liff.login();
+      return;
+    }
+    const profile = await liff.getProfile();
+    lineUserId = profile.userId;
+    showScreen("screen-welcome");
+  } catch (e) {
+    console.error(e);
+    showScreen("screen-error");
+  }
+}
+
+// ========== 画面切替 ==========
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+// ========== クイズ開始 ==========
+function startQuiz() {
+  currentQ = 0;
+  renderQuestion();
+  showScreen("screen-question");
+}
+
+// ========== 質問描画 ==========
+function renderQuestion() {
+  const q = QUESTIONS[currentQ];
+  const total = QUESTIONS.length;
+  const progress = ((currentQ + 1) / total * 100).toFixed(0);
+
+  document.getElementById('progress-count').textContent = `${currentQ + 1} / ${total}`;
+  document.getElementById('progress-fill').style.width = `${progress}%`;
+  document.getElementById('q-category').textContent = q.category;
+  document.getElementById('q-text').textContent = q.q;
+
+  const list = document.getElementById('options-list');
+  list.innerHTML = '';
+  q.opts.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn' + (answers[q.id] && answers[q.id].l === opt.l ? ' selected' : '');
+    btn.innerHTML = `<span class="option-label"><span class="option-circle"></span><span>${opt.l}</span></span>`;
+    btn.onclick = () => selectOption(q.id, opt, btn);
+    list.appendChild(btn);
+  });
+
+  document.getElementById('btn-back').style.display = currentQ === 0 ? 'none' : '';
+  document.getElementById('btn-next').disabled = !answers[q.id];
+  document.getElementById('btn-next').textContent = currentQ === total - 1 ? 'プロフィール入力へ →' : '次へ →';
+}
+
+function selectOption(qId, opt, btn) {
+  document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  answers[qId] = opt;
+  document.getElementById('btn-next').disabled = false;
+}
+
+function nextQuestion() {
+  if (currentQ < QUESTIONS.length - 1) {
+    currentQ++;
+    renderQuestion();
+    window.scrollTo(0, 0);
+  } else {
+    showScreen("screen-profile");
+  }
+}
+
+function prevQuestion() {
+  if (currentQ > 0) {
+    currentQ--;
+    renderQuestion();
+    window.scrollTo(0, 0);
+  }
+}
+
+function backToLastQuestion() {
+  currentQ = QUESTIONS.length - 1;
+  renderQuestion();
+  showScreen("screen-question");
+}
+
+// ========== 送信 ==========
+async function submitAll() {
+  const name = document.getElementById('input-name').value.trim();
+  const birthday = document.getElementById('input-birthday').value;
+
+  if (!name) { alert('お名前を入力してください'); return; }
+  if (!birthday) { alert('生年月日を入力してください'); return; }
+
+  const birthtime = document.getElementById('input-birthtime').value || null;
+  const birthplace = document.getElementById('input-birthplace').value.trim() || null;
+
+  const btn = document.getElementById('btn-submit');
+  btn.disabled = true;
+  btn.textContent = '送信中...';
+
+  // タグを集約してプロフィールデータを構築
+  const aggregatedTags = {};
+  Object.values(answers).forEach(a => {
+    Object.assign(aggregatedTags, a.t);
+  });
+
+  const payload = {
+    line_user_id: lineUserId,
+    answers: answers,
+    tags: aggregatedTags,
+    profile: { name, birthday, birthtime, birthplace }
+  };
+
+  try {
+    // Railway の Flask サーバーに送信
+    const res = await fetch('/api/liff-result', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    showScreen("screen-complete");
+  } catch (e) {
+    console.error(e);
+    btn.disabled = false;
+    btn.textContent = '診断完了 ✨';
+    alert('送信に失敗しました。もう一度お試しください。');
+  }
+}
+
+function closeLiff() {
+  if (liff.isInClient()) {
+    liff.closeWindow();
+  } else {
+    window.close();
+  }
+}
+
+// ========== 起動 ==========
+initLiff();
+</script>
+</body>
+</html>
