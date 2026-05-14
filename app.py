@@ -490,14 +490,14 @@ def gen_monthly(user):
         h = int(_hs.sha256(f"{user.get('birthday','')}|{year}{month:02d}|{key}".encode()).hexdigest(),16)
         return lst[h % len(lst)]
 
-    month_str = now.strftime("%Y年%[月")
+    month_str = now.strftime("%Y年%m月")
     ov = cat_sc["全体運"]
     om_list = ["慎重に過ごす月です","一歩一歩着実に","穏やかな運気の月","好調な月！積極的に","絶好調の月。大きな挑戦を"]
     categories = {}
     for cat in ["全体運","金運","恋愛運","仕事運","健康運","対人運"]:
         sc = cat_sc[cat]
         v = lv(sc)
-        msg = pich(_MSG[cat][v], cat + "_monthly")
+        msg = pick(_MSG[cat][v], cat + "_monthly")
         categories[cat] = {"score": sc, "trend": trend_map[cat], "message": msg}
     return {
         "month": month_str,
@@ -508,7 +508,7 @@ def gen_monthly(user):
     }
 
 def gen_divination(user):
-    today = datetime.now().strftime("%Y年%[月%d日")
+    today = datetime.now().strftime("%Y年%m月%d日")
     ctx = build_user_context(user)
     birthday = user.get("birthday", "")
     prompt = f"""{ctx}
