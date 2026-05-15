@@ -505,21 +505,24 @@ def _gen_personalized_text(user, cat_sc, sys_scores, date_label, mode):
 {{
   "overall_message": "{period}の宣言文（50文字以内・断言形・インパクト重視）",
   "categories": {{
-    "全体運": {{"message": "具体的な予言または行動指示（40文字以内）"}},
-    "金運": {{"message": "具体的な予言または行動指示（40文字以内）"}},
-    "恋愛運": {{"message": "具体的な予言または行動指示（40文字以内）"}},
-    "仕事運": {{"message": "具体的な予言または行動指示（40文字以内）"}},
-    "健康運": {{"message": "具体的な予言または行動指示（40文字以内）"}},
-    "対人運": {{"message": "具体的な予言または行動指示（40文字以内）"}}
+    "全体運": {{"message": "予言または行動指示（35文字以内）", "reason": "なぜそうなるか・占術的根拠（25文字以内）"}},
+    "金運": {{"message": "予言または行動指示（35文字以内）", "reason": "なぜそうなるか・占術的根拠（25文字以内）"}},
+    "恋愛運": {{"message": "予言または行動指示（35文字以内）", "reason": "なぜそうなるか・占術的根拠（25文字以内）"}},
+    "仕事運": {{"message": "予言または行動指示（35文字以内）", "reason": "なぜそうなるか・占術的根拠（25文字以内）"}},
+    "健康運": {{"message": "予言または行動指示（35文字以内）", "reason": "なぜそうなるか・占術的根拠（25文字以内）"}},
+    "対人運": {{"message": "予言または行動指示（35文字以内）", "reason": "なぜそうなるか・占術的根拠（25文字以内）"}}
   }},
   "lucky": {{
-    "color": "色名＋一言理由（15文字以内）",
-    "action": "今すぐできる具体的行動（25文字以内）",
-    "item": "持つべきアイテム（15文字以内）",
-    "word": "今日の魔法の言葉（10文字以内）"
+    "color": "色名（5文字以内）",
+    "color_reason": "なぜその色か・占術的根拠（20文字以内）",
+    "action": "具体的行動（20文字以内）",
+    "action_reason": "なぜその行動か（20文字以内）",
+    "item": "アイテム名（8文字以内）",
+    "item_reason": "なぜそのアイテムか（20文字以内）",
+    "word": "今日の魔法の言葉（8文字以内）"
   }}
 }}"""
-    result = ask_claude(prompt, max_tokens=1200)
+    result = ask_claude(prompt, max_tokens=1500)
     if result and r:
         try:
             ttl = 86400 if mode == "daily" else 86400 * 7
@@ -955,6 +958,8 @@ def fmt_daily(data):
         score = d.get("score", 5)
         lines.append(f"  {cat} {score}/10")
         lines.append(f"  {d.get('message','')}")
+        if d.get("reason"):
+            lines.append(f"  ✦ {d['reason']}")
         if d.get("lucky"):
             lines.append(f"  → {d['lucky']}")
     lucky = data.get("lucky_summary")
@@ -980,6 +985,8 @@ def fmt_monthly(data):
         trend = d.get("trend", "安定")
         lines.append(f"  {cat} {score}/10 {trend_icon.get(trend,'→')}")
         lines.append(f"  {d.get('message','')}")
+        if d.get("reason"):
+            lines.append(f"  ✦ {d['reason']}")
     lines += ["━━━━━━━━━━━━━━━━━━",
               f"吉日：{data.get('best_days','-')}",
               f"⚠️ 注意日：{data.get('caution_days','-')}"]
@@ -987,9 +994,15 @@ def fmt_monthly(data):
     if lucky:
         lines.append("━━━━━━━━━━━━━━━━━━")
         lines.append("✨ 今月のラッキー")
-        if lucky.get("color"):  lines.append(f"🎨 カラー：{lucky['color']}")
-        if lucky.get("action"): lines.append(f"🎯 行動：{lucky['action']}")
-        if lucky.get("item"):   lines.append(f"💎 アイテム：{lucky['item']}")
+        if lucky.get("color"):
+            cr = f"　{lucky['color_reason']}" if lucky.get("color_reason") else ""
+            lines.append(f"🎨 カラー：{lucky['color']}{cr}")
+        if lucky.get("action"):
+            ar = f"　{lucky['action_reason']}" if lucky.get("action_reason") else ""
+            lines.append(f"🎯 行動：{lucky['action']}{ar}")
+        if lucky.get("item"):
+            ir = f"　{lucky['item_reason']}" if lucky.get("item_reason") else ""
+            lines.append(f"💎 アイテム：{lucky['item']}{ir}")
         if lucky.get("word"):   lines.append(f"🔑 キーワード：{lucky['word']}")
     return "\n".join(lines)
 
