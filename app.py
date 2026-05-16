@@ -919,7 +919,7 @@ def generate_past_fortune_image(graph_data, user):
     for spine in ax.spines.values():
         spine.set_color('#2a2a54')
 
-    target_systems = ["四柱推命", "算命学", "西洋占星術", "数秘術"]
+    target_systems = ["四柱推命", "算命学", "西洋占星術", "数秘術", "紫微斗数"]
     for system in target_systems:
         scores = graph_data.get(system, {}).get("past_yearly", [])
         if scores:
@@ -1131,8 +1131,14 @@ def past_graph_image_thread(user_id, user):
         img_url = f"{base}/img/{img_id}"
         push_image(user_id, img_url)
         push(user_id,
-             "📊 過去12年の運勢推移です。\n\n実際に良かった年・大変だった年と、どの占術の山谷が一致しているか確認してみてください。\n一番一致している占術があなたとの相性が高い占術です✨",
-             with_menu=True)
+             "📊 過去12年の運勢推移です。\n\n実際に良かった年・大変だった年と、どの占術の好調・低調の波が一致しているか確認してみてください。\n一番一致している占術があなたとの相性が高い占術です✨")
+        legend = (
+            "📊 グラフの色の凡例\n"
+            + LEGEND_TEXT + "\n\n"
+            "📸 スクリーンショットで保存できます。\n"
+            "※データは24時間キャッシュされます。"
+        )
+        push(user_id, legend, with_menu=True)
 
     except Exception as e:
         push(user_id, f"⚠️ グラフの生成に失敗しました。\n({e})")
