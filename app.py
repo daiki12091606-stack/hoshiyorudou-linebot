@@ -501,17 +501,18 @@ def _gen_personalized_text(user, cat_sc, sys_scores, date_label, mode):
 ・スコア8以上：可能性や好機の「流れ」を感じさせる前向きな表現
 ・スコア4以下：無理をしないことや内省の「流れ」を感じさせる、穏やかな注意の表現
 ・スコア5〜7：静かなエネルギーの中にある気づきや変化の兆しを伝える
+・各カテゴリのmessageは「占術的背景を感じさせる表現」（「星の配置が示す」「数のエネルギーが」「天干地支の流れで」「九星の気の流れが」など）を自然に用い、前半に現在の状態・エネルギー、後半に意識すべき具体的テーマを含める
 
 以下のJSON形式のみで返してください：
 {{
   "overall_message": "{period}を詩的に表現した一文（50文字以内・傾向・本質重視）",
   "categories": {{
-    "全体運": {{"message": "この時期の傾向・雰囲気（35文字以内）", "reason": "なぜそうなるか・占術的根拠（25文字以内）"}},
-    "金運": {{"message": "この時期の傾向・雰囲気（35文字以内）", "reason": "なぜそうなるか・占術的根拠（25文字以内）"}},
-    "恋愛運": {{"message": "この時期の傾向・雰囲気（35文字以内）", "reason": "なぜそうなるか・占術的根拠（25文字以内）"}},
-    "仕事運": {{"message": "この時期の傾向・雰囲気（35文字以内）", "reason": "なぜそうなるか・占術的根拠（25文字以内）"}},
-    "健康運": {{"message": "この時期の傾向・雰囲気（35文字以内）", "reason": "なぜそうなるか・占術的根拠（25文字以内）"}},
-    "対人運": {{"message": "この時期の傾向・雰囲気（35文字以内）", "reason": "なぜそうなるか・占術的根拠（25文字以内）"}}
+    "全体運": {{"message": "占術的根拠を感じさせる【現在の状態・エネルギー】＋【意識すべき具体的テーマ】（50〜80文字）", "reason": "なぜそうなるか・占術的根拠（25文字以内）"}},
+    "金運": {{"message": "占術的根拠を感じさせる【現在の状態・エネルギー】＋【意識すべき具体的テーマ】（50〜80文字）", "reason": "なぜそうなるか・占術的根拠（25文字以内）"}},
+    "恋愛運": {{"message": "占術的根拠を感じさせる【現在の状態・エネルギー】＋【意識すべき具体的テーマ】（50〜80文字）", "reason": "なぜそうなるか・占術的根拠（25文字以内）"}},
+    "仕事運": {{"message": "占術的根拠を感じさせる【現在の状態・エネルギー】＋【意識すべき具体的テーマ】（50〜80文字）", "reason": "なぜそうなるか・占術的根拠（25文字以内）"}},
+    "健康運": {{"message": "占術的根拠を感じさせる【現在の状態・エネルギー】＋【意識すべき具体的テーマ】（50〜80文字）", "reason": "なぜそうなるか・占術的根拠（25文字以内）"}},
+    "対人運": {{"message": "占術的根拠を感じさせる【現在の状態・エネルギー】＋【意識すべき具体的テーマ】（50〜80文字）", "reason": "なぜそうなるか・占術的根拠（25文字以内）"}}
   }},
   "energy_message": "この時期のエネルギーと起こりそうなこと（40文字以内・「〜のエネルギーが働き、〜の可能性がある」スタイル）",
   "lucky": {{
@@ -960,8 +961,8 @@ def fmt_daily(data):
     for cat, emoji in CAT_EMOJI.items():
         d = data.get("categories", {}).get(cat, {})
         score = d.get("score", 5)
-        lines.append(f"  {cat} {score}/10")
-        lines.append(f"  {d.get('message','')}")
+        lines.append(f"{emoji} {cat}  ◆ {score}/10 ◆")
+        lines.append(f"{d.get('message','')}")
         if d.get("reason"):
             lines.append(f"  ✦ {d['reason']}")
         if d.get("lucky"):
@@ -995,8 +996,8 @@ def fmt_monthly(data):
         d = data.get("categories", {}).get(cat, {})
         score = d.get("score", 5)
         trend = d.get("trend", "安定")
-        lines.append(f"  {cat} {score}/10 {trend_icon.get(trend,'→')}")
-        lines.append(f"  {d.get('message','')}")
+        lines.append(f"{emoji} {cat}  ◆ {score}/10 ◆")
+        lines.append(f"{d.get('message','')}")
         if d.get("reason"):
             lines.append(f"  ✦ {d['reason']}")
     lines += ["━━━━━━━━━━━━━━━━━━",
