@@ -306,6 +306,18 @@ def _date_day_kan(d):
     return ((_dc(d.year, d.month, d.day) - _dc(2000, 1, 1)).days % 10 + 10) % 10
 
 def _kyusei_daily(d):
+    """九星日盤を返す（簡易版：基準日からの逆算）"""
+    from datetime import date as _dc
+    # 基準: 2026-01-01 = 六白金星
+    base = _dc(2026, 1, 1)
+    base_num = 6  # 六白
+    delta = (_dc(d.year, d.month, d.day) - base).days
+    star_num = ((base_num - 1 - delta) % 9) + 1
+    stars = ["一白水星","二黒土星","三碧木星","四緑木星","五黄土星","六白金星","七赤金星","八白土星","九紫火星"]
+    return stars[star_num - 1]
+
+def _kyusei_daily_num(d):
+    """九星日盤を数値（1-9）で返す（_calc_scores用）"""
     from datetime import date as _dc
     delta = (_dc(d.year, d.month, d.day) - _dc(2000, 1, 6)).days
     s = 6 - (delta % 9)
@@ -381,7 +393,7 @@ def _parse_bdata(user):
 def _calc_scores(bdata, d):
     return {
         "四柱推命": _stem_harmony(bdata["bday_kan"], _date_day_kan(d)),
-        "算命学": _kyusei_harmony(bdata["personal_star"], _kyusei_daily(d)),
+        "算命学": _kyusei_harmony(bdata["personal_star"], _kyusei_daily_num(d)),
         "西洋占星術": _western_daily(bdata["sun_sign"], d),
         "数秘術": _numerology_daily(bdata["life_path"], bdata["name_num"], d),
         "紫微斗数": _zwds_daily(bdata["zwds_base"], d),
@@ -455,13 +467,38 @@ _CAT_PRIMARY_SYS = {
     "仕事運": "算命学", "健康運": "紫微斗数", "対人運": "西洋占星術",
 }
 
-YEAR_ENERGY_2026 = """【2026年の時代エネルギー】
-・九星：八白土星年（変革・継承・蓄積・不動産・切り替わりのエネルギー）
-・干支：丙午（ひのえうま）年 → 火の陽年・行動・革命・独立のエネルギーが強い
-・木星：双子座（情報・コミュニケーション・多様性の拡大）
-・天王星：双子座に移行年（通信・AI・移動の革命が本格化）
-・世界テーマ：「情報革命の加速」「古い構造の解体と新秩序」「個人の自由と集団の摩擦」
-・5月の九星月盤：七赤金星月（言葉・社交・発信・金融・享楽のエネルギー）"""
+YEAR_ENERGY_2026 = """【2026年（八白土星の年）の時代背景】
+・年盤: 八白土星（変革・継承・基盤固め・切り替わりの年）
+・2026年は旧来の構造が変わり始め、新しい基盤が問われる年
+・「継承か革新か」の選択が個人レベルでも問われるテーマ"""
+
+# 2026年の月盤（節入り日以降の九星）
+KYUSEI_MONTHLY_2026 = {
+    1: "四緑木星",   # 1/6~
+    2: "三碧木星",   # 2/4~
+    3: "二黒土星",   # 3/6~
+    4: "一白水星",   # 4/5~
+    5: "九紫火星",   # 5/6~
+    6: "八白土星",   # 6/6~
+    7: "七赤金星",   # 7/7~
+    8: "六白金星",   # 8/7~
+    9: "五黄土星",   # 9/8~
+    10: "四緑木星",  # 10/8~
+    11: "三碧木星",  # 11/7~
+    12: "二黒土星",  # 12/7~
+}
+
+KYUSEI_MEANINGS = {
+    "一白水星": "内省・潜伏・縁・流動・コミュニケーションの深まり",
+    "二黒土星": "蓄積・忍耐・サポート・地道な努力・変化の準備",
+    "三碧木星": "行動・発展・始動・声を上げる・新しい挑戦",
+    "四緑木星": "縁・信頼・成長・信用の積み上げ・整理整頓",
+    "五黄土星": "変革・破壊と再生・強いエネルギー・大きな動き",
+    "六白金星": "完成・実力発揮・権威・天の導き・決断",
+    "七赤金星": "言葉・社交・発信・金融・享楽・収穫",
+    "八白土星": "変革・継承・蓄積・切り替わり・基盤固め",
+    "九紫火星": "名誉・情熱・直感・美・華やかさ・頂点",
+}
 
 def _gen_personalized_text(user, cat_sc, sys_scores, date_label, mode, extra_context=""):
     tags = user.get("diagnosis_tags") or {}
@@ -488,57 +525,67 @@ def _gen_personalized_text(user, cat_sc, sys_scores, date_label, mode, extra_con
             score_lines.append(f"{cat}: {sc}/10（5占術平均）")
     period = f"今日（{date_label}）" if mode == "daily" else f"今月（{date_label}）"
     guidance = "今日1日の具体的なアドバイスを含めてください" if mode == "daily" else "今月の前半・後半の流れを意識したアドバイスを含めてください"
-    prompt = f"""あなたは「マクロ→ミクロの3層読み」を実践する占術師です。
-時代・社会全体のエネルギーの流れ（Layer 1: 惑星トランジット、Layer 2: 九星の日盤・月盤）と
-個人の命式・数の流れ（Layer 3: 干支・五行・数秘）を重ね合わせることで、
-「なぜ今この人に、このテーマが動くのか」を宇宙の文脈として読み解きます。
+    birth_str = birthday
+    bdata_info = _parse_bdata(user)
+    _kan = ["甲","乙","丙","丁","戊","己","庚","辛","壬","癸"]
+    _shi = ["子","丑","寅","卯","辰","巳","午","未","申","酉","戌","亥"]
+    _year_kan_idx = bdata_info.get("bday_kan", 0) % 10
+    year_pillar = _kan[_year_kan_idx] + _shi[_year_kan_idx % 12]
+    month_pillar = "（月干支）"
+    day_pillar = "（日干支）"
+    sanmei_num = bdata_info.get("personal_star", 5)
+    life_path = bdata_info.get("life_path", 1)
+    scores_str = ", ".join(f"{cat}:{cat_sc.get(cat,5)}" for cat in ["全体運","金運","恋愛運","仕事運","健康運","対人運"])
+    lucky_day_schema = '{"score": 0, "message": "吉日コメント（20文字以内）"}' if mode == "daily" else '"（月運では省略）"'
+    prompt = f"""あなたはLoveMEDOメソッドを実践する占術師です。
+「マクロ（宇宙・時代）→ミクロ（個人）への3層読み」があなたの核心技法です。
 
-{extra_context if extra_context else YEAR_ENERGY_2026}
+【3層読みの構造】
+Layer 1（宇宙・時代）: 大惑星トランジットが示す「人類レベルのテーマ」
+Layer 2（社会・集合）: 九星気学の年盤・月盤・日盤が示す「社会全体の集合的エネルギー」
+Layer 3（個人）: 命式（干支・五行・数秘）と時代エネルギーの「共鳴」
 
-以下のユーザー情報と運勢スコアをもとに、{name}さんの{period}を占ってください。
+{extra_context}
 
-【ユーザー情報】
-名前: {name}さん
-{persona if persona else "（診断情報なし）"}
+【対象者の命式】
+・生年月日: {birth_str}
+・四柱推命: 年干支={year_pillar}, 月干支={month_pillar}, 日干支={day_pillar}
+・算命学: 算命数={sanmei_num}
+・数秘術: ライフパスナンバー={life_path}
+・占術スコア（各占術の{mode}運勢値, 1-10）: {scores_str}
 
-【{period}の運勢スコア（10点満点）】
-{chr(10).join(score_lines)}
+【占術スタイルの絶対ルール】
+・Layer 2の「集合的エネルギーテーマ」とLayer 3の「個人命式」を必ず絡める
+・「〜の気が流れ込み」「〜のエネルギーと共鳴して」「時代の波が個人の〜を動かす」などの表現を自然に使う
+・断言しないが「このテーマが動きやすい時期」という確信を持って書く
+・時間帯・場所・具体的人物名は書かない
+・スコアは1〜10の全範囲。低いスコアは「休息・内省・守りの時期」として表現し、必ずしもネガティブではない
+・overall_messageは「今日/今月を一言で表す詩的な宣言」。時代と個人が交差する瞬間を言語化する
 
-【占いスタイルの絶対ルール】
-・断言せず、傾向・流れとして表現する：「〜な流れがある」「〜を感じる一日（ひと月）」「〜が動きやすい」「〜に意識が向きやすい」などの表現を使う
-・読んだ人が「もしかしてそういうことかも？」と思えるような、星占い的な抽象度で書く
-・具体的な時間帯・場所・特定の人物は書かない
-・ユーザーの状況（優先事項・恋愛状況・挑戦中のこと）の雰囲気をやわらかく織り込む
-・{guidance}
-・overall_messageは詩的かつ本質をついた一文。読んだ人の心に静かに響く言葉で
-・スコアは1〜10の全範囲を正直に反映する。統計的に平均5〜6になるよう、低運（1〜4）・中運（5〜6）・好運（7〜10）をバランスよく使う
-・全カテゴリが高い日も低い日もある。ユーザーの生まれ情報と今日の干支・星回り・数の流れを正直に反映し、特定スコア帯に偏らない
-・スコア8以上：可能性や好機の「流れ」を感じさせる前向きな表現
-・スコア4以下：無理をしないことや内省の「流れ」を感じさせる、穏やかな注意の表現
-・スコア5〜7：静かなエネルギーの中にある気づきや変化の兆しを伝える
-・各カテゴリのmessage（50〜80文字）は：前半にこの時期の「九星・天体・干支のエネルギー」が個人の命式と作る流れを描写し、後半にその流れの中で意識すると良いテーマ・方向性を書く。「〜の気が流れ込み」「〜のエネルギーと共鳴して」「星の配置が示すように」など宇宙的文脈の言葉を自然に使い、断言はしないが「このテーマが動きやすい時期」という確信を持って書く
-
-以下のJSON形式のみで返してください：
+以下のJSON形式のみで回答。コードブロック不要：
 {{
-  "overall_message": "{period}を詩的に表現した一文（50文字以内・傾向・本質重視）",
-  "categories": {{
-    "全体運": {{"message": "占術的根拠を感じさせる【現在の状態・エネルギー】＋【意識すべき具体的テーマ】（50〜80文字）", "reason": "なぜそうなるか・占術的根拠（25文字以内）"}},
-    "金運": {{"message": "占術的根拠を感じさせる【現在の状態・エネルギー】＋【意識すべき具体的テーマ】（50〜80文字）", "reason": "なぜそうなるか・占術的根拠（25文字以内）"}},
-    "恋愛運": {{"message": "占術的根拠を感じさせる【現在の状態・エネルギー】＋【意識すべき具体的テーマ】（50〜80文字）", "reason": "なぜそうなるか・占術的根拠（25文字以内）"}},
-    "仕事運": {{"message": "占術的根拠を感じさせる【現在の状態・エネルギー】＋【意識すべき具体的テーマ】（50〜80文字）", "reason": "なぜそうなるか・占術的根拠（25文字以内）"}},
-    "健康運": {{"message": "占術的根拠を感じさせる【現在の状態・エネルギー】＋【意識すべき具体的テーマ】（50〜80文字）", "reason": "なぜそうなるか・占術的根拠（25文字以内）"}},
-    "対人運": {{"message": "占術的根拠を感じさせる【現在の状態・エネルギー】＋【意識すべき具体的テーマ】（50〜80文字）", "reason": "なぜそうなるか・占術的根拠（25文字以内）"}}
+  "overall_message": "今日/今月の本質を詩的に表現（20文字以内）",
+  "energy_message": "時代エネルギー×個人命式の共鳴（50文字以内）",
+  "scores": {{"overall": 0, "money": 0, "love": 0, "work": 0, "health": 0, "social": 0}},
+  "details": {{
+    "overall": {{"score": 0, "message": "九星/天体/干支×命式の流れ（50〜80文字）"}},
+    "money": {{"score": 0, "message": "..."}},
+    "love": {{"score": 0, "message": "..."}},
+    "work": {{"score": 0, "message": "..."}},
+    "health": {{"score": 0, "message": "..."}},
+    "social": {{"score": 0, "message": "..."}}
   }},
-  "energy_message": "その日/月の集合的エネルギーテーマ（九星日盤・月盤・惑星の動き）と個人の命式との共鳴を組み合わせた一文（50文字以内）。例：「七赤金星の言葉のエネルギーが高まる中、あなたの木の気が新たな縁を引き寄せる流れ」",
   "lucky": {{
-    "color": "ラッキーカラー（複数可：「赤または青」形式・12文字以内）",
-    "color_reason": "なぜその色か・占術的根拠（20文字以内）",
-    "action": "ラッキー行動（複数可：「〜か〜」形式・25文字以内）",
+    "color": "ラッキーカラー（複数可：「赤または青」形式）",
+    "color_reason": "五行・九星との対応（20文字以内）",
+    "action": "ラッキー行動（複数可・25文字以内）",
     "action_reason": "なぜその行動か（20文字以内）",
-    "item": "ラッキーアイテム（複数可：「〜または〜」形式・15文字以内）",
+    "item": "ラッキーアイテム（複数可・15文字以内）",
     "item_reason": "なぜそのアイテムか（20文字以内）",
     "word": "今日の魔法の言葉（8文字以内）"
-  }}
+  }},
+  "lucky_day": {lucky_day_schema},
+  "caution": "注意すべきこと（20文字以内、または空文字）"
 }}"""
     result = ask_claude(prompt, max_tokens=1800)
     if result and r:
@@ -568,18 +615,26 @@ def gen_daily(user):
     }
 
     date_str = now.strftime("%Y年%m月%d日")
-    kyusei_day = _kyusei_daily(today)
-    daily_context = f"【今日（{date_str}）の時代エネルギー】\n九星日盤: {kyusei_day}星\n{YEAR_ENERGY_2026}"
+    today_kyusei = _kyusei_daily(today)
+    today_meaning = KYUSEI_MEANINGS.get(today_kyusei, "")
+    month_kyusei = KYUSEI_MONTHLY_2026.get(today.month, "")
+    month_meaning = KYUSEI_MEANINGS.get(month_kyusei, "")
+    extra_context = f"""【今日（{today.strftime('%Y年%m月%d日')}）の時代エネルギー】
+・九星日盤: {today_kyusei}（{today_meaning}）
+・九星月盤: {month_kyusei}（{month_meaning}）
+{YEAR_ENERGY_2026}"""
     if user.get("diagnosis_done"):
-        personalized = _gen_personalized_text(user, cat_sc, s, date_str, "daily", extra_context=daily_context)
+        personalized = _gen_personalized_text(user, cat_sc, s, date_str, "daily", extra_context=extra_context)
         if personalized:
+            _det_map = {"全体運":"overall","金運":"money","恋愛運":"love","仕事運":"work","健康運":"health","対人運":"social"}
             categories = {
                 cat: {"score": cat_sc[cat],
-                      "message": personalized.get("categories", {}).get(cat, {}).get("message", ""),
+                      "message": personalized.get("details", {}).get(_det_map.get(cat,"overall"), {}).get("message", ""),
                       "lucky": ""}
                 for cat in ["全体運", "金運", "恋愛運", "仕事運", "健康運", "対人運"]
             }
             return {"date": date_str, "overall_message": personalized.get("overall_message", ""),
+                    "energy_message": personalized.get("energy_message", ""),
                     "categories": categories, "lucky_summary": personalized.get("lucky", {})}
 
     def lv(sc): return min(4, max(0, (sc - 1) * 4 // 9))
@@ -634,16 +689,22 @@ def gen_monthly(user):
     if user.get("diagnosis_done"):
         sys_avg = {sys: round(sum(ds[sys] for _,_,ds in day_avgs) / len(day_avgs), 1)
                    for sys in ["四柱推命","算命学","西洋占星術","数秘術","紫微斗数"]}
-        monthly_context = f"【今月（{month_str}）の時代エネルギー】\n{YEAR_ENERGY_2026}"
-        personalized = _gen_personalized_text(user, cat_sc, sys_avg, month_str, "monthly", extra_context=monthly_context)
+        month_kyusei = KYUSEI_MONTHLY_2026.get(now.month, "")
+        month_meaning = KYUSEI_MEANINGS.get(month_kyusei, "")
+        extra_context = f"""【今月（{month_str}）の時代エネルギー】
+・九星月盤: {month_kyusei}（{month_meaning}）
+{YEAR_ENERGY_2026}"""
+        personalized = _gen_personalized_text(user, cat_sc, sys_avg, month_str, "monthly", extra_context=extra_context)
         if personalized:
+            _det_map = {"全体運":"overall","金運":"money","恋愛運":"love","仕事運":"work","健康運":"health","対人運":"social"}
             categories = {
                 cat: {"score": cat_sc[cat],
-                      "message": personalized.get("categories", {}).get(cat, {}).get("message", ""),
+                      "message": personalized.get("details", {}).get(_det_map.get(cat,"overall"), {}).get("message", ""),
                       "trend": "安定"}
                 for cat in ["全体運", "金運", "恋愛運", "仕事運", "健康運", "対人運"]
             }
             return {"month": month_str, "overall_message": personalized.get("overall_message", ""),
+                    "energy_message": personalized.get("energy_message", ""),
                     "categories": categories, "best_days": "", "caution_days": "",
                     "lucky_summary": personalized.get("lucky", {})}
 
