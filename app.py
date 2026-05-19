@@ -294,11 +294,11 @@ def _stem_harmony(bkan, tkan):
     be, te = _five_elem(bkan), _five_elem(tkan)
     gen = {(0,1),(1,2),(2,3),(3,4),(4,0)}
     ctrl = {(0,2),(2,4),(4,1),(1,3),(3,0)}
-    if be == te: return 7
+    if be == te: return 6
     if (be, te) in gen: return 9
     if (te, be) in gen: return 7
     if (be, te) in ctrl: return 3
-    if (te, be) in ctrl: return 2
+    if (te, be) in ctrl: return 1
     return 5
 
 def _date_day_kan(d):
@@ -314,27 +314,27 @@ def _kyusei_daily(d):
 
 def _kyusei_harmony(personal, daily):
     diff = (personal - daily) % 9
-    return {0:8, 1:6, 2:7, 3:5, 4:3, 5:4, 6:6, 7:7, 8:5}.get(diff, 5)
+    return {0:8, 1:5, 2:7, 3:4, 4:2, 5:3, 6:5, 7:7, 8:4}.get(diff, 5)
 
 def _western_daily(sun_sign, d):
     from datetime import date as _dc
     days = (_dc(d.year, d.month, d.day) - _dc(2000, 1, 1)).days
     moon_sign = days % 12
     diff = (moon_sign - sun_sign) % 12
-    return {0:9,1:5,2:7,3:5,4:8,5:6,6:3,7:5,8:8,9:6,10:7,11:5}.get(diff, 5)
+    return {0:9,1:5,2:7,3:3,4:8,5:5,6:2,7:3,8:8,9:5,10:6,11:4}.get(diff, 5)
 
 def _numerology_daily(life_path, name_num, d):
     pd = _digit_reduce(d.year + d.month + d.day)
     lp_m = life_path % 9 or 9
     pd_m = pd % 9 or 9
     diff = abs(lp_m - pd_m)
-    base = {0:9,1:7,2:6,3:8,4:3,5:4,6:8,7:6,8:7}.get(diff % 9, 5)
+    base = {0:9,1:6,2:5,3:8,4:2,5:3,6:8,7:5,8:6}.get(diff % 9, 5)
     nd = abs((name_num % 9 or 9) - pd_m)
     return min(10, base + (1 if nd in (0, 3, 6) else 0))
 
 def _zwds_daily(zwds_base, d):
     combined = ((d.month + zwds_base - 2) % 12 + d.day % 12) % 12
-    return {0:5,1:8,2:4,3:6,4:8,5:4,6:6,7:8,8:4,9:6,10:8,11:5}.get(combined, 5)
+    return {0:5,1:8,2:2,3:6,4:9,5:2,6:5,7:8,8:1,9:6,10:8,11:3}.get(combined, 5)
 
 def _parse_bdata(user):
     import re as _re
@@ -498,6 +498,8 @@ def _gen_personalized_text(user, cat_sc, sys_scores, date_label, mode):
 ・ユーザーの状況（優先事項・恋愛状況・挑戦中のこと）の雰囲気をやわらかく織り込む
 ・{guidance}
 ・overall_messageは詩的かつ本質をついた一文。読んだ人の心に静かに響く言葉で
+・スコアは1〜10の全範囲を正直に反映する。統計的に平均5〜6になるよう、低運（1〜4）・中運（5〜6）・好運（7〜10）をバランスよく使う
+・全カテゴリが高い日も低い日もある。ユーザーの生まれ情報と今日の干支・星回り・数の流れを正直に反映し、特定スコア帯に偏らない
 ・スコア8以上：可能性や好機の「流れ」を感じさせる前向きな表現
 ・スコア4以下：無理をしないことや内省の「流れ」を感じさせる、穏やかな注意の表現
 ・スコア5〜7：静かなエネルギーの中にある気づきや変化の兆しを伝える
