@@ -455,7 +455,15 @@ _CAT_PRIMARY_SYS = {
     "仕事運": "算命学", "健康運": "紫微斗数", "対人運": "西洋占星術",
 }
 
-def _gen_personalized_text(user, cat_sc, sys_scores, date_label, mode):
+YEAR_ENERGY_2026 = """【2026年の時代エネルギー】
+・九星：八白土星年（変革・継承・蓄積・不動産・切り替わりのエネルギー）
+・干支：丙午（ひのえうま）年 → 火の陽年・行動・革命・独立のエネルギーが強い
+・木星：双子座（情報・コミュニケーション・多様性の拡大）
+・天王星：双子座に移行年（通信・AI・移動の革命が本格化）
+・世界テーマ：「情報革命の加速」「古い構造の解体と新秩序」「個人の自由と集団の摩擦」
+・5月の九星月盤：七赤金星月（言葉・社交・発信・金融・享楽のエネルギー）"""
+
+def _gen_personalized_text(user, cat_sc, sys_scores, date_label, mode, extra_context=""):
     tags = user.get("diagnosis_tags") or {}
     name = user.get("name") or "あなた"
     persona = _build_persona_summary(tags)
@@ -480,7 +488,12 @@ def _gen_personalized_text(user, cat_sc, sys_scores, date_label, mode):
             score_lines.append(f"{cat}: {sc}/10（5占術平均）")
     period = f"今日（{date_label}）" if mode == "daily" else f"今月（{date_label}）"
     guidance = "今日1日の具体的なアドバイスを含めてください" if mode == "daily" else "今月の前半・後半の流れを意識したアドバイスを含めてください"
-    prompt = f"""あなたは20年以上のキャリアを持つ伝説の占い師です。龍神占術・月占星術・数秘術を組み合わせ、"当たりすぎる"と話題の存在です。
+    prompt = f"""あなたは「マクロ→ミクロの3層読み」を実践する占術師です。
+時代・社会全体のエネルギーの流れ（Layer 1: 惑星トランジット、Layer 2: 九星の日盤・月盤）と
+個人の命式・数の流れ（Layer 3: 干支・五行・数秘）を重ね合わせることで、
+「なぜ今この人に、このテーマが動くのか」を宇宙の文脈として読み解きます。
+
+{extra_context if extra_context else YEAR_ENERGY_2026}
 
 以下のユーザー情報と運勢スコアをもとに、{name}さんの{period}を占ってください。
 
@@ -503,7 +516,7 @@ def _gen_personalized_text(user, cat_sc, sys_scores, date_label, mode):
 ・スコア8以上：可能性や好機の「流れ」を感じさせる前向きな表現
 ・スコア4以下：無理をしないことや内省の「流れ」を感じさせる、穏やかな注意の表現
 ・スコア5〜7：静かなエネルギーの中にある気づきや変化の兆しを伝える
-・各カテゴリのmessageは「占術的背景を感じさせる表現」（「星の配置が示す」「数のエネルギーが」「天干地支の流れで」「九星の気の流れが」など）を自然に用い、前半に現在の状態・エネルギー、後半に意識すべき具体的テーマを含める
+・各カテゴリのmessage（50〜80文字）は：前半にこの時期の「九星・天体・干支のエネルギー」が個人の命式と作る流れを描写し、後半にその流れの中で意識すると良いテーマ・方向性を書く。「〜の気が流れ込み」「〜のエネルギーと共鳴して」「星の配置が示すように」など宇宙的文脈の言葉を自然に使い、断言はしないが「このテーマが動きやすい時期」という確信を持って書く
 
 以下のJSON形式のみで返してください：
 {{
@@ -516,7 +529,7 @@ def _gen_personalized_text(user, cat_sc, sys_scores, date_label, mode):
     "健康運": {{"message": "占術的根拠を感じさせる【現在の状態・エネルギー】＋【意識すべき具体的テーマ】（50〜80文字）", "reason": "なぜそうなるか・占術的根拠（25文字以内）"}},
     "対人運": {{"message": "占術的根拠を感じさせる【現在の状態・エネルギー】＋【意識すべき具体的テーマ】（50〜80文字）", "reason": "なぜそうなるか・占術的根拠（25文字以内）"}}
   }},
-  "energy_message": "この時期のエネルギーと起こりそうなこと（40文字以内・「〜のエネルギーが働き、〜の可能性がある」スタイル）",
+  "energy_message": "その日/月の集合的エネルギーテーマ（九星日盤・月盤・惑星の動き）と個人の命式との共鳴を組み合わせた一文（50文字以内）。例：「七赤金星の言葉のエネルギーが高まる中、あなたの木の気が新たな縁を引き寄せる流れ」",
   "lucky": {{
     "color": "ラッキーカラー（複数可：「赤または青」形式・12文字以内）",
     "color_reason": "なぜその色か・占術的根拠（20文字以内）",
@@ -555,8 +568,10 @@ def gen_daily(user):
     }
 
     date_str = now.strftime("%Y年%m月%d日")
+    kyusei_day = _kyusei_daily(today)
+    daily_context = f"【今日（{date_str}）の時代エネルギー】\n九星日盤: {kyusei_day}星\n{YEAR_ENERGY_2026}"
     if user.get("diagnosis_done"):
-        personalized = _gen_personalized_text(user, cat_sc, s, date_str, "daily")
+        personalized = _gen_personalized_text(user, cat_sc, s, date_str, "daily", extra_context=daily_context)
         if personalized:
             categories = {
                 cat: {"score": cat_sc[cat],
@@ -619,7 +634,8 @@ def gen_monthly(user):
     if user.get("diagnosis_done"):
         sys_avg = {sys: round(sum(ds[sys] for _,_,ds in day_avgs) / len(day_avgs), 1)
                    for sys in ["四柱推命","算命学","西洋占星術","数秘術","紫微斗数"]}
-        personalized = _gen_personalized_text(user, cat_sc, sys_avg, month_str, "monthly")
+        monthly_context = f"【今月（{month_str}）の時代エネルギー】\n{YEAR_ENERGY_2026}"
+        personalized = _gen_personalized_text(user, cat_sc, sys_avg, month_str, "monthly", extra_context=monthly_context)
         if personalized:
             categories = {
                 cat: {"score": cat_sc[cat],
