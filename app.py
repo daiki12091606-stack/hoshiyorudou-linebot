@@ -663,20 +663,18 @@ def _gen_personalized_text(user, cat_sc, sys_scores, date_label, mode, extra_con
 【今日/今月の社会的テーマ（九星×五行から導出）】
 {social_theme_text}
 
+【出力の大原則】
+・「〜が高まります」「〜に注意が必要です」のような曖昧な表現を禁止する
+・必ず「〜すると吉」「〜を避ける」「〜に集中する」など行動レベルで書く
+・social_predictionは社会ニュースの予言。個人の運勢を書かない
+・lucky_explanationには必ず日盤九星の名前と属性を入れる
+
 【占術スタイルの絶対ルール】
 ・overall_message: 今日/今月を詩的かつ本質的に表現（20文字以内）
-・social_prediction: 九星の象意から導かれる「今日/今月の社会トピック」を2〜4個、各15文字以内の短い断言形式で列挙。
-  形式例: 「名前に『水』が入る人物が動く」「水・海に関するニュースが浮上」「○○に関する政策の動き」
-  災害系は「自然の力が感じられる出来事」など曖昧な表現にする。
+・social_prediction: 今日の九星・命式エネルギーから連想される社会的話題を3〜4個列挙する。各項目は15文字以内の短い断言形式で書く。例1（政策）: '木・緑に関する政策が動きやすい日'、例2（芸能人）: '名前に「山」が入る人物の話題'、例3（ニュース）: '水・川・海に関する話題が浮上'、例4（自然）: '山・土地に関する自然の変化'。【重要】災害・事故・死亡などネガティブな出来事は直接言及せず、必ず '〜の変動が感じられる' '自然の力が見えやすい日' などオブラートな表現にする。絵文字・記号は使わない。
 ・energy_message: {day_kyusei_name}と{month_kyusei_name}のエネルギー×個人命式の共鳴（50文字以内）
-・各カテゴリのmessage（50〜80文字）:
-  - 「[占術名]の流れでは、[具体的な意味]」の形式で書く
-  - 「あなたのスコアは〇/10」などスコア言及は禁止
-  - 「今日は○○に注意が向きやすい」「○○な行動が吉」など行動に結びついた表現を使う
-  - スコアが低いカテゴリは摩擦の内容と具体的な対処行動、高いカテゴリは追い風の内容と活かし方を示す
-・lucky_explanation: ラッキーアイテム・行動の占術的根拠（60〜90文字）
-  形式: 「{day_kyusei_name}の[五行属性]エネルギーが強まる今日、あなたの{weakest_cat}運がやや沈みがち。[ラッキーアイテム/行動]でそのエネルギーを補うと全体運が底上げされやすい」
-  ※必ず日盤九星名・五行属性名・最低スコアカテゴリ名を文中に入れる
+・各カテゴリのmessage（50〜70文字）: 【指示】以下のフォーマットで書く：「[占術名]では〜な状態。[具体的な行動・注意点]と良い日。」例：「算命学では内向きのエネルギーが強まる状態。重要な決断は明日以降に持ち越し、今日は情報収集に集中すると吉。」抽象的な形容詞（好調・吉・凶）のみの表現は禁止。必ず行動指針を含める。
+・lucky_explanation: 【指示】次のテンプレートに従って書く：「{day_kyusei_name}の[属性]エネルギーが強まる今日、{weakest_cat}運がやや沈みがち。[ラッキーアイテムまたは行動]を取り入れると[属性]が補われ、全体運が底上げされやすい。」必ず具体的な九星名・属性名（木・火・土・金・水）・カテゴリ名を入れること。60〜90文字。
 
 以下のJSON形式のみで回答。コードブロック不要：
 {{
@@ -1163,18 +1161,17 @@ def generate_past_fortune_image(graph_data, user):
 def fmt_daily(data):
     if not data:
         return "⚠️ 運勢の計算に失敗しました。もう一度お試しください。"
-    lines = [f"📅 {data.get('date','今日')}の運勢",
-             f"🌙 {data.get('overall_message','')}"]
-    if data.get('energy_message'):
-        lines.append(f"🔮 {data['energy_message']}")
-
-    # 社会的テーマ予報
+    # 社会的テーマ予報（最上部）
     social = data.get('social_prediction', [])
+    lines = [f"📅 {data.get('date','今日')}の運勢"]
     if social:
         lines.append("━━━━━━━━━━━━━━━━━━")
-        lines.append("🌐 今日の社会的テーマ")
-        for s in social[:3]:
+        lines.append("📢 今日話題になりそうなこと")
+        for s in social[:4]:
             lines.append(f"・{s}")
+    lines.append(f"🌙 {data.get('overall_message','')}")
+    if data.get('energy_message'):
+        lines.append(f"🔮 {data['energy_message']}")
 
     lines.append("━━━━━━━━━━━━━━━━━━")
     for cat, emoji in CAT_EMOJI.items():
@@ -1209,18 +1206,17 @@ def fmt_monthly(data):
     if not data:
         return "⚠️ 今月の運勢の計算に失敗しました。"
     trend_icon = {"上昇": "↑", "安定": "→", "下降": "↓"}
-    lines = [f"📆 {data.get('month','今月')}の運勢",
-             f"🌙 {data.get('overall_message','')}"]
-    if data.get('energy_message'):
-        lines.append(f"🔮 {data['energy_message']}")
-
-    # 社会的テーマ予報
+    # 社会的テーマ予報（最上部）
     social = data.get('social_prediction', [])
+    lines = [f"📆 {data.get('month','今月')}の運勢"]
     if social:
         lines.append("━━━━━━━━━━━━━━━━━━")
-        lines.append("🌐 今月の社会的テーマ")
-        for s in social[:3]:
+        lines.append("📢 今月話題になりそうなこと")
+        for s in social[:4]:
             lines.append(f"・{s}")
+    lines.append(f"🌙 {data.get('overall_message','')}")
+    if data.get('energy_message'):
+        lines.append(f"🔮 {data['energy_message']}")
 
     lines.append("━━━━━━━━━━━━━━━━━━")
     for cat, emoji in CAT_EMOJI.items():
