@@ -27,6 +27,8 @@ from linebot.v3.webhooks import MessageEvent, TextMessageContent, FollowEvent
 
 app = Flask(__name__)
 
+_CACHE_VER = "v3"  # プロンプト変更時にここを上げる
+
 LINE_CHANNEL_SECRET = os.environ.get("LINE_CHANNEL_SECRET", "")
 LINE_CHANNEL_ACCESS_TOKEN = os.environ.get("LINE_CHANNEL_ACCESS_TOKEN", "")
 ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
@@ -610,7 +612,7 @@ def _gen_personalized_text(user, cat_sc, sys_scores, date_label, mode, extra_con
     persona = _build_persona_summary(tags)
     birthday = user.get("birthday", "")
     today_key = datetime.now().strftime("%Y%m%d") if mode == "daily" else datetime.now().strftime("%Y%m")
-    cache_key = f"fortune_text_{mode}:{abs(hash(birthday + name)) % 10**12}:{today_key}"
+    cache_key = f"fortune_text_{mode}:{abs(hash(birthday + name)) % 10**12}:{today_key}:{_CACHE_VER}"
     r = _get_redis()
     if r:
         try:
@@ -759,7 +761,9 @@ def gen_daily(user):
             }
             return {"date": date_str, "overall_message": personalized.get("overall_message", ""),
                     "energy_message": personalized.get("energy_message", ""),
-                    "categories": categories, "lucky_summary": personalized.get("lucky", {})}
+                    "categories": categories, "lucky_summary": personalized.get("lucky", {}),
+                    "social_prediction": personalized.get("social_prediction", []),
+                    "lucky_explanation": personalized.get("lucky_explanation", "")}
 
     def lv(sc): return min(4, max(0, (sc - 1) * 4 // 9))
     def pick(lst, key):
@@ -836,7 +840,9 @@ def gen_monthly(user):
             return {"month": month_str, "overall_message": personalized.get("overall_message", ""),
                     "energy_message": personalized.get("energy_message", ""),
                     "categories": categories, "best_days": "", "caution_days": "",
-                    "lucky_summary": personalized.get("lucky", {})}
+                    "lucky_summary": personalized.get("lucky", {}),
+                    "social_prediction": personalized.get("social_prediction", []),
+                    "lucky_explanation": personalized.get("lucky_explanation", "")}
 
     mid = last_day // 2
     first_half = sum(v for d,v,_ in day_avgs if d <= mid) / max(1, mid)
