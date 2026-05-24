@@ -1019,7 +1019,7 @@ def gen_graph_data(user):
     for art in arts:
         monthly = [round(wave_score(art, (m / 12.0) * 2 * math.pi, "monthly"), 1)
                    for m in range(12)]
-        yearly = [round(wave_score(art, (y / 13.0) * 2 * math.pi, "yearly"), 1)
+        yearly = [round(wave_score(art, ((y + 2) / 13.0) * 2 * math.pi, "yearly"), 1)
                   for y in range(13)]
         past_yearly = [round(wave_score(art, ((i - 10) / 13.0) * 2 * math.pi, "yearly"), 1)
                        for i in range(13)]
@@ -1045,7 +1045,7 @@ def get_graph_data_cached(user):
 def generate_fortune_image(graph_data, user):
     current_year = datetime.now().year
     current_month = datetime.now().month
-    start_year = current_year - 2
+    start_year = current_year
 
     birthday = user.get("birthday", "")
     birthday_iso = birthday_to_iso(birthday) or ""
@@ -1065,7 +1065,7 @@ def generate_fortune_image(graph_data, user):
         (ax2, 'yearly',
          [str(start_year + i) for i in range(13)],
          '12-Year Fortune Trend',
-         2),
+         0),
     ]
 
     for ax, key, labels, title, curr_idx in charts:
