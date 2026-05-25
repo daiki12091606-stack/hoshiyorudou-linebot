@@ -1441,7 +1441,10 @@ def handle_follow(event):
         "あなただけにカスタマイズされた占いが届くようになります✨\n\n"
         f"🔮 診断はこちら\n{LIFF_URL}"
     )
-    reply_msg(event.reply_token, combined)
+    try:
+        reply_msg(event.reply_token, combined)
+    except Exception:
+        push(user_id, combined, with_menu=False)
 @handler.add(MessageEvent, message=TextMessageContent)
 def handle_message(event):
     user_id = event.source.user_id
@@ -1586,6 +1589,8 @@ def callback():
         handler.handle(body, signature)
     except InvalidSignatureError:
         abort(400)
+    except Exception as e:
+        app.logger.error(f"Webhook handler error: {e}", exc_info=True)
     return "OK"
 
 @app.route("/img/<img_id>")
