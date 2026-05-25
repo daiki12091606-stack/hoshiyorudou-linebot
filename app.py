@@ -5,7 +5,7 @@ import json
 import re
 import threading
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 from io import BytesIO
 from flask import Flask, request, abort, make_response, jsonify
 import anthropic
@@ -27,7 +27,8 @@ from linebot.v3.webhooks import MessageEvent, TextMessageContent, FollowEvent
 
 app = Flask(__name__)
 
-_CACHE_VER = "v5"  # プロンプト変更時にここを上げる
+_JST = timezone(timedelta(hours=9))  # 日本標準時
+_CACHE_VER = "v6"  # プロンプト変更時にここを上げる
 
 LINE_CHANNEL_SECRET = os.environ.get("LINE_CHANNEL_SECRET", "")
 LINE_CHANNEL_ACCESS_TOKEN = os.environ.get("LINE_CHANNEL_ACCESS_TOKEN", "")
@@ -610,7 +611,7 @@ def _gen_personalized_text(user, cat_sc, sys_scores, date_label, mode, extra_con
     name = user.get("name") or "あなた"
     persona = _build_persona_summary(tags)
     birthday = user.get("birthday", "")
-    today_key = datetime.now().strftime("%Y%m%d") if mode == "daily" else datetime.now().strftime("%Y%m")
+    today_key = datetime.now(_JST).strftime("%Y%m%d") if mode == "daily" else datetime.now(_JST).strftime("%Y%m")
     cache_key = f"fortune_text_{mode}:{abs(hash(birthday + name)) % 10**12}:{today_key}:{_CACHE_VER}"
     r = _get_redis()
     if r:
@@ -648,7 +649,17 @@ def _gen_personalized_text(user, cat_sc, sys_scores, date_label, mode, extra_con
     weakest_score = _cat_scores[weakest_cat]
     strongest_cat = max(_cat_scores, key=_cat_scores.get)
     strongest_score = _cat_scores[strongest_cat]
-    prompt = f"""あなたはLoveMEDOメソッドを実践するベテラン占術師です。
+    if mode == "monthly":
+        _social_pred_rule = "・social_prediction: 今月の九星エネルギーから連想される社会的話題を、月を3〜4の日付範囲に分けて記載する。形式: [\"1日〜8日：○○が話題になりそう\", \"9日〜16日：○○が話題になりそう\", \"17日〜24日：○○が話題になりそう\", \"25日〜末日：○○が話題になりそう\"]。日付範囲込みで各項目20文字以内。災害・事故・死亡は直接言及せずオブラートな表現にする。絵文字・記号禁止。"
+        _lucky_exp_rule = "・lucky_explanation: 40〜55文字。「{{月盤九星名}}の{{属性}}が強い今月、{{最低カテゴリ}}運を底上げするには{{ラッキーアイテム/行動}}が効く。」の形式で1文で締める。「共鳴」「交差」などの描写ワード禁止。"
+        _lucky_exp_schema = "ラッキーアイテム全体の占術的根拠（40〜55文字）"
+        _energy_rule = "・energy_message: 「あなたにとって今月は〜な月。〜すると流れが変わる。」の形式で書く。状態描写だけで終わらせない。30文字以内。占術名・九星名は使わない。"
+    else:
+        _social_pred_rule = "{_social_pred_rule}"
+        _lucky_exp_rule = "{_lucky_exp_rule}"
+        _lucky_exp_schema = "ラッキーアイテム全体の占術的根拠（40〜55文字）"
+        _energy_rule = "{_energy_rule}"
+        prompt = f"""あなたはLoveMEDOメソッドを実践するベテラン占術師です。
 「マクロ（宇宙・時代）→ミクロ（個人）への3層読み」で運勢を鑑定します。
 
 {extra_context}
@@ -700,7 +711,7 @@ def _gen_personalized_text(user, cat_sc, sys_scores, date_label, mode, extra_con
     "item_reason": "なぜそのアイテムか（20文字以内）",
     "word": "今日の魔法の言葉（8文字以内）"
   }},
-  "lucky_explanation": "ラッキーアイテム全体の占術的根拠（60〜90文字）",
+  "lucky_explanation": "{_lucky_exp_schema}",
   "lucky_day": {lucky_day_schema},
   "caution": "注意点（20文字以内、または空文字）"
 }}"""
@@ -716,7 +727,7 @@ def _gen_personalized_text(user, cat_sc, sys_scores, date_label, mode, extra_con
 def gen_daily(user):
     import hashlib as _hs
     from datetime import datetime, date as _dc
-    now = datetime.now()
+    now = datetime.now(_JST)
     today = _dc(now.year, now.month, now.day)
     bdata = _parse_bdata(user)
     s = _calc_scores(bdata, today)
@@ -785,7 +796,7 @@ def gen_daily(user):
 def gen_monthly(user):
     import hashlib as _hs, calendar as _cal
     from datetime import datetime, date as _dc
-    now = datetime.now()
+    now = datetime.now(_JST)
     year, month = now.year, now.month
     bdata = _parse_bdata(user)
     _, last_day = _cal.monthrange(year, month)
@@ -813,6 +824,9 @@ def gen_monthly(user):
     cat_sc = {k: max(1, min(10, v)) for k, v in cat_sc.items()}
 
     month_str = now.strftime("%Y年%m月")
+    sorted_days = sorted(day_avgs, key=lambda x: -x[1])
+    best_days = "・".join(str(d) + "日" for d,_,_ in sorted_days[:3])
+    caution_days = "・".join(str(d) + "日" for d,_,_ in sorted_days[-3:])
     if user.get("diagnosis_done"):
         sys_avg = {sys: round(sum(ds[sys] for _,_,ds in day_avgs) / len(day_avgs), 1)
                    for sys in ["四柱推命","算命学","西洋占星術","数秘術","紫微斗数"]}
@@ -838,7 +852,7 @@ def gen_monthly(user):
             }
             return {"month": month_str, "overall_message": personalized.get("overall_message", ""),
                     "energy_message": personalized.get("energy_message", ""),
-                    "categories": categories, "best_days": "", "caution_days": "",
+                    "categories": categories, "best_days": best_days, "caution_days": caution_days,
                     "lucky_summary": personalized.get("lucky", {}),
                     "social_prediction": personalized.get("social_prediction", []),
                     "lucky_explanation": personalized.get("lucky_explanation", "")}
