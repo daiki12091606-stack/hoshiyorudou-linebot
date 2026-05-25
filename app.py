@@ -28,7 +28,7 @@ from linebot.v3.webhooks import MessageEvent, TextMessageContent, FollowEvent
 app = Flask(__name__)
 
 _JST = timezone(timedelta(hours=9))  # 日本標準時
-_CACHE_VER = "v6"  # プロンプト変更時にここを上げる
+_CACHE_VER = "v7"  # プロンプト変更時にここを上げる
 
 LINE_CHANNEL_SECRET = os.environ.get("LINE_CHANNEL_SECRET", "")
 LINE_CHANNEL_ACCESS_TOKEN = os.environ.get("LINE_CHANNEL_ACCESS_TOKEN", "")
@@ -655,11 +655,11 @@ def _gen_personalized_text(user, cat_sc, sys_scores, date_label, mode, extra_con
         _lucky_exp_schema = "ラッキーアイテム全体の占術的根拠（40〜55文字）"
         _energy_rule = "・energy_message: 「あなたにとって今月は〜な月。〜すると流れが変わる。」の形式で書く。状態描写だけで終わらせない。30文字以内。占術名・九星名は使わない。"
     else:
-        _social_pred_rule = "{_social_pred_rule}"
-        _lucky_exp_rule = "{_lucky_exp_rule}"
+        _social_pred_rule = "・social_prediction: 今日の九星・命式エネルギーから連想される社会的話題を3〜4個列挙する。各項目は15文字以内の短い断言形式で書く。例1（政策）: '木・緑に関する政策が動きやすい日'、例2（芸能人）: '名前に「山」が入る人物の話題'、例3（ニュース）: '水・川・海に関する話題が浮上'、例4（自然）: '山・土地に関する自然の変化'。「共鳴」「交差」などの描写ワード禁止。絵文字・記号は使わない。"
+        _lucky_exp_rule = "{_lucky_exp_rule}
         _lucky_exp_schema = "ラッキーアイテム全体の占術的根拠（40〜55文字）"
-        _energy_rule = "{_energy_rule}"
-        prompt = f"""あなたはLoveMEDOメソッドを実践するベテラン占術師です。
+        _energy_rule = "・energy_message: 「あなたにとって今日は〜な日。〜すると流れが変わる。」の形式で書く。状態描写だけで終わらせない。30文字以内。占術名・九星名は使わない。例：「あなたにとって今日は動きやすい日。自分から声をかけると流れが変わる。」"
+    prompt = f"""あなたはLoveMEDOメソッドを実践するベテラン占術師です。
 「マクロ（宇宙・時代）→ミクロ（個人）への3層読み」で運勢を鑑定します。
 
 {extra_context}
@@ -683,10 +683,10 @@ def _gen_personalized_text(user, cat_sc, sys_scores, date_label, mode, extra_con
 
 【占術スタイルの絶対ルール】
 ・overall_message: 今日/今月を詩的かつ本質的に表現（20文字以内）
-・social_prediction: 今日の九星・命式エネルギーから連想される社会的話題を3〜4個列挙する。各項目は15文字以内の短い断言形式で書く。例1（政策）: '木・緑に関する政策が動きやすい日'、例2（芸能人）: '名前に「山」が入る人物の話題'、例3（ニュース）: '水・川・海に関する話題が浮上'、例4（自然）: '山・土地に関する自然の変化'。【重要】災害・事故・死亡などネガティブな出来事は直接言及せず、必ず '〜の変動が感じられる' '自然の力が見えやすい日' などオブラートな表現にする。絵文字・記号は使わない。
-・energy_message: 「あなたにとって今日は〜な日。〜すると流れが変わる。」の形式で書く。状態描写だけで終わらせない。30文字以内。占術名・九星名は使わない。例：「あなたにとって今日は動きやすい日。自分から声をかけると流れが変わる。」
+{_social_pred_rule}
+{_energy_rule}
 ・各カテゴリのmessage: 必ず「あなたは〜」または「あなたにとって〜」で始める。1文目：共感フレーズ（「〜な気持ちになりやすい日」「〜が気になる頃かも」「〜しがちな今日」など）。2文目：具体的な行動指示（「〜してみて」「今日は〜に集中を」「〜は後回しで」）。恋愛運・対人運は「誰かに気持ちを伝えたくなる日かも」「相手の反応が気になるのは自然なこと」などの自分ごと化フレーズを必ず入れる。占術名・九星名・難読漢字（蒐集・金財など）は使わない。「〜すると吉」で終わらない。合計40文字以内。
-・lucky_explanation: 40〜55文字。「{{日盤九星名}}の{{属性}}が強い今日、{{最低カテゴリ}}運を底上げするには{{ラッキーアイテム/行動}}が効く。」の形式で1文で締める。「共鳴」「交差」などの描写ワード禁止。
+{_lucky_exp_rule}
 
 以下のJSON形式のみで回答。コードブロック不要：
 {{
@@ -1056,8 +1056,8 @@ def get_graph_data_cached(user):
     return data
 
 def generate_fortune_image(graph_data, user):
-    current_year = datetime.now().year
-    current_month = datetime.now().month
+    current_year = datetime.now(_JST).year
+    current_month = datetime.now(_JST).month
     start_year = current_year
 
     birthday = user.get("birthday", "")
@@ -1449,9 +1449,48 @@ def handle_message(event):
     text = event.message.text.strip()
 
     if text == "誕生日変更":
-        user["state"] = "waiting_birthday"
+        user["state"] = "waiting_change_birthday"
         set_user(user_id, user)
-        reply_msg(event.reply_token, "新しい生年月日を入力してください。\n（例: 1990年3月15日）")
+        reply_msg(event.reply_token, "📅 新しい生年月日と出生時刻を入力してください。\n\n例：1990年3月15日 午前10時\n（時刻不明の場合は日付のみでOK）")
+        return
+
+    if user.get("state") == "waiting_change_birthday":
+        birthday = parse_birthday(text)
+        if birthday:
+            user["birthday"] = birthday
+            bt = parse_birth_time(text)
+            if bt:
+                user["birth_time"] = bt
+            user["state"] = "waiting_change_nameplace"
+            set_user(user_id, user)
+            curr_name = user.get("name") or "未設定"
+            curr_place = user.get("birthplace") or "未設定"
+            reply_msg(event.reply_token,
+                f"✅ 生年月日を更新しました。\n\n"
+                f"続いて名前（ひらがな）と出生地を教えてください。\n\n"
+                f"現在の設定：{curr_name} / {curr_place}\n\n"
+                f"例：たなかたろう 東京都\n変更なしは「スキップ」と入力")
+        else:
+            reply_msg(event.reply_token, "生年月日の形式を認識できませんでした。\n\n例：1990年3月15日 午前10時")
+        return
+
+    if user.get("state") == "waiting_change_nameplace":
+        if text != "スキップ":
+            extra = parse_extra_info(text)
+            if extra.get("name"):
+                user["name"] = extra["name"]
+            if extra.get("name_kana"):
+                user["name_kana"] = extra["name_kana"]
+            if extra.get("birthplace"):
+                user["birthplace"] = extra["birthplace"]
+        user["state"] = "menu"
+        set_user(user_id, user)
+        info_parts = []
+        if user.get("birthday"): info_parts.append(f"📅 {user['birthday']}")
+        if user.get("name"): info_parts.append(f"👤 {user['name']}")
+        if user.get("birthplace"): info_parts.append(f"📍 {user['birthplace']}")
+        info = "\n".join(info_parts)
+        reply_msg(event.reply_token, f"✅ プロフィールを更新しました！\n\n{info}", with_menu=True)
         return
 
     if user.get("state") == "waiting_birthday" or not user.get("birthday"):
