@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>守護動物診断 — あなたの守護動物は？</title>
+<meta name="description" content="10の質問でわかるあなたの守護動物。獅子・狼・鷹・熊・狐・馬・亀 — 星夜堂の守護動物診断。">
+<style>
+:root{
+  --pr:#2d6a1f;--pr2:#5cb338;--amber:#ff8c00;--amber2:#ffc947;
+  --bg:#0a120a;--card:#121e10;--card2:#162715;--border:#1e3d1a;
+  --text:#e8f5e3;--sub:#7dab6a;
+  --radius:16px;--shadow:0 8px 32px rgba(0,0,0,.5);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Yu Gothic',sans-serif;
+  background:var(--bg);color:var(--text);min-height:100vh;
+  background-image:radial-gradient(ellipse at 20% 30%,rgba(45,106,31,.2) 0%,transparent 60%),
+    radial-gradient(ellipse at 80% 70%,rgba(255,140,0,.1) 0%,transparent 60%);
+}
+#app{max-width:480px;margin:0 auto;padding:16px 16px 40px;min-height:100vh;display:flex;flex-direction:column}
+.screen{display:none;animation:fadeUp .4s ease both}
+.screen.active{display:flex;flex-direction:column;flex:1}
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+#top{align-items:center;justify-content:center;text-align:center;gap:20px;padding:24px 0}
+.top-icon{font-size:80px;filter:drop-shadow(0 0 20px rgba(92,179,56,.5));animation:float 3s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.top-title{font-size:28px;font-weight:800;letter-spacing:.04em;
+  background:linear-gradient(135deg,#a5d6a7,#ffcc80);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.top-sub{font-size:14px;color:var(--sub);line-height:1.7;max-width:320px}
+.top-meta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.badge{background:var(--card2);border:1px solid var(--border);border-radius:20px;padding:6px 14px;font-size:12px;color:var(--sub)}
+.btn-start{width:100%;max-width:320px;padding:18px;background:linear-gradient(135deg,#2d6a1f,#ff8c00);
+  color:#fff;border:none;border-radius:var(--radius);font-size:18px;font-weight:700;cursor:pointer;
+  box-shadow:0 4px 20px rgba(45,106,31,.4);transition:.2s;letter-spacing:.05em}
+.btn-start:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(45,106,31,.5)}
+.types-preview{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;width:100%}
+.type-chip{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:10px 4px;text-align:center;font-size:12px}
+.type-chip .emoji{font-size:20px;display:block;margin-bottom:4px}
+
+.progress-wrap{padding:8px 0 20px}
+.progress-label{display:flex;justify-content:space-between;font-size:13px;color:var(--sub);margin-bottom:8px}
+.progress-bar{height:6px;background:var(--card2);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,#2d6a1f,#ff8c00);border-radius:3px;transition:width .4s ease}
+.q-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:24px 20px;margin-bottom:20px;box-shadow:var(--shadow)}
+.q-num{font-size:12px;color:var(--pr2);font-weight:700;letter-spacing:.1em;margin-bottom:10px}
+.q-text{font-size:17px;font-weight:700;line-height:1.6}
+.options{display:flex;flex-direction:column;gap:10px}
+.opt{background:var(--card2);border:1.5px solid var(--border);border-radius:12px;padding:16px 18px;
+  font-size:15px;line-height:1.5;cursor:pointer;transition:.2s;text-align:left;color:var(--text)}
+.opt:hover{border-color:var(--pr2);background:rgba(45,106,31,.25);transform:translateX(4px)}
+.opt.selected{border-color:var(--amber);background:rgba(255,140,0,.12);color:var(--amber2)}
+
+#result{gap:0;padding-top:0}
+.result-hero{background:linear-gradient(135deg,var(--card2),var(--card));border:1px solid var(--border);
+  border-radius:var(--radius);padding:32px 20px 24px;text-align:center;margin-bottom:16px;box-shadow:var(--shadow);
+  animation:heroIn .6s ease both}
+@keyframes heroIn{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:none}}
+.result-icon{font-size:72px;margin-bottom:12px;filter:drop-shadow(0 0 24px rgba(255,140,0,.6))}
+.result-label{font-size:12px;color:var(--amber);font-weight:700;letter-spacing:.15em;margin-bottom:8px}
+.result-name{font-size:32px;font-weight:900;letter-spacing:.06em;margin-bottom:10px;
+  background:linear-gradient(135deg,#ffcc80,#a5d6a7);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.result-catch{font-size:15px;color:var(--sub);line-height:1.6}
+.result-section{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:12px}
+.section-title{font-size:13px;font-weight:700;color:var(--pr2);letter-spacing:.08em;margin-bottom:14px}
+.traits{display:flex;flex-wrap:wrap;gap:8px}
+.trait{background:linear-gradient(135deg,rgba(45,106,31,.3),rgba(255,140,0,.2));
+  border:1px solid rgba(92,179,56,.4);border-radius:20px;padding:6px 14px;font-size:13px;font-weight:600}
+.weaknesses{display:flex;flex-direction:column;gap:6px}
+.weakness{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--sub)}
+.weakness::before{content:'△';font-size:11px;color:var(--amber)}
+.desc{font-size:14px;line-height:1.8}
+.compat{display:flex;align-items:center;gap:12px;background:var(--card2);border-radius:10px;padding:14px}
+.compat-icon{font-size:32px}
+.compat-name{font-size:16px;font-weight:700;color:var(--amber2)}
+.compat-why{font-size:12px;color:var(--sub);margin-top:2px}
+.tendency-bars{display:flex;flex-direction:column;gap:10px}
+.tend-row{display:flex;align-items:center;gap:10px;font-size:13px}
+.tend-label{width:80px;flex-shrink:0;color:var(--sub)}
+.tend-bar-wrap{flex:1;height:8px;background:var(--card2);border-radius:4px;overflow:hidden}
+.tend-bar{height:100%;background:linear-gradient(90deg,#2d6a1f,#ff8c00);border-radius:4px;transition:width 1s ease .3s}
+.tend-val{width:28px;text-align:right;font-size:12px;color:var(--amber)}
+.share-section{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:12px}
+.share-title{font-size:13px;font-weight:700;color:var(--sub);text-align:center;margin-bottom:14px}
+.share-btns{display:flex;flex-direction:column;gap:10px}
+.btn-x{background:#000;color:#fff;border:1.5px solid #333;border-radius:12px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:.2s}
+.btn-x:hover{background:#1a1a1a;transform:translateY(-1px)}
+.btn-line{background:#06c755;color:#fff;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:.2s}
+.btn-line:hover{background:#05b34c;transform:translateY(-1px)}
+.btn-retry{background:transparent;color:var(--sub);border:1.5px solid var(--border);border-radius:12px;padding:12px;font-size:14px;cursor:pointer;width:100%;transition:.2s}
+.btn-retry:hover{border-color:var(--pr2);color:var(--pr2)}
+.line-cta{background:linear-gradient(135deg,#0a2a1a,#0d3b24);border:1px solid #1a5c35;border-radius:var(--radius);padding:24px 20px;text-align:center;margin-bottom:12px}
+.line-cta-icon{font-size:36px;margin-bottom:8px}
+.line-cta-title{font-size:17px;font-weight:800;color:#06c755;margin-bottom:8px}
+.line-cta-text{font-size:13px;color:#7fbf93;line-height:1.6;margin-bottom:16px}
+.btn-line-cta{background:#06c755;color:#fff;border:none;border-radius:12px;padding:16px 24px;font-size:15px;font-weight:700;cursor:pointer;width:100%;display:flex;align-items:center;justify-content:center;gap:8px;transition:.2s;text-decoration:none}
+.btn-line-cta:hover{background:#05b34c;transform:translateY(-2px)}
+.result-footer{text-align:center;font-size:11px;color:var(--sub);padding-top:8px}
+</style>
+</head>
+<body>
+<div id="app">
+<div id="top" class="screen active">
+  <div class="top-icon">🦁</div>
+  <div>
+    <div class="top-title">守護動物診断</div>
+    <div style="font-size:13px;color:#5cb338;margin-top:4px;margin-bottom:12px;font-weight:600;letter-spacing:.05em">あなたを守護する動物は？</div>
+    <div class="top-sub">10の質問で、あなたを守護する動物がわかります。7種の力強い動物から、あなたの魂と共鳴する守護者を診断します。</div>
+  </div>
+  <div class="top-meta">
+    <span class="badge">⏱ 約2分</span>
+    <span class="badge">❓ 全10問</span>
+    <span class="badge">🐾 全7タイプ</span>
+  </div>
+  <div class="types-preview">
+    <div class="type-chip"><span class="emoji">🦁</span>獅子</div>
+    <div class="type-chip"><span class="emoji">🐺</span>狼</div>
+    <div class="type-chip"><span class="emoji">🦅</span>鷹</div>
+    <div class="type-chip"><span class="emoji">🐻</span>熊</div>
+    <div class="type-chip"><span class="emoji">🦊</span>狐</div>
+    <div class="type-chip"><span class="emoji">🐎</span>馬</div>
+    <div class="type-chip"><span class="emoji">🐢</span>亀</div>
+  </div>
+  <button class="btn-start" onclick="startQuiz()">診断スタート 🐾</button>
+</div>
+
+<div id="quiz" class="screen">
+  <div class="progress-wrap">
+    <div class="progress-label"><span id="q-counter">Q 1 / 10</span><span id="q-pct">10%</span></div>
+    <div class="progress-bar"><div class="progress-fill" id="prog-fill" style="width:10%"></div></div>
+  </div>
+  <div class="q-card">
+    <div class="q-num" id="q-num-label">QUESTION 01</div>
+    <div class="q-text" id="q-text"></div>
+  </div>
+  <div class="options" id="options-wrap"></div>
+</div>
+
+<div id="result" class="screen"></div>
+</div>
+
+<script>
+const SHARE_URL='https://hoshiyorudou.jp/dobutsu';
+const LINE_OA='https://lin.ee/hoshiyorudou';
+
+const questions=[
+  { text:'群れ（チーム）の中での自分の役割は？',
+    opts:[
+      {text:'👑 自然と先頭に立つリーダー',scores:{lion:3,wolf:1}},
+      {text:'🤝 仲間を支えるサポート役',scores:{bear:3,wolf:2}},
+      {text:'🦅 一歩引いて全体を見渡す',scores:{hawk:3,kitsune:1}},
+    ]},
+  { text:'大きな決断をするとき、重視するのは？',
+    opts:[
+      {text:'⚡ 自分の直感と信念',scores:{lion:2,horse:3}},
+      {text:'🔬 データと分析・リスク評価',scores:{hawk:3,kitsune:2}},
+      {text:'👥 仲間・家族との相談',scores:{wolf:3,bear:2}},
+    ]},
+  { text:'困難に直面したとき、あなたは？',
+    opts:[
+      {text:'🔥 正面突破！全力でぶつかる',scores:{lion:3,horse:1}},
+      {text:'🧩 冷静に策を練ってから動く',scores:{kitsune:3,hawk:2}},
+      {text:'🌊 仲間と力を合わせて乗り越える',scores:{wolf:3,bear:2}},
+    ]},
+  { text:'理想の自由のイメージは？',
+    opts:[
+      {text:'🌾 広大な大地を風のように駆ける',scores:{horse:3,lion:1}},
+      {text:'🌤️ 空高く舞い上がり全てを見渡す',scores:{hawk:3,kitsune:1}},
+      {text:'🌲 深い森の中で自分のペースで生きる',scores:{wolf:2,kame:2}},
+    ]},
+  { text:'あなたの知恵の使い方は？',
+    opts:[
+      {text:'🗡️ 戦略として使い、勝利をつかむ',scores:{kitsune:3,lion:1}},
+      {text:'👁️ 洞察として使い、本質を見抜く',scores:{hawk:3,kame:1}},
+      {text:'🤱 知恵として使い、人を守り育てる',scores:{bear:3,wolf:1}},
+    ]},
+  { text:'あなたの一番の強みは？',
+    opts:[
+      {text:'💪 圧倒的なカリスマと影響力',scores:{lion:3,horse:2}},
+      {text:'🦊 機転と適応力、頭の回転の速さ',scores:{kitsune:3,hawk:2}},
+      {text:'🏔️ 揺るぎない忍耐力と安定感',scores:{kame:3,bear:2}},
+    ]},
+  { text:'エネルギーが最も高まるは？',
+    opts:[
+      {text:'🏟️ 注目を浴びているとき',scores:{lion:3,horse:2}},
+      {text:'🌳 仲間と一緒にいるとき',scores:{wolf:3,bear:2}},
+      {text:'🧘 一人で静かに考えているとき',scores:{kame:3,kitkitsune:1}},
+    ]},
+  { text:'長所として周囲に言われることは？',
+    opts:[
+      {text:'🦁 存在感がある・頼もしい',scores:{lion:3,bear:2}},
+      {text:'⚡ 行動が速い・情熱的',scores:{horse:3,lion:1}},
+      {text:'💡 頭が切れる・冷静',scores:{kitsune:3,hawk:2}},
+    ]},
+  { text:'理想の生き方は？',
+    opts:[
+      {text:'🌅 第一線で活躍し続けるトップ',scores:{lion:3,horse:2}},
+      {text:'🕊️ 深い絆で結ばれた仲間と共に',scores:{wolf:3,bear:1}},
+      {text:'🏡 着実に積み上げ、長く生き続ける',scores:{kame:3,wolf:1}},
+    ]},
+  { text:'直感と論理、どちらを信じる？',
+    opts:[
+      {text:'⚡ 直感！感覚が大事',scores:{horse:3,lion:1}},
+      {text:'📊 論理！根拠が大事',scores:{hawk:3,kame:2}},
+      {text:'⚖️ 両方バランスよく使う',scores:{kitsune:3,wolf:1}},
+    ]},
+];
+
+const results={
+  lion:{emoji:'🦁',name:'獅子（ライオン）',catch:'王者の風格を持つ百獣の守護者',
+    traits:['圧倒的なカリスマと存在感','勇敢なリーダーシップ','仲間を守る強い意志'],
+    weaknesses:['プライドが傷つくと激しく反応することも','支配的になりすぎることがある'],
+    desc:'獅子があなたを守護しています。百獣の王・獅子のエネルギーを宿すあなたは、生まれながらのリーダーです。その圧倒的な存在感と勇気で、自然と人々が集まってきます。仲間への深い愛情と守護の意識が行動の根底にあります。',
+    compat:{emoji:'🐺',name:'狼タイプ',why:'王と群れの本能が最高のチームを作る'},
+    tend:{支配力:95,共感力:65,知恵:70,忍耐力:60,自由度:75}},
+  wolf:{emoji:'🐺',name:'狼',catch:'群れの絆と本能で生きる孤高の守護者',
+    traits:['深い忠誠心と仲間への愛','鋭い本能と状況判断力','チームで高め合う協調力'],
+    weaknesses:['縄張り意識が強くなりすぎることも','信頼していない人には心を開きにくい'],
+    desc:'狼があなたを守護しています。狼のエネルギーを宿すあなたは、深い絆と忠誠心を大切にします。孤高に見いても、信頼した仲間のためなら全てをかけます。鋭い本能と状況を読む力で、チームを勝利に導きます。',
+    compat:{emoji:'🐻',name:'熊タイプ',why:'本能と包容力が最高の安心感を生む'},
+    tend:{支配力:70,共感力:80,知恵:75,忍耐力:75,自由度:65}},
+  hawk:{emoji:'🦅',name:'鷹',catch:'高い視座と鋭い洞察力を持つ守護者',
+    traits:['卓越した観察力と洞察力','高い視座で全体を把握','正確無比な判断力'],
+    weaknesses:['冷たく見られることがある','感情表現が少ないと思われることも'],
+    desc:'鷹があなたを守護しています。空高く舞い上がる鷹のエネルギーを宿すあなたは、物事を高い視座から見渡す力を持ちます。感情に流されず冷静に本質を見抜き、最適な判断を下します。その精度の高さは、周囲の信頼を確実に集めます。',
+    compat:{emoji:'🦊',name:'狐タイプ',why:'洞察と機転が絶妙に噛み合う'},
+    tend:{支配力:65,共感力:55,知恵:90,忍耐力:70,自由度:80}},
+  bear:{emoji:'🐻',name:'熊',catch:'大きな力と深い慈愛で守護する存在',
+    traits:['圧倒的な包容力と慈愛','大切なものを守る強さ','どっしりした安定感'],
+    weaknesses:['行動が遅く見られることも','頑固な面が出ることがある'],
+    desc:'熊があなたを守護しています。大きな熊のエネルギーを宿すあなたは、包容力と慈愛に満ちた守護者です。大切な人のためなら圧倒的な力を発揮し、その存在自体が周囲に安心をもたらします。温かくどっしりした安定感が魅力です。',
+    compat:{emoji:'🦁',name:'獅子タイプ',why:'包容力と力が最高のバランスを生む'},
+    tend:{支配力:70,共感力:90,知恵:65,忍耐力:85,自由度:50}},
+  kitsune:{emoji:'🦊',name:'狐',catch:'知恵と機転で世界を渡る守護者',
+    traits:['卓越した機転と適応力','状況を読む鋭い知性','魅力と話術で人を動かす力'],
+    weaknesses:['計算高く見られることがある','本音を出しにくいことも'],
+    desc:'狐があなたを守護しています。賢い狐のエネルギーを宿すあなたは、卓越した機転と適応力で、どんな状況でも最適解を見つけます。魅力的な話術と鋭い知性で、気づけば周囲を自分の流れに引き込んでいます。',
+    compat:{emoji:'🦅',name:'鷹タイプ',why:'機転と洞察が最強の知性コンビ'},
+    tend:{支配力:65,共感力:70,知恵:95,忍耐力:55,自由度:85}},
+  horse:{emoji:'🐎',name:'馬',catch:'自由と情熱で疾走する守護者',
+    traits:['止まらない行動力と情熱','自由への強い意志','周囲を元気にするエネルギー'],
+    weaknesses:['一つのことに集中できないことも','衝動的に動いてしまうことがある'],
+    desc:'馬があなたを守護しています。疾走する馬のエネルギーを宿すあなたは、情熱と行動力で人生を駆け抜けます。自由を愛し、束縛を嫌います。その溢れるエネルギーと前向きな姿勢が、周囲の人に活力と希望を与えます。',
+    compat:{emoji:'🦁',name:'獅子タイプ',why:'情熱と王者の風格が大きな流れを作る'},
+    tend:{支配力:65,共感力:65,知恵:60,忍耐力:55,自由度:9u}},
+  kame:{emoji:'🐢',name:'亀',catch:'深い知恵と長い視点を持つ守護者',
+    traits:['長期的な視野と深い知恵','確実に積み上げる粘り強さ','揺るぎない精神的な安定'],
+    weaknesses:['動き出すまでに時間がかかることも','変化への適応が遅いことがある'],
+    desc:'亀があなたを守護しています。長寿と知恵の象徴・亀のエネルギーを宿すあなたは、焦らず確実に積み上げる力を持ちます。短期的な流行に惑わされず、長期的な視点で本質を見極めます。その揺るぎない安定感が、周囲に深い信頼をもたらします。',
+    compat:{emoji:'🦊',name:'狐タイプ',why:'深い知恵と機転が理想の補完関係'},
+    tend:{支配力:55,共感力:70,知恵:85,忍耐力:95,自由度:45}},
+};
+
+let scores={},currentQ=0,_shareText='';
+function resetScores(){scores={};Object.keys(results).forEach(k=>scores[k]=0);}
+function startQuiz(){resetScores();currentQ=0;showScreen('quiz');renderQuestion();}
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo({top:0,behavior:'smooth'});}
+function renderQuestion(){
+  const q=questions[currentQ];const n=currentQ+1;const pct=Math.round(n/questions.length*100);
+  document.getElementById('q-counter').textContent=`Q ${n} / ${questions.length}`;
+  document.getElementById('q-pct').textContent=pct+'%';
+  document.getElementById('prog-fill').style.width=pct+'%';
+  document.getElementById('q-num-label').textContent='QUESTION '+String(n).padStart(2,'0');
+  document.getElementById('q-text').textContent=q.text;
+  const wrap=document.getElementById('options-wrap');wrap.innerHTML='';
+  q.opts.forEach(opt=>{const btn=document.createElement('button');btn.className='opt';btn.textContent=opt.text;btn.onclick=()=>selectAnswer(opt.scores,btn);wrap.appendChild(btn);});
+}
+function selectAnswer(scoreMap,btn){
+  document.querySelectorAll('.opt').forEach(b=>b.style.pointerEvents='none');
+  btn.classList.add('selected');
+  Object.entries(scoreMap).forEach([[k,v])=>{scores[k]=(scores[k]||0)+v;});
+  setTimeout(()=>{currentQ++;if(currentQ<questions.length){renderQuestion();const c=document.querySelector('.q-card');c.style.animation='none';c.offsetHeight;c.style.animation='fadeUp .35s ease both';}else showResult();},420);
+}
+function showResult(){
+  const key=Object.entries(scores).sort((a,b)=>b[1]-a[1])[0][0];
+  const r=results[key];const el=document.getElementById('result');
+  _shareText='私の守護動物は「'+r.name+'」でした！\nあなたの守護動物は？\n';
+  const tendHTML=Object.entries(r.tend).map(([label,val])=>
+    `<div class="tend-row"><div class="tend-label">${label}</div><div class="tend-bar-wrap"><div class="tend-bar" style="width:0" data-w="${val}%"></div></div><div class="tend-val">${val}</div></div>`
+  ).join('');
+  el.innerHTML=`
+    <div class="result-hero"><div class="result-icon">${r.emoji}</div><div class="result-label">あなたの守護動物</div><div class="result-name">${r.name}</div><div class="result-catch">${r.catch}</div></div>
+    <div class="result-section"><div class="section-title">✨ 長所・強み</div><div class="traits">${r.traits.map(t=>`<span class="trait">${t}</span>`).join('')}</div></div>
+    <div class="result-section"><div class="section-title">💬 詳細解説</div><div class="desc">${r.desc}</div></div>
+    <div class="result-section"><div class="section-title">△ 気をつけたいこと</div><div class="weaknesses">${r.weaknesses.map(w=>`<div class="weakness">${w}</div>`).join('')}</div></div>
+    <div class="result-section"><div class="section-title">💕 相性の良いタイプ</div><div class="compat"><div class="compat-icon">${r.compat.emoji}</div><div><div class="compat-name">${r.compat.name}</div><div class="compat-why">${r.compat.why}</div></div></div></div>
+    <div class="result-section"><div class="section-title">📊 あなたの傾向</div><div class="tendency-bars">${tendHTML}</div></div>
+    <div class="share-section"><div class="share-title">📣 結果をシェアしよう</div><div class="share-btns">
+      <button class="btn-x" onclick="shareX()"><svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.742l7.742-8.852L1.512 2.25h6.961l4.263 5.623 5.508-5.623zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>Xでシェア</button>
+      <button class="btn-line" onclick="shareLINE()"><svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>LINEでシェア</button>
+      <button class="btn-retry" onclick="startQuiz()">🔄 もう一度診断する</button>
+    </div></div>
+    <div class="line-cta"><div class="line-cta-icon">🔮</div><div class="line-cta-title">本格占いは星夜堂へ</div><div class="line-cta-text">守護動物だけでなく、あなたの生年月日から<br>今日の運勢・今月の流れを毎日お届けします</div><a class="btn-line-cta" href="${LINE_OA}" target="_blank"><svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>星夜堂でもっと詳しく占う</a></div>
+    <div class="result-footer">© 星夜堂 — 守護動物診断</div>
+  `;
+  showScreen('result');
+  setTimeout(()=>{document.querySelectorAll('.tend-bar').forEach(b=>b.style.width=b.dataset.w);},400);
+}
+function shareX(){window.open('https://twitter.com/intent/tweet?text='+encodeURIComponent(_shareText+SHARE_URL),'_blank');}
+function shareLINE(){window.open('https://social-plugins.line.me/lineit/share?url='+encodeURIComponent(SHARE_URL)+'&text='+encodeURIComponent(_shareText),'_blank');}
+</script>
+</body>
+</html>
