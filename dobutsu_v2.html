@@ -96,6 +96,26 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Yu Gothic',sa
 .btn-line-cta{background:#06c755;color:#fff;border:none;border-radius:12px;padding:16px 24px;font-size:15px;font-weight:700;cursor:pointer;width:100%;display:flex;align-items:center;justify-content:center;gap:8px;transition:.2s;text-decoration:none}
 .btn-line-cta:hover{background:#05b34c;transform:translateY(-2px)}
 .result-footer{text-align:center;font-size:11px;color:var(--sub);padding-top:8px}
+.btn-back{display:none;align-items:center;justify-content:center;gap:6px;margin-top:16px;
+  background:transparent;border:1px solid var(--border);border-radius:10px;padding:10px 16px;
+  font-size:13px;color:var(--sub);cursor:pointer;width:100%;transition:.2s}
+.btn-back:hover{border-color:var(--pr2);color:var(--pr2)}
+#type-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:200;
+  overflow-y:auto;padding:20px 16px}
+.type-modal-inner{max-width:440px;margin:20px auto;background:var(--card);border:1px solid var(--border);
+  border-radius:20px;padding:28px 24px;position:relative}
+.bm-close{float:right;background:transparent;border:none;font-size:24px;cursor:pointer;color:var(--sub);line-height:1;padding:0}
+.bm-emoji{font-size:64px;display:block;text-align:center;margin-bottom:12px;filter:drop-shadow(0 0 16px rgba(45,106,31,.5))}
+.bm-name{font-size:24px;font-weight:900;text-align:center;letter-spacing:.06em;margin-bottom:6px;
+  background:linear-gradient(135deg,#2d6a1f,#5cb338);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.bm-catch{font-size:13px;color:var(--sub);text-align:center;margin-bottom:16px;line-height:1.5}
+.bm-keywords{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:16px}
+.bm-kw{background:linear-gradient(135deg,rgba(45,106,31,.35),rgba(45,106,31,.25));
+  border:1px solid rgba(45,106,31,.5);border-radius:20px;padding:6px 14px;font-size:12px;font-weight:700}
+.bm-desc{font-size:14px;color:var(--sub);line-height:1.6;margin-bottom:20px;text-align:center}
+.bm-startbtn{width:100%;padding:14px;background:linear-gradient(135deg,#2d6a1f,#5cb338);
+  border:none;border-radius:12px;color:#fff;font-size:15px;font-weight:700;cursor:pointer;transition:.2s}
+.bm-startbtn:hover{transform:translateY(-2px)}
 </style>
 </head>
 <body>
@@ -113,13 +133,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Yu Gothic',sa
     <span class="badge">🐾 全7タイプ</span>
   </div>
   <div class="types-preview">
-    <div class="type-chip"><span class="emoji">🦁</span>獅子</div>
-    <div class="type-chip"><span class="emoji">🐺</span>狼</div>
-    <div class="type-chip"><span class="emoji">🦅</span>鷹</div>
-    <div class="type-chip"><span class="emoji">🐻</span>熊</div>
-    <div class="type-chip"><span class="emoji">🦊</span>狐</div>
-    <div class="type-chip"><span class="emoji">🐎</span>馬</div>
-    <div class="type-chip"><span class="emoji">🐢</span>亀</div>
+    <div class="type-chip" onclick="showTypeInfo('lion')"><span class="emoji">🦁</span>獅子</div>
+    <div class="type-chip" onclick="showTypeInfo('wolf')"><span class="emoji">🐺</span>狼</div>
+    <div class="type-chip" onclick="showTypeInfo('hawk')"><span class="emoji">🦅</span>鷹</div>
+    <div class="type-chip" onclick="showTypeInfo('bear')"><span class="emoji">🐻</span>熊</div>
+    <div class="type-chip" onclick="showTypeInfo('kitsune')"><span class="emoji">🦊</span>狐</div>
+    <div class="type-chip" onclick="showTypeInfo('horse')"><span class="emoji">🐎</span>馬</div>
+    <div class="type-chip" onclick="showTypeInfo('kame')"><span class="emoji">🐢</span>亀</div>
   </div>
   <button class="btn-start" onclick="startQuiz()">診断スタート 🐾</button>
 </div>
@@ -134,9 +154,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Yu Gothic',sa
     <div class="q-text" id="q-text"></div>
   </div>
   <div class="options" id="options-wrap"></div>
+  <button class="btn-back" id="btn-back" onclick="goBack()">← 前の質問に戻る</button>
 </div>
 
 <div id="result" class="screen"></div>
+<div id="type-modal" onclick="if(event.target===this)closeTypeModal()">
+  <div class="type-modal-inner" id="type-modal-content"></div>
+</div>
+
 </div>
 
 <script>
@@ -180,11 +205,11 @@ const questions=[
       {text:'🦊 機転と適応力、頭の回転の速さ',scores:{kitsune:3,hawk:2}},
       {text:'🏔️ 揺るぎない忍耐力と安定感',scores:{kame:3,bear:2}},
     ]},
-  { text:'エネルギーが最も高まるは？',
+  { text:'エネルギーが最も高まるのは？',
     opts:[
       {text:'🏟️ 注目を浴びているとき',scores:{lion:3,horse:2}},
       {text:'🌳 仲間と一緒にいるとき',scores:{wolf:3,bear:2}},
-      {text:'🧘 一人で静かに考えているとき',scores:{kame:3,kitkitsune:1}},
+      {text:'🧘 一人で静かに考えているとき',scores:{kame:3,kitsune:1}},
     ]},
   { text:'長所として周囲に言われることは？',
     opts:[
@@ -216,7 +241,7 @@ const results={
   wolf:{emoji:'🐺',name:'狼',catch:'群れの絆と本能で生きる孤高の守護者',
     traits:['深い忠誠心と仲間への愛','鋭い本能と状況判断力','チームで高め合う協調力'],
     weaknesses:['縄張り意識が強くなりすぎることも','信頼していない人には心を開きにくい'],
-    desc:'狼があなたを守護しています。狼のエネルギーを宿すあなたは、深い絆と忠誠心を大切にします。孤高に見いても、信頼した仲間のためなら全てをかけます。鋭い本能と状況を読む力で、チームを勝利に導きます。',
+    desc:'狼があなたを守護しています。狼のエネルギーを宿すあなたは、深い絆と忠誠心を大切にします。孤高に見えても、信頼した仲間のためなら全てをかけます。鋭い本能と状況を読む力で、チームを勝利に導きます。',
     compat:{emoji:'🐻',name:'熊タイプ',why:'本能と包容力が最高の安心感を生む'},
     tend:{支配力:70,共感力:80,知恵:75,忍耐力:75,自由度:65}},
   hawk:{emoji:'🦅',name:'鷹',catch:'高い視座と鋭い洞察力を持つ守護者',
@@ -242,7 +267,7 @@ const results={
     weaknesses:['一つのことに集中できないことも','衝動的に動いてしまうことがある'],
     desc:'馬があなたを守護しています。疾走する馬のエネルギーを宿すあなたは、情熱と行動力で人生を駆け抜けます。自由を愛し、束縛を嫌います。その溢れるエネルギーと前向きな姿勢が、周囲の人に活力と希望を与えます。',
     compat:{emoji:'🦁',name:'獅子タイプ',why:'情熱と王者の風格が大きな流れを作る'},
-    tend:{支配力:65,共感力:65,知恵:60,忍耐力:55,自由度:9u}},
+    tend:{支配力:65,共感力:65,知恵:60,忍耐力:55,自由度:95}},
   kame:{emoji:'🐢',name:'亀',catch:'深い知恵と長い視点を持つ守護者',
     traits:['長期的な視野と深い知恵','確実に積み上げる粘り強さ','揺るぎない精神的な安定'],
     weaknesses:['動き出すまでに時間がかかることも','変化への適応が遅いことがある'],
@@ -251,8 +276,58 @@ const results={
     tend:{支配力:55,共感力:70,知恵:85,忍耐力:95,自由度:45}},
 };
 
+
+function showTypeInfo(key){
+  const b=typeInfo[key];if(!b)return;
+  const modal=document.getElementById('type-modal');
+  document.getElementById('type-modal-content').innerHTML=
+    '<button class="bm-close" onclick="closeTypeModal()">✕</button>'+
+    '<span class="bm-emoji">'+b.emoji+'</span>'+
+    '<div class="bm-name">'+b.name+'</div>'+
+    '<div class="bm-catch">'+b.catch+'</div>'+
+    '<div class="bm-keywords">'+b.keywords.map(k=>'<span class="bm-kw">'+k+'</span>').join('')+'</div>'+
+    '<div class="bm-desc">'+b.summary+'</div>'+
+    '<button class="bm-startbtn" onclick="closeTypeModal();startQuiz()">🐾 診断してみる</button>';
+  modal.style.display='block';document.body.style.overflow='hidden';
+}
+function closeTypeModal(){
+  document.getElementById('type-modal').style.display='none';
+  document.body.style.overflow='';
+}
+
+let answerHistory=[];
+
+const typeInfo = {
+  lion:{emoji:'🦁',name:'獅子（ライオン）',catch:'王者の風格を持つ百獣の守護者',keywords:['カリスマ','リーダーシップ','守護力'],summary:'生まれながらのリーダー。圧倒的な存在感と勇気で、自然と人々が集まってくる。仲間への深い愛情と守護の意識が行動の根底にある。'},
+  wolf:{emoji:'🐺',name:'狼',catch:'群れの絆と本能で生きる孤高の守護者',keywords:['深い忠誠心','鋭い本能','協調力'],summary:'孤高に見えても、信頼した仲間のためなら全てをかける。深い絆を大切にし、鋭い状況判断で仲間を守る。'},
+  hawk:{emoji:'🦅',name:'鷹',catch:'高い視座と鋭い洞察力を持つ守護者',keywords:['洞察力','冷静な判断','高い視座'],summary:'物事を高い視座から見渡す力を持つ。感情に流されず冷静に本質を見抜き、最適な判断を下す。その精度の高さが周囲の信頼を集める。'},
+  bear:{emoji:'🐻',name:'熊',catch:'大きな力と深い慈愛で守護する存在',keywords:['包容力','守護の強さ','安定感'],summary:'包容力と慈愛に満ちた守護者。大切な人のためなら圧倒的な力を発揮し、その存在自体が周囲に安心をもたらす。'},
+  kitsune:{emoji:'🦊',name:'狐',catch:'知恵と機転で世界を渡る守護者',keywords:['機転','適応力','魅力と話術'],summary:'卓越した機転と適応力で、どんな状況でも最適解を見つける。魅力的な話術と鋭い知性で、気づけば周囲を自分の流れに引き込んでいる。'},
+  horse:{emoji:'🐎',name:'馬',catch:'自由と情熱で疾走する守護者',keywords:['行動力','自由への意志','エネルギー'],summary:'情熱と行動力で人生を駆け抜ける。自由を愛し束縛を嫌う。溢れるエネルギーと前向きな姿勢が周囲に活力と希望を与える。'},
+  kame:{emoji:'🐢',name:'亀',catch:'深い知恵と長い視点を持つ守護者',keywords:['長期的視野','粘り強さ','精神的安定'],summary:'焦らず確実に積み上げる力を持つ。短期的な流行に惑わされず、長期的な視点で本質を見極める。揺るぎない安定感が深い信頼をもたらす。'},
+};
+
+function showTypeInfo(key){
+  const b=typeInfo[key];if(!b)return;
+  const modal=document.getElementById('type-modal');
+  document.getElementById('type-modal-content').innerHTML=
+    '<button class="bm-close" onclick="closeTypeModal()">✕</button>'+
+    '<span class="bm-emoji">'+b.emoji+'</span>'+
+    '<div class="bm-name">'+b.name+'</div>'+
+    '<div class="bm-catch">'+b.catch+'</div>'+
+    '<div class="bm-keywords">'+b.keywords.map(k=>'<span class="bm-kw">'+k+'</span>').join('')+'</div>'+
+    '<div class="bm-desc">'+b.summary+'</div>'+
+    '<button class="bm-startbtn" onclick="closeTypeModal();startQuiz()">🐾 診断してみる</button>';
+  modal.style.display='block';document.body.style.overflow='hidden';
+}
+function closeTypeModal(){
+  document.getElementById('type-modal').style.display='none';
+  document.body.style.overflow='';
+}
+
 let scores={},currentQ=0,_shareText='';
-function resetScores(){scores={};Object.keys(results).forEach(k=>scores[k]=0);}
+function resetScores(){scores={};answerHistory=[];Object.keys(results).forEach(k=>scores[k]=0);}
+function goBack(){if(currentQ<=0)return;const last=answerHistory.pop();Object.entries(last).forEach(([k,v])=>{scores[k]=(scores[k]||0)-v;});currentQ--;renderQuestion();const c=document.querySelector('.q-card');c.style.animation='none';c.offsetHeight;c.style.animation='fadeUp .35s ease both';}
 function startQuiz(){resetScores();currentQ=0;showScreen('quiz');renderQuestion();}
 function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo({top:0,behavior:'smooth'});}
 function renderQuestion(){
@@ -262,14 +337,16 @@ function renderQuestion(){
   document.getElementById('prog-fill').style.width=pct+'%';
   document.getElementById('q-num-label').textContent='QUESTION '+String(n).padStart(2,'0');
   document.getElementById('q-text').textContent=q.text;
+  const back=document.getElementById('btn-back');if(back)back.style.display=currentQ>0?'flex':'none';
   const wrap=document.getElementById('options-wrap');wrap.innerHTML='';
   q.opts.forEach(opt=>{const btn=document.createElement('button');btn.className='opt';btn.textContent=opt.text;btn.onclick=()=>selectAnswer(opt.scores,btn);wrap.appendChild(btn);});
 }
 function selectAnswer(scoreMap,btn){
   document.querySelectorAll('.opt').forEach(b=>b.style.pointerEvents='none');
   btn.classList.add('selected');
-  Object.entries(scoreMap).forEach([[k,v])=>{scores[k]=(scores[k]||0)+v;});
-  setTimeout(()=>{currentQ++;if(currentQ<questions.length){renderQuestion();const c=document.querySelector('.q-card');c.style.animation='none';c.offsetHeight;c.style.animation='fadeUp .35s ease both';}else showResult();},420);
+  answerHistory.push(Object.assign({},scoreMap));
+  Object.entries(scoreMap).forEach(([k,v])=>{scores[k]=(scores[k]||0)+v;});
+  setTimeout(()=>{currentQ++;if(currentQ<questions.length){renderQuestion();}else showResult();},420);
 }
 function showResult(){
   const key=Object.entries(scores).sort((a,b)=>b[1]-a[1])[0][0];
