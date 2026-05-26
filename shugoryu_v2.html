@@ -126,6 +126,26 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Yu Gothic',sa
 
 /* ===== RESULT FOOTER ===== */
 .result-footer{text-align:center;font-size:11px;color:var(--sub);padding-top:8px}
+.btn-back{display:none;align-items:center;justify-content:center;gap:6px;margin-top:16px;
+  background:transparent;border:1px solid var(--border);border-radius:10px;padding:10px 16px;
+  font-size:13px;color:var(--sub);cursor:pointer;width:100%;transition:.2s}
+.btn-back:hover{border-color:var(--pr2);color:var(--pr2)}
+#type-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:200;
+  overflow-y:auto;padding:20px 16px}
+.type-modal-inner{max-width:440px;margin:20px auto;background:var(--card);border:1px solid var(--border);
+  border-radius:20px;padding:28px 24px;position:relative}
+.bm-close{float:right;background:transparent;border:none;font-size:24px;cursor:pointer;color:var(--sub);line-height:1;padding:0}
+.bm-emoji{font-size:64px;display:block;text-align:center;margin-bottom:12px;filter:drop-shadow(0 0 16px rgba(124,92,191,.5))}
+.bm-name{font-size:24px;font-weight:900;text-align:center;letter-spacing:.06em;margin-bottom:6px;
+  background:linear-gradient(135deg,#7c5cbf,#a07de0);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.bm-catch{font-size:13px;color:var(--sub);text-align:center;margin-bottom:16px;line-height:1.5}
+.bm-keywords{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:16px}
+.bm-kw{background:linear-gradient(135deg,rgba(124,92,191,.35),rgba(124,92,191,.25));
+  border:1px solid rgba(124,92,191,.5);border-radius:20px;padding:6px 14px;font-size:12px;font-weight:700}
+.bm-desc{font-size:14px;color:var(--sub);line-height:1.6;margin-bottom:20px;text-align:center}
+.bm-startbtn{width:100%;padding:14px;background:linear-gradient(135deg,#7c5cbf,#a07de0);
+  border:none;border-radius:12px;color:#fff;font-size:15px;font-weight:700;cursor:pointer;transition:.2s}
+.bm-startbtn:hover{transform:translateY(-2px)}
 </style>
 </head>
 <body>
@@ -145,12 +165,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Yu Gothic',sa
     <span class="badge">🐉 全6タイプ</span>
   </div>
   <div class="types-preview">
-    <div class="type-chip"><span class="emoji">🌟</span>金龍</div>
-    <div class="type-chip"><span class="emoji">🔥</span>炎龍</div>
-    <div class="type-chip"><span class="emoji">🌸</span>桜龍</div>
-    <div class="type-chip"><span class="emoji">⚡</span>嵐龍</div>
-    <div class="type-chip"><span class="emoji">🌙</span>月龍</div>
-    <div class="type-chip"><span class="emoji">🏔️</span>大地龍</div>
+    <div class="type-chip" onclick="showTypeInfo('kin')"><span class="emoji">🌟</span>金龍</div>
+    <div class="type-chip" onclick="showTypeInfo('en')"><span class="emoji">🔥</span>炎龍</div>
+    <div class="type-chip" onclick="showTypeInfo('sakura')"><span class="emoji">🌸</span>桜龍</div>
+    <div class="type-chip" onclick="showTypeInfo('arashi')"><span class="emoji">⚡</span>嵐龍</div>
+    <div class="type-chip" onclick="showTypeInfo('tsuki')"><span class="emoji">🌙</span>月龍</div>
+    <div class="type-chip" onclick="showTypeInfo('taichi')"><span class="emoji">🏔️</span>大地龍</div>
   </div>
   <button class="btn-start" onclick="startQuiz()">診断スタート 🐉</button>
 </div>
@@ -169,10 +189,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Yu Gothic',sa
     <div class="q-text" id="q-text">質問テキスト</div>
   </div>
   <div class="options" id="options-wrap"></div>
+  <button class="btn-back" id="btn-back" onclick="goBack()">← 前の質問に戻る</button>
 </div>
 
 <!-- RESULT SCREEN -->
 <div id="result" class="screen"></div>
+
+<div id="type-modal" onclick="if(event.target===this)closeTypeModal()">
+  <div class="type-modal-inner" id="type-modal-content"></div>
+</div>
 
 </div>
 
@@ -250,7 +275,7 @@ const questions = [
     text: '理想の生き方は？',
     opts: [
       { text: '🏆 確かな成果を積み上げていく人生', scores: { kin:3, taichi:2 } },
-      { text: '🌊 情熱のみみに自分らしく突き進む', scores: { en:3, arashi:2 } },
+      { text: '🌊 情熱のままに自分らしく突き進む', scores: { en:3, arashi:2 } },
       { text: '🌿 深い縁で結ばれた人と共に歩む', scores: { sakura:2, tsuki:3 } },
     ]
   },
@@ -267,16 +292,16 @@ const questions = [
 // ===== RESULTS =====
 const results = {
   kin: {
-    emoji: '🌟', name: '金龍', catch: '繁栄と成功をもたらす黄金龍',
+    emoji: '🌟', name: '金龍', catch: '繁栄と成功をもたらす黄金の守護龍',
     traits: ['卓越したリーダーシップ','強い責任感と誠実さ','目標達成への意志'],
     weaknesses: ['完璧主義で疲れやすい','融通が利かないと言われることも'],
-    desc: '金龍があなたを守護しています。鈢実な努力と高い責任感で着実に目標を達成するあなたの姿と、繁栄と成功を象徴する金龍のエネルギーが重なります。組織を正しく導く力と、揺るぎない実行力が最大の武器です。',
+    desc: '金龍があなたを守護しています。堅実な努力と高い責任感で着実に目標を達成するあなたの姿と、繁栄と成功を象徴する金龍のエネルギーが重なります。組織を正しく導く力と、揺るぎない実行力が最大の武器です。',
     compat: { emoji:'🔥', name:'炎龍タイプ', why:'行動力で補い合える最強コンビ' },
     tend: { 行動力:70, 思いやり:60, 直感力:50, 計画力:90, 柔軟性:55 }
   },
   en: {
     emoji: '🔥', name: '炎龍', catch: '情熱と瞬発力で道を切り開く龍',
-    traits: ['圧倒的な行動力と情熱','現場でピ判断力','周囲を動かすカリスマ'],
+    traits: ['圧倒的な行動力と情熱','現場での判断力','周囲を動かすカリスマ'],
     weaknesses: ['衝動的になりすぎることがある','長期計画が苦手なことも'],
     desc: '炎龍があなたを守護しています。燃え盛る炎のように情熱的で、瞬発力と行動力で困難な状況を切り開くあなた。現場の空気を読む力とチャンスを素早くつかむ才能で、周囲に刺激と活力を与えます。',
     compat: { emoji:'🌙', name:'月龍タイプ', why:'直感と情熱が絶妙に響き合う' },
@@ -287,7 +312,7 @@ const results = {
     traits: ['深い共感力と包容力','人間関係を大切にする誠実さ','チームの調和を保つ力'],
     weaknesses: ['自己犠牲になりすぎることがある','感情が揺れやすいことも'],
     desc: '桜龍があなたを守護しています。散る桜の花びらのように、人と人の縁を優しく結ぶ存在です。温かい包容力と深い愛情で周囲を包み込み、チームの調和を保つ天性の調整者でもあります。',
-    compat: { emoji:'🌟', name:'金龍タイプ', why:'殉定と温かさが見事にマッチ' },
+    compat: { emoji:'🌟', name:'金龍タイプ', why:'安定と温かさが見事にマッチ' },
     tend: { 行動力:55, 思いやり:95, 直感力:65, 計画力:60, 柔軟性:70 }
   },
   arashi: {
@@ -300,7 +325,7 @@ const results = {
   },
   tsuki: {
     emoji: '🌙', name: '月龍', catch: '深い直感と神秘の力を宿す龍',
-    traits: ['鋭い直感と洞察力','独自の美意識と感性','感性','静かに深く物事を見通す力'],
+    traits: ['鋭い直感と洞察力','独自の美意識と感性','静かに深く物事を見通す力'],
     weaknesses: ['行動に移すまで時間がかかることも','感情の波が大きいことがある'],
     desc: '月龍があなたを守護しています。月の満ち欠けのように、深い内省と直感で物事の本質を見抜きます。表には出にくいですが、静かな知性と独特の感性が周囲を魅了し、信頼を集めます。',
     compat: { emoji:'⚡', name:'嵐龍タイプ', why:'感性と革新が深く共鳴する' },
@@ -317,15 +342,45 @@ const results = {
 };
 
 // ===== APP STATE =====
+
+const typeInfo = {
+  kin:{emoji:'🌟',name:'金龍',catch:'繁栄と成功をもたらす黄金の守護龍',keywords:['卓越した実行力','成功への嗅覚','繁栄の龍脈'],summary:'繁栄と成功をもたらす黄金の龍。高い目標を定め、計画的に着実に実現していく力を持つ。その輝きで周囲に豊かさと成功をもたらす。'},
+  en:{emoji:'🔥',name:'炎龍',catch:'情熱と瞬発力で道を切り開く龍',keywords:['圧倒的行動力','情熱の炎','瞬発力'],summary:'燃え盛る情熱と圧倒的な行動力で道を開く龍。考える前に動く瞬発力と、周囲を熱く巻き込むエネルギーが最大の武器。'},
+  sakura:{emoji:'🌸',name:'桜龍',catch:'縁と調和を守る優しき守護龍',keywords:['深い共感力','縁を結ぶ力','調和と包容力'],summary:'縁と絆を大切にする優しき龍。深い共感力と包容力で人々の心を結び、調和あふれる空間を作り出す。その温かさが人を惹きつける。'},
+  arashi:{emoji:'⚡',name:'嵐龍',catch:'変革と突破力で常識を打ち破る龍',keywords:['変革の力','突破力','自由な発想'],summary:'既存の枠を打ち破り、新たな時代を切り開く龍。自由な発想と圧倒的な突破力で、不可能を可能にする変革者。'},
+  tsuki:{emoji:'🌙',name:'月龍',catch:'深い直感と神秘の力を宿す龍',keywords:['鋭い直感','神秘的な洞察','静かな強さ'],summary:'月の光のように静かながら深い力を持つ龍。鋭い直感と神秘的な洞察で物事の本質を見通し、静かな強さで周囲を導く。'},
+  taichi:{emoji:'🏔️',name:'大地龍',catch:'大地のように揺るぎない守護の龍',keywords:['揺るぎない安定','守護の意志','深い忍耐力'],summary:'大地のようにどっしりと構え、全てを受け止める守護の龍。揺るぎない安定感と深い忍耐力で、大切なものをしっかりと守り続ける。'},
+};
+
+function showTypeInfo(key){
+  const b=typeInfo[key];if(!b)return;
+  const modal=document.getElementById('type-modal');
+  document.getElementById('type-modal-content').innerHTML=
+    '<button class="bm-close" onclick="closeTypeModal()">✕</button>'+
+    '<span class="bm-emoji">'+b.emoji+'</span>'+
+    '<div class="bm-name">'+b.name+'</div>'+
+    '<div class="bm-catch">'+b.catch+'</div>'+
+    '<div class="bm-keywords">'+b.keywords.map(k=>'<span class="bm-kw">'+k+'</span>').join('')+'</div>'+
+    '<div class="bm-desc">'+b.summary+'</div>'+
+    '<button class="bm-startbtn" onclick="closeTypeModal();startQuiz()">🐉 診断してみる</button>';
+  modal.style.display='block';document.body.style.overflow='hidden';
+}
+function closeTypeModal(){
+  document.getElementById('type-modal').style.display='none';
+  document.body.style.overflow='';
+}
+
+let answerHistory=[];
 let scores = {};
 let currentQ = 0;
 let _shareText = '';
 
 function resetScores(){
-  scores = {};
+  scores = {};answerHistory=[];
   Object.keys(results).forEach(k => scores[k] = 0);
 }
 
+function goBack(){if(currentQ<=0)return;const last=answerHistory.pop();Object.entries(last).forEach(([k,v])=>{scores[k]=(scores[k]||0)-v;});currentQ--;renderQuestion();const c=document.querySelector('.q-card');c.style.animation='none';c.offsetHeight;c.style.animation='fadeUp .35s ease both';}
 function startQuiz(){
   resetScores();
   currentQ = 0;
@@ -350,6 +405,7 @@ function renderQuestion(){
   document.getElementById('q-num-label').textContent = 'QUESTION ' + String(n).padStart(2,'0');
   document.getElementById('q-text').textContent = q.text;
 
+  const back=document.getElementById('btn-back');if(back)back.style.display=currentQ>0?'flex':'none';
   const wrap = document.getElementById('options-wrap');
   wrap.innerHTML = '';
   q.opts.forEach((opt, i) => {
@@ -366,6 +422,7 @@ function selectAnswer(scoreMap, btn){
   // Disable all buttons
   document.querySelectorAll('.opt').forEach(b => b.style.pointerEvents='none');
   btn.classList.add('selected');
+  answerHistory.push(Object.assign({},scoreMap));
 
   // Add scores
   Object.entries(scoreMap).forEach(([k,v]) => { scores[k] = (scores[k]||0) + v; });
