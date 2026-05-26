@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>神獣診断 — あなたの魂に宿る神獣は？</title>
+<meta name="description" content="10の質問で魂に宿る神獣がわかる。白虎・青龍・朱雀・玄武・麒麟・鳳凰 — 星夜堂の神獣診断。">
+<style>
+:root{
+  --pr:#1565c0;--pr2:#42a5f5;--accent:#e3f2fd;--silver:#c0d8f0;
+  --bg:#080d1a;--card:#0d1a2e;--card2:#111f38;--border:#1a3050;
+  --text:#e8f4ff;--sub:#7fa8d0;
+  --radius:16px;--shadow:0 8px 32px rgba(0,0,0,.5);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Yu Gothic',sans-serif;
+  background:var(--bg);color:var(--text);min-height:100vh;
+  background-image:radial-gradient(ellipse at 30% 20%,rgba(21,101,192,.18) 0%,transparent 60%),
+    radial-gradient(ellipse at 70% 80%,rgba(66,165,245,.1) 0%,transparent 60%);
+}
+#app{max-width:480px;margin:0 auto;padding:16px 16px 40px;min-height:100vh;display:flex;flex-direction:column}
+.screen{display:none;animation:fadeUp .4s ease both}
+.screen.active{display:flex;flex-direction:column;flex:1}
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+
+#top{align-items:center;justify-content:center;text-align:center;gap:20px;padding:24px 0}
+.top-icon{font-size:80px;filter:drop-shadow(0 0 20px rgba(66,165,245,.6));animation:float 3s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.top-title{font-size:28px;font-weight:800;letter-spacing:.04em;
+  background:linear-gradient(135deg,#90caf9,#e3f2fd);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.top-sub{font-size:14px;color:var(--sub);line-height:1.7;max-width:320px}
+.top-meta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.badge{background:var(--card2);border:1px solid var(--border);border-radius:20px;padding:6px 14px;font-size:12px;color:var(--sub)}
+.btn-start{width:100%;max-width:320px;padding:18px;background:linear-gradient(135deg,#1565c0,#42a5f5);
+  color:#fff;border:none;border-radius:var(--radius);font-size:18px;font-weight:700;cursor:pointer;
+  box-shadow:0 4px 20px rgba(21,101,192,.4);transition:.2s;letter-spacing:.05em}
+.btn-start:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(21,101,192,.5)}
+.types-preview{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:100%}
+.type-chip{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:10px 6px;text-align:center;font-size:13px}
+.type-chip .emoji{font-size:22px;display:block;margin-bottom:4px}
+
+.progress-wrap{padding:8px 0 20px}
+.progress-label{display:flex;justify-content:space-between;font-size:13px;color:var(--sub);margin-bottom:8px}
+.progress-bar{height:6px;background:var(--card2);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,#1565c0,#42a5f5);border-radius:3px;transition:width .4s ease}
+.q-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:24px 20px;margin-bottom:20px;box-shadow:var(--shadow)}
+.q-num{font-size:12px;color:var(--pr2);font-weight:700;letter-spacing:.1em;margin-bottom:10px}
+.q-text{font-size:17px;font-weight:700;line-height:1.6}
+.options{display:flex;flex-direction:column;gap:10px}
+.opt{background:var(--card2);border:1.5px solid var(--border);border-radius:12px;padding:16px 18px;
+  font-size:15px;line-height:1.5;cursor:pointer;transition:.2s;text-align:left;color:var(--text)}
+.opt:hover{border-color:var(--pr2);background:rgba(21,101,192,.2);transform:translateX(4px)}
+.opt.selected{border-color:#42a5f5;background:rgba(66,165,245,.15);color:#90caf9}
+
+#result{gap:0;padding-top:0}
+.result-hero{background:linear-gradient(135deg,var(--card2),var(--card));border:1px solid var(--border);
+  border-radius:var(--radius);padding:32px 20px 24px;text-align:center;margin-bottom:16px;box-shadow:var(--shadow);
+  animation:heroIn .6s ease both}
+@keyframes heroIn{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:none}}
+.result-icon{font-size:72px;margin-bottom:12px;filter:drop-shadow(0 0 24px rgba(66,165,245,.7))}
+.result-label{font-size:12px;color:#42a5f5;font-weight:700;letter-spacing:.15em;margin-bottom:8px}
+.result-name{font-size:32px;font-weight:900;letter-spacing:.06em;margin-bottom:10px;
+  background:linear-gradient(135deg,#90caf9,#e3f2fd);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.result-catch{font-size:15px;color:var(--sub);line-height:1.6}
+.result-section{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:12px}
+.section-title{font-size:13px;font-weight:700;color:var(--pr2);letter-spacing:.08em;margin-bottom:14px}
+.traits{display:flex;flex-wrap:wrap;gap:8px}
+.trait{background:linear-gradient(135deg,rgba(21,101,192,.3),rgba(66,165,245,.2));
+  border:1px solid rgba(66,165,245,.4);border-radius:20px;padding:6px 14px;font-size:13px;font-weight:600}
+.weaknesses{display:flex;flex-direction:column;gap:6px}
+.weakness{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--sub)}
+.weakness::before{content:'△';font-size:11px;color:#f39c12}
+.desc{font-size:14px;line-height:1.8}
+.compat{display:flex;align-items:center;gap:12px;background:var(--card2);border-radius:10px;padding:14px}
+.compat-icon{font-size:32px}
+.compat-name{font-size:16px;font-weight:700;color:#90caf9}
+.compat-why{font-size:12px;color:var(--sub);margin-top:2px}
+.tendency-bars{display:flex;flex-direction:column;gap:10px}
+.tend-row{display:flex;align-items:center;gap:10px;font-size:13px}
+.tend-label{width:80px;flex-shrink:0;color:var(--sub)}
+.tend-bar-wrap{flex:1;height:8px;background:var(--card2);border-radius:4px;overflow:hidden}
+.tend-bar{height:100%;background:linear-gradient(90deg,#1565c0,#42a5f5);border-radius:4px;transition:width 1s ease .3s}
+.tend-val{width:28px;text-align:right;font-size:12px;color:#42a5f5}
+
+.share-section{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:12px}
+.share-title{font-size:13px;font-weight:700;color:var(--sub);text-align:center;margin-bottom:14px}
+.share-btns{display:flex;flex-direction:column;gap:10px}
+.btn-x{background:#000;color:#fff;border:1.5px solid #333;border-radius:12px;padding:14px;
+  font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:.2s}
+.btn-x:hover{background:#1a1a1a;transform:translateY(-1px)}
+.btn-line{background:#06c755;color:#fff;border:none;border-radius:12px;padding:14px;
+  font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:.2s}
+.btn-line:hover{background:#05b34c;transform:translateY(-1px)}
+.btn-retry{background:transparent;color:var(--sub);border:1.5px solid var(--border);border-radius:12px;padding:12px;
+  font-size:14px;cursor:pointer;width:100%;transition:.2s}
+.btn-retry:hover{border-color:var(--pr2);color:var(--pr2)}
+.line-cta{background:linear-gradient(135deg,#0a2a1a,#0d3b24);border:1px solid #1a5c35;
+  border-radius:var(--radius);padding:24px 20px;text-align:center;margin-bottom:12px}
+.line-cta-icon{font-size:36px;margin-bottom:8px}
+.line-cta-title{font-size:17px;font-weight:800;color:#06c755;margin-bottom:8px}
+.line-cta-text{font-size:13px;color:#7fbf93;line-height:1.6;margin-bottom:16px}
+.btn-line-cta{background:#06c755;color:#fff;border:none;border-radius:12px;padding:16px 24px;
+  font-size:15px;font-weight:700;cursor:pointer;width:100%;display:flex;align-items:center;justify-content:center;gap:8px;transition:.2s;text-decoration:none}
+.btn-line-cta:hover{background:#05b34c;transform:translateY(-2px)}
+.result-footer{text-align:center;font-size:11px;color:var(--sub);padding-top:8px}
+</style>
+</head>
+<body>
+<div id="app">
+
+<div id="top" class="screen active">
+  <div class="top-icon">🦁</div>
+  <div>
+    <div class="top-title">神獣診断</div>
+    <div style="font-size:13px;color:#42a5f5;margin-top:4px;margin-bottom:12px;font-weight:600;letter-spacing:.05em">あなたの魂に宿る神獣は？</div>
+    <div class="top-sub">10の質問で、あなたの魂に宿る神聖な獣がわかります。古代から伝わる6種の神獣から、あなたを守護する存在を診断します。</div>
+  </div>
+  <div class="top-meta">
+    <span class="badge">⏱ 約2分</span>
+    <span class="badge">❓ 全10問</span>
+    <span class="badge">🦁 全6タイプ</span>
+  </div>
+  <div class="types-preview">
+    <div class="type-chip"><span class="emoji">🐯</span>白虎</div>
+    <div class="type-chip"><span class="emoji">🐉</span>青龍</div>
+    <div class="type-chip"><span class="emoji">🦅</span>朱雀</div>
+    <div class="type-chip"><span class="emoji">🐢</span>玄武</div>
+    <div class="type-chip"><span class="emoji">🦄</span>麒麟</div>
+    <div class="type-chip"><span class="emoji">🦚</span>鳳凰</div>
+  </div>
+  <button class="btn-start" onclick="startQuiz()">診断スタート ✨</button>
+</div>
+
+<div id="quiz" class="screen">
+  <div class="progress-wrap">
+    <div class="progress-label">
+      <span id="q-counter">Q 1 / 10</span>
+      <span id="q-pct">10%</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="prog-fill" style="width:10%"></div></div>
+  </div>
+  <div class="q-card">
+    <div class="q-num" id="q-num-label">QUESTION 01</div>
+    <div class="q-text" id="q-text"></div>
+  </div>
+  <div class="options" id="options-wrap"></div>
+</div>
+
+<div id="result" class="screen"></div>
+
+</div>
+<script>
+const SHARE_URL = 'https://hoshiyorudou.jp/shinjuu';
+const LINE_OA   = 'https://lin.ee/hoshiyorudou';
+
+const questions = [
+  {
+    text: '困難な状況に直面したとき、あなたは？',
+    opts: [
+      { text: '🗡️ 真正面から全力で立ち向かう', scores: { byakko:3, suzaku:1 } },
+      { text: '🧠 冷静に分析して最善策を探す', scores: { seiryu:3, genbu:1 } },
+      { text: '🌊 柔軟に対応しながら流れに乗る', scores: { kirin:2, suzaku:2 } },
+    ]
+  },
+  {
+    text: '自分の一番の強みは何だと思う？',
+    opts: [
+      { text: '⚡ 瞬発力と決断の速さ', scores: { byakko:3, suzaku:2 } },
+      { text: '📚 深い知識と分析力', scores: { seiryu:3, genbu:1 } },
+      { text: '💞 人を惹きつける魅力と共感力', scores: { kirin:3, hooh:2 } },
+    ]
+  },
+  {
+    text: '夢や目標に対するスタンスは？',
+    opts: [
+      { text: '🏹 高い目標を設定して一点集中で突き進む', scores: { byakko:3, seiryu:1 } },
+      { text: '🌱 着実に積み上げて長期的に実現していく', scores: { genbu:3, seiryu:2 } },
+      { text: '🦋 インスピレーションで大きく変革していく', scores: { hooh:3, kirin:2 } },
+    ]
+  },
+  {
+    text: '友人や仲間との関係で大切にしていることは？',
+    opts: [
+      { text: '🤜 仲間のためなら体を張れる', scores: { byakko:3, genbu:2 } },
+      { text: '💡 互いを高め合い成長できる関係', scores: { seiryu:3, kirin:1 } },
+      { text: '🌸 深い信頼と温かい絆', scores: { kirin:3, hooh:1 } },
+    ]
+  },
+  {
+    text: '何か新しいことを学ぶとき？',
+    opts: [
+      { text: '🏃 まず体で覚える・実践ファースト', scores: { byakko:3, suzaku:2 } },
+      { text: '📖 体系的に理解してから応用する', scores: { seiryu:3, genbu:1 } },
+      { text: '✨ 感性で吸収して自分なりに昇華する', scores: { hooh:3, kirin:2 } },
+    ]
+  },
+  {
+    text: 'あなたが大切にしている価値観は？',
+    opts: [
+      { text: '⚔️ 正義と勇気・筋を通すこと', scores: { byakko:3, genbu:1 } },
+      { text: '🔬 真理と知恵・本質を見抜くこと', scores: { seiryu:3, kirin:1 } },
+      { text: '🕊️ 調和と平和・全てが共存すること', scores: { kirin:3, hooh:2 } },
+    ]
+  },
+  {
+    text: '逆境のとき、あなたを支えるのは？',
+    opts: [
+      { text: '🔥 内側から燃える闘志', scores: { byakko:3, suzaku:2 } },
+      { text: '🏔️ 積み重ねた経験と揺るぎない信念', scores: { genbu:3, seiryu:2 } },
+      { text: '🌟 未来への希望と可能性', scores: { hooh:3, kirin:2 } },
+    ]
+  },
+  {
+    text: '周囲の人からどう見られることが多い？',
+    opts: [
+      { text: '🦁 頼もしい・勇ましい', scores: { byakko:3, suzaku:1 } },
+      { text: '🦉 落ち着いている・賢い', scores: { seiryu:2, genbu:3 } },
+      { text: '🦋 個性的・華がある・オーラがある', scores: { hooh:3, kirin:2 } },
+    ]
+  },
+  {
+    text: '変化に対してどう感じる？',
+    opts: [
+      { text: '⚡ 変化は歓迎！スピードについていける', scores: { byakko:2, suzaku:3 } },
+      { text: '🌳 変化は慎重に。安定を優先したい', scores: { genbu:3, seiryu:2 } },
+      { text: '🦅 変化こそが成長のチャンス・大好き', scores: { hooh:3, kirin:2 } },
+    ]
+  },
+  {
+    text: '理想の自分のイメージは？',
+    opts: [
+      { text: '🗡️ 何があっても折れない強さを持つ人', scores: { byakko:3, genbu:2 } },
+      { text: '🌿 深く賢く、静かに人を導く人', scores: { seiryu:3, kirin:2 } },
+      { text: '🌈 新たな時代を切り開く変革者', scores: { hooh:3, suzaku:2 } },
+    ]
+  },
+];
+
+const results = {
+  byakko: {
+    emoji:'🐯', name:'白虎', catch:'勇気と純粋さを象徴する西方の神獣',
+    traits:['圧倒的な勇気と行動力','純粋な正義感','困難を跳ね返す強さ'],
+    weaknesses:['猪突猛進になりすぎることも','感情が表に出やすい'],
+    desc:'白虎があなたの魂に宿っています。西方を守護する白虎は、純粋な勇気と行動力の象徴。正しいと信じることには全力で立ち向かう真っ直ぐさと、どんな困難も跳ね返す強さを持ちます。その純白の輝きが周囲を照らします。',
+    compat:{emoji:'🐉',name:'青龍タイプ',why:'勇気と知恵が合わさる最強コンビ'},
+    tend:{勇気:95,知恵:55,魅力:65,忍耐:60,変革力:70}
+  },
+  seiryu: {
+    emoji:'🐉', name:'青龍', catch:'知恵と成長の力を宿す東方の神獣',
+    traits:['鋭い知性と洞察力','物事の本質を見抜く眼','継続的な成長への意欲'],
+    weaknesses:['頭でっかちになることも','感情表現が苦手なことがある'],
+    desc:'青龍があなたの魂に宿っています。東方を守護する青龍は、知恵と成長の象徴。物事の本質を見抜く深い洞察力と、常に学び続ける向上心を持ちます。その知性の光は、暗闇の中でも正しい道を照らし出します。',
+    compat:{emoji:'🦚',name:'鳳凰タイプ',why:'知恵と変革が響き合い時代を動かす'},
+    tend:{勇気:65,知恵:95,魅力:60,忍耐:75,変革力:70}
+  },
+  suzaku: {
+    emoji:'🦅', name:'朱雀', catch:'情熱と再生の炎を灯す南方の神獣',
+    traits:['燃え盛る情熱と表現力','再生と変化への適応力','周囲を熱くする感化力'],
+    weaknesses:['燃え尽きやすいことも','感情の波が激しいことがある'],
+    desc:'朱雀があなたの魂に宿っています。南方を守護する朱雀は、情熱と再生の象徴。何度でも炎の中から蘇る不屈の精神と、周囲を熱く感化する表現力を持ちます。その緋色の翼は、希望の光として人々を鼓舞します。',
+    compat:{emoji:'🐢',name:'玄武タイプ',why:'情熱と安定が見事に補い合う'},
+    tend:{勇気:80,知恵:60,魅力:85,忍耐:55,変革力:80}
+  },
+  genbu: {
+    emoji:'🐢', name:'玄武', catch:'忍耐と守護の力を持つ北方の神獣',
+    traits:['揺るぎない忍耐力と安定感','大切なものを守る強い意志','長期的な視点と深い慎重さ'],
+    weaknesses:['変化への対応が遅れることも','頑固に見られることがある'],
+    desc:'玄武があなたの魂に宿っています。北方を守護する玄武は、忍耐と守護の象徴。時間をかけて着実に積み上げ、大切なものを最後まで守り抜く力を持ちます。その重厚な存在感は、周囲に安心と信頼をもたらします。',
+    compat:{emoji:'🦅',name:'朱雀タイプ',why:'安定と情熱が互いを支え合う'},
+    tend:{勇気:70,知恵:80,魅力:55,忍耐:95,変革力:40}
+  },
+  kirin: {
+    emoji:'🦄', name:'麒麟', catch:'高貴さと平和の徳を体現する神獣',
+    traits:['高い徳と品格','争いを好まない平和的な心','人を惹きつける不思議な魅力'],
+    weaknesses:['競争や争いが苦手なことも','優柔不断に見られることがある'],
+    desc:'麒麟があなたの魂に宿っています。仁義の徳を体現する麒麟は、平和と高貴さの象徴。悪を踏まず、争いを好まず、その存在自体が周囲に幸運と平和をもたらします。静かでありながら、誰もが尊敬する圧倒的な品格を持ちます。',
+    compat:{emoji:'🐉',name:'青龍タイプ',why:'高貴な魂と深い知恵が調和する'},
+    tend:{勇気:55,知恵:80,魅力:90,忍耐:75,変革力:60}
+  },
+  hooh: {
+    emoji:'🦚', name:'鳳凰', catch:'変革と不死の力で時代を切り開く神獣',
+    traits:['時代を変える変革力','何度でも蘇る不死の精神','圧倒的な個性とカリスマ'],
+    weaknesses:['自分のペースを崩されると辛いことも','独りよがりになることがある'],
+    desc:'鳳凰があなたの魂に宿っています。不死と変革の象徴である鳳凰は、時代を変える力を持ちます。炎の中から何度でも蘇り、新たな時代の先駆けとなるカリスマを持ちます。その圧倒的な存在感と独自の美しさは、多くの人を魅了します。',
+    compat:{emoji:'🐢',name:'玄武タイプ',why:'変革と安定が理想のバランスを生む'},
+    tend:{勇気:75,知恵:75,魅力:95,忍耐:65,変革力:95}
+  }
+};
+
+let scores={}, currentQ=0, _shareText='';
+function resetScores(){ scores={}; Object.keys(results).forEach(k=>scores[k]=0); }
+function startQuiz(){ resetScores(); currentQ=0; showScreen('quiz'); renderQuestion(); }
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function renderQuestion(){
+  const q=questions[currentQ]; const n=currentQ+1; const pct=Math.round(n/questions.length*100);
+  document.getElementById('q-counter').textContent=`Q ${n} / ${questions.length}`;
+  document.getElementById('q-pct').textContent=pct+'%';
+  document.getElementById('prog-fill').style.width=pct+'%';
+  document.getElementById('q-num-label').textContent='QUESTION '+String(n).padStart(2,'0');
+  document.getElementById('q-text').textContent=q.text;
+  const wrap=document.getElementById('options-wrap'); wrap.innerHTML='';
+  q.opts.forEach(opt=>{
+    const btn=document.createElement('button'); btn.className='opt';
+    btn.textContent=opt.text; btn.onclick=()=>selectAnswer(opt.scores,btn); wrap.appendChild(btn);
+  });
+}
+function selectAnswer(scoreMap,btn){
+  document.querySelectorAll('.opt').forEach(b=>b.style.pointerEvents='none');
+  btn.classList.add('selected');
+  Object.entries(scoreMap).forEach(([k,v])=>{scores[k]=(scores[k]||0)+v;});
+  setTimeout(()=>{
+    currentQ++;
+    if(currentQ<questions.length){ renderQuestion(); const c=document.querySelector('.q-card'); c.style.animation='none'; c.offsetHeight; c.style.animation='fadeUp .35s ease both'; }
+    else showResult();
+  },420);
+}
+function showResult(){
+  const key=Object.entries(scores).sort((a,b)=>b[1]-a[1])[0][0];
+  const r=results[key]; const el=document.getElementById('result');
+  _shareText='私の神獣は「'+r.name+'」でした！\nあなたの神獣は？\n';
+  const tendHTML=Object.entries(r.tend).map(([label,val])=>
+    `<div class="tend-row"><div class="tend-label">${label}</div><div class="tend-bar-wrap"><div class="tend-bar" style="width:0" data-w="${val}%"></div></div><div class="tend-val">${val}</div></div>`
+  ).join('');
+  el.innerHTML=`
+    <div class="result-hero">
+      <div class="result-icon">${r.emoji}</div>
+      <div class="result-label">あなたの神獣</div>
+      <div class="result-name">${r.name}</div>
+      <div class="result-catch">${r.catch}</div>
+    </div>
+    <div class="result-section"><div class="section-title">✨ 長所・強み</div><div class="traits">${r.traits.map(t=>`<span class="trait">${t}</span>`).join('')}</div></div>
+    <div class="result-section"><div class="section-title">💬 詳細解説</div><div class="desc">${r.desc}</div></div>
+    <div class="result-section"><div class="section-title">△ 気をつけたいこと</div><div class="weaknesses">${r.weaknesses.map(w=>`<div class="weakness">${w}</div>`).join('')}</div></div>
+    <div class="result-section"><div class="section-title">💕 相性の良いタイプ</div><div class="compat"><div class="compat-icon">${r.compat.emoji}</div><div><div class="compat-name">${r.compat.name}</div><div class="compat-why">${r.compat.why}</div></div></div></div>
+    <div class="result-section"><div class="section-title">📊 あなたの傾向</div><div class="tendency-bars">${tendHTML}</div></div>
+    <div class="share-section">
+      <div class="share-title">📣 結果をシェアしよう</div>
+      <div class="share-btns">
+        <button class="btn-x" onclick="shareX()"><svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.742l7.742-8.852L1.512 2.25h6.961l4.263 5.623 5.508-5.623zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>Xでシェア</button>
+        <button class="btn-line" onclick="shareLINE()"><svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>LINEでシェア</button>
+        <button class="btn-retry" onclick="startQuiz()">🔄 もう一度診断する</button>
+      </div>
+    </div>
+    <div class="line-cta">
+      <div class="line-cta-icon">🔮</div>
+      <div class="line-cta-title">本格占いは星夜堂へ</div>
+      <div class="line-cta-text">神獣だけでなく、あなたの生年月日から<br>今日の運勢・今月の流れを毎日お届けします</div>
+      <a class="btn-line-cta" href="${LINE_OA}" target="_blank"><svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>星夜堂でもっと詳しく占う</a>
+    </div>
+    <div class="result-footer">© 星夜堂 — 神獣診断</div>
+  `;
+  showScreen('result');
+  setTimeout(()=>{ document.querySelectorAll('.tend-bar').forEach(b=>b.style.width=b.dataset.w); },400);
+}
+function shareX(){ window.open('https://twitter.com/intent/tweet?text='+encodeURIComponent(_shareText+SHARE_URL),'_blank'); }
+function shareLINE(){ window.open('https://social-plugins.line.me/lineit/share?url='+encodeURIComponent(SHARE_URL)+'&text='+encodeURIComponent(_shareText),'_blank'); }
+</script>
+</body>
+</html>
