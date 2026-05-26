@@ -4,369 +4,574 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>犬種パーソナリティ診断 — あなたはどの犬？</title>
-<meta name="description" content="10の質問でわかる犬種パーソナリティ。柴犬・ゴールデン・トイプードル・ボーダーコリー・ダックス・チワワ・ラブラドール・ハスキー — 星夜堂の犬種診断。">
+<meta name="description" content="20の質問でわかる犬種パーソナリティ。16犬種から診断 — 星夜堂の犬種診断。">
 <style>
 :root{
-  --pr:#6b3a1f;--pr2:#c47d45;--cream:#f5deb3;--cream2:#fff8f0;
-  --bg:#130d08;--card:#221508;--card2:#2c1c0c;--border:#4a2e15;
-  --text:#fdf3e7;--sub:#b8956a;
-  --radius:16px;--shadow:0 8px 32px rgba(0,0,0,.5);
+  --bg:#0d0d1a;--card:#141428;--card2:#1a1a32;--border:#2a2a4a;
+  --pr:#7c6ff5;--pr2:#a89ff8;--text:#e8e6ff;--sub:#8888aa;
+  --radius:16px;--shadow:0 8px 32px rgba(0,0,0,.6);
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Yu Gothic',sans-serif;
   background:var(--bg);color:var(--text);min-height:100vh;
-  background-image:radial-gradient(ellipse at 25% 25%,rgba(107,58,31,.2) 0%,transparent 60%),
-    radial-gradient(ellipse at 75% 75%,rgba(196,125,69,.1) 0%,transparent 60%);
+  background-image:radial-gradient(ellipse at 20% 20%,rgba(124,111,245,.15) 0%,transparent 55%),
+    radial-gradient(ellipse at 80% 80%,rgba(168,159,248,.08) 0%,transparent 55%);
 }
 #app{max-width:480px;margin:0 auto;padding:16px 16px 40px;min-height:100vh;display:flex;flex-direction:column}
 .screen{display:none;animation:fadeUp .4s ease both}
 .screen.active{display:flex;flex-direction:column;flex:1}
 @keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
-#top{align-items:center;justify-content:center;text-align:center;gap:20px;padding:24px 0}
-.top-icon{font-size:80px;filter:drop-shadow(0 0 20px rgba(196,125,69,.6));animation:float 3s ease-in-out infinite}
-@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
-.top-title{font-size:28px;font-weight:800;letter-spacing:.04em;
-  background:linear-gradient(135deg,#f5cfa0,#fdf3e7);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.top-sub{font-size:14px;color:var(--sub);line-height:1.7;max-width:320px}
-.top-meta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
-.badge{background:var(--card2);border:1px solid var(--border);border-radius:20px;padding:6px 14px;font-size:12px;color:var(--sub)}
-.btn-start{width:100%;max-width:320px;padding:18px;background:linear-gradient(135deg,#6b3a1f,#c47d45);
-  color:#fff;border:none;border-radius:var(--radius);font-size:18px;font-weight:700;cursor:pointer;
-  box-shadow:0 4px 20px rgba(107,58,31,.4);transition:.2s;letter-spacing:.05em}
-.btn-start:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(107,58,31,.5)}
-.types-preview{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;width:100%}
-.type-chip{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:10px 4px;text-align:center;font-size:11px}
-.type-chip .emoji{font-size:20px;display:block;margin-bottom:4px}
-.progress-wrap{padding:8px 0 20px}
-.progress-label{display:flex;justify-content:space-between;font-size:13px;color:var(--sub);margin-bottom:8px}
-.progress-bar{height:6px;background:var(--card2);border-radius:3px;overflow:hidden}
-.progress-fill{height:100%;background:linear-gradient(90deg,#6b3a1f,#c47d45);border-radius:3px;transition:width .4s ease}
-.q-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:24px 20px;margin-bottom:20px;box-shadow:var(--shadow)}
-.q-num{font-size:12px;color:var(--pr2);font-weight:700;letter-spacing:.1em;margin-bottom:10px}
-.q-text{font-size:17px;font-weight:700;line-height:1.6}
-.options{display:flex;flex-direction:column;gap:10px}
-.opt{background:var(--card2);border:1.5px solid var(--border);border-radius:12px;padding:16px 18px;
-  font-size:15px;line-height:1.5;cursor:pointer;transition:.2s;text-align:left;color:var(--text)}
-.opt:hover{border-color:var(--pr2);background:rgba(107,58,31,.25);transform:translateX(4px)}
-.opt.selected{border-color:#f5cfa0;background:rgba(245,207,160,.12);color:#f5cfa0}
-#result{gap:0;padding-top:0}
-.result-hero{background:linear-gradient(135deg,var(--card2),var(--card));border:1px solid var(--border);
-  border-radius:var(--radius);padding:32px 20px 24px;text-align:center;margin-bottom:16px;box-shadow:var(--shadow);
-  animation:heroIn .6s ease both}
-@keyframes heroIn{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:none}}
-.result-icon{font-size:72px;margin-bottom:12px;filter:drop-shadow(0 0 24px rgba(196,125,69,.7))}
-.result-label{font-size:12px;color:var(--pr2);font-weight:700;letter-spacing:.15em;margin-bottom:8px}
-.result-name{font-size:32px;font-weight:900;letter-spacing:.06em;margin-bottom:10px;
-  background:linear-gradient(135deg,#f5cfa0,#fdf3e7);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.result-catch{font-size:15px;color:var(--sub);line-height:1.6}
-.result-section{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:12px}
-.section-title{font-size:13px;font-weight:700;color:var(--pr2);letter-spacing:.08em;margin-bottom:14px}
-.traits{display:flex;flex-wrap:wrap;gap:8px}
-.trait{background:linear-gradient(135deg,rgba(107,58,31,.3),rgba(196,125,69,.2));
-  border:1px solid rgba(196,125,69,.4);border-radius:20px;padding:6px 14px;font-size:13px;font-weight:600}
-.weaknesses{display:flex;flex-direction:column;gap:6px}
-.weakness{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--sub)}
-.weakness::before{content:'△';font-size:11px;color:var(--pr2)}
-.desc{font-size:14px;line-height:1.8}
-.compat{display:flex;align-items:center;gap:12px;background:var(--card2);border-radius:10px;padding:14px}
-.compat-icon{font-size:32px}
-.compat-name{font-size:16px;font-weight:700;color:#f5cfa0}
-.compat-why{font-size:12px;color:var(--sub);margin-top:2px}
-.tendency-bars{display:flex;flex-direction:column;gap:10px}
-.tend-row{display:flex;align-items:center;gap:10px;font-size:13px}
-.tend-label{width:80px;flex-shrink:0;color:var(--sub)}
-.tend-bar-wrap{flex:1;height:8px;background:var(--card2);border-radius:4px;overflow:hidden}
-.tend-bar{height:100%;background:linear-gradient(90deg,#6b3a1f,#c47d45);border-radius:4px;transition:width 1s ease .3s}
-.tend-val{width:28px;text-align:right;font-size:12px;color:var(--pr2)}
-.share-section{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:12px}
-.share-title{font-size:13px;font-weight:700;color:var(--sub);text-align:center;margin-bottom:14px}
-.share-btns{display:flex;flex-direction:column;gap:10px}
-.btn-x{background:#000;color:#fff;border:1.5px solid #333;border-radius:12px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:.2s}
-.btn-x:hover{background:#1a1a1a;transform:translateY(-1px)}
-.btn-line{background:#06c755;color:#fff;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:.2s}
-.btn-line:hover{background:#05b34c;transform:translateY(-1px)}
-.btn-retry{background:transparent;color:var(--sub);border:1.5px solid var(--border);border-radius:12px;padding:12px;font-size:14px;cursor:pointer;width:100%;transition:.2s}
-.btn-retry:hover{border-color:var(--pr2);color:var(--pr2)}
-.line-cta{background:linear-gradient(135deg,#0a2a1a,#0d3b24);border:1px solid #1a5c35;border-radius:var(--radius);padding:24px 20px;text-align:center;margin-bottom:12px}
-.line-cta-icon{font-size:36px;margin-bottom:8px}
-.line-cta-title{font-size:17px;font-weight:800;color:#06c755;margin-bottom:8px}
-.line-cta-text{font-size:13px;color:#7fbf93;line-height:1.6;margin-bottom:16px}
-.btn-line-cta{background:#06c755;color:#fff;border:none;border-radius:12px;padding:16px 24px;font-size:15px;font-weight:700;cursor:pointer;width:100%;display:flex;align-items:center;justify-content:center;gap:8px;transition:.2s;text-decoration:none}
-.btn-line-cta:hover{background:#05b34c;transform:translateY(-2px)}
-.result-footer{text-align:center;font-size:11px;color:var(--sub);padding-top:8px}
 
-.type-chip{cursor:pointer}
-.type-chip:hover{border-color:var(--pr2);background:rgba(196,125,69,.18);transform:translateY(-2px);transition:.2s}
-.btn-back{display:none;align-items:center;justify-content:center;gap:6px;margin-top:16px;
-  background:transparent;color:var(--sub);border:1.5px solid var(--border);border-radius:12px;
-  padding:10px 16px;font-size:14px;cursor:pointer;width:100%;transition:.2s}
-.btn-back:hover{border-color:var(--pr2);color:var(--pr2)}
-#breed-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:200;
-  overflow-y:auto;padding:20px;-webkit-overflow-scrolling:touch}
-.breed-modal-inner{max-width:440px;margin:20px auto;background:var(--card);border:1px solid var(--border);
-  border-radius:var(--radius);padding:32px 24px;animation:fadeUp .35s ease both}
-.bm-close{float:right;background:transparent;border:none;font-size:24px;cursor:pointer;color:var(--sub);line-height:1;padding:0}
-.bm-emoji{font-size:64px;display:block;text-align:center;margin-bottom:12px;filter:drop-shadow(0 0 16px rgba(196,125,69,.5))}
-.bm-name{font-size:24px;font-weight:900;text-align:center;letter-spacing:.06em;margin-bottom:6px;
-  background:linear-gradient(135deg,#f5cfa0,#fdf3e7);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.bm-catch{font-size:13px;color:var(--sub);text-align:center;margin-bottom:16px;line-height:1.5}
-.bm-keywords{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:16px}
-.bm-kw{background:linear-gradient(135deg,rgba(107,58,31,.35),rgba(196,125,69,.25));
-  border:1px solid rgba(196,125,69,.4);border-radius:20px;padding:5px 14px;font-size:13px;font-weight:600}
-.bm-desc{font-size:14px;color:var(--sub);line-height:1.8;text-align:center;margin-bottom:22px}
-.bm-startbtn{width:100%;padding:14px;background:linear-gradient(135deg,#6b3a1f,#c47d45);
-  color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;transition:.2s}
-.bm-startbtn:hover{transform:translateY(-2px)}
+/* TOP SCREEN */
+#top{align-items:center;justify-content:flex-start;text-align:center;gap:18px;padding:20px 0}
+.top-icon{font-size:72px;filter:drop-shadow(0 0 24px rgba(124,111,245,.7));animation:float 3s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.top-title{font-size:26px;font-weight:900;letter-spacing:.04em;
+  background:linear-gradient(135deg,var(--pr2),#fff);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.top-sub{font-size:13px;color:var(--sub);line-height:1.7;max-width:320px}
+.top-meta{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.badge{background:var(--card2);border:1px solid var(--border);border-radius:20px;padding:5px 12px;font-size:11px;color:var(--sub)}
+
+/* BREED GRID */
+.breed-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;width:100%;margin:4px 0}
+.breed-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:10px 4px 8px;
+  text-align:center;cursor:pointer;transition:.2s;position:relative;overflow:hidden}
+.breed-card::before{content:'';position:absolute;inset:0;background:var(--bc,transparent);opacity:.08;border-radius:12px}
+.breed-card:hover{transform:translateY(-2px);border-color:var(--bc,var(--pr));box-shadow:0 4px 16px rgba(0,0,0,.4)}
+.dog-portrait{width:52px;height:52px;border-radius:50%;border:2.5px solid var(--bc,var(--pr));
+  display:flex;align-items:center;justify-content:center;font-size:26px;margin:0 auto 5px;
+  background:rgba(0,0,0,.3)}
+.breed-card-name{font-size:9px;color:var(--sub);line-height:1.3}
+
+/* START BTN */
+.btn-start{width:100%;max-width:320px;padding:16px;
+  background:linear-gradient(135deg,var(--pr),#9c8fff);
+  color:#fff;border:none;border-radius:var(--radius);font-size:17px;font-weight:700;cursor:pointer;
+  box-shadow:0 4px 20px rgba(124,111,245,.4);transition:.2s;letter-spacing:.05em;margin-top:4px}
+.btn-start:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(124,111,245,.5)}
+
+/* QUESTION SCREEN */
+.progress-wrap{padding:8px 0 16px}
+.progress-label{display:flex;justify-content:space-between;font-size:12px;color:var(--sub);margin-bottom:8px}
+.progress-bar{height:5px;background:var(--card2);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--pr),var(--pr2));border-radius:3px;transition:width .4s ease}
+.q-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:22px 18px;margin-bottom:16px;box-shadow:var(--shadow)}
+.q-num{font-size:11px;color:var(--pr2);font-weight:700;letter-spacing:.1em;margin-bottom:8px}
+.q-text{font-size:16px;font-weight:700;line-height:1.6}
+.options{display:flex;flex-direction:column;gap:9px}
+.opt{background:var(--card2);border:1.5px solid var(--border);border-radius:12px;padding:14px 16px;
+  font-size:14px;line-height:1.5;cursor:pointer;transition:.2s;text-align:left;color:var(--text)}
+.opt:hover{border-color:var(--pr2);background:rgba(124,111,245,.12);transform:translateX(4px)}
+.btn-back{display:none;align-items:center;gap:6px;background:none;border:1px solid var(--border);
+  border-radius:10px;padding:9px 14px;color:var(--sub);font-size:13px;cursor:pointer;margin-top:8px;
+  transition:.2s;width:fit-content}
+.btn-back:hover{border-color:var(--pr);color:var(--pr2)}
+
+/* RESULT SCREEN */
+.result-hero{border-radius:20px;padding:28px 20px 22px;text-align:center;margin-bottom:18px;
+  border:1px solid var(--border);background:var(--card);position:relative;overflow:hidden}
+.result-hero::before{content:'';position:absolute;inset:0;background:var(--bc,var(--pr));opacity:.06}
+.result-icon{font-size:70px;margin-bottom:10px;filter:drop-shadow(0 0 20px var(--bc,var(--pr)))}
+.result-type{font-size:11px;letter-spacing:.15em;font-weight:700;color:var(--bc,var(--pr2));margin-bottom:6px}
+.result-name{font-size:26px;font-weight:900;margin-bottom:8px}
+.result-catch{font-size:14px;color:var(--sub);line-height:1.6;max-width:300px;margin:0 auto}
+.section-title{font-size:13px;font-weight:700;color:var(--pr2);letter-spacing:.08em;margin-bottom:10px;
+  display:flex;align-items:center;gap:6px}
+.section-title::before{content:'';display:inline-block;width:3px;height:14px;background:var(--pr);border-radius:2px}
+.traits-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:18px}
+.trait-chip{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:9px 12px;font-size:13px}
+.trait-chip.weak{border-color:rgba(255,100,100,.2);background:rgba(255,80,80,.05);color:#ff9999}
+.desc-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:18px}
+.desc-text{font-size:14px;line-height:1.8;color:var(--text)}
+.compat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;margin-bottom:18px;display:flex;align-items:flex-start;gap:14px}
+.compat-icon{font-size:36px;flex-shrink:0}
+.compat-name{font-size:12px;color:var(--sub);margin-bottom:2px}
+.compat-breed{font-size:16px;font-weight:700;margin-bottom:4px}
+.compat-why{font-size:13px;color:var(--sub);line-height:1.5}
+.radar-wrap{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:18px}
+.stat-row{display:flex;align-items:center;gap:10px;margin-bottom:9px}
+.stat-label{font-size:12px;color:var(--sub);width:52px;flex-shrink:0}
+.stat-bar-bg{flex:1;height:7px;background:var(--card2);border-radius:4px;overflow:hidden}
+.stat-bar-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--pr),var(--pr2));transition:width .8s ease}
+.stat-val{font-size:12px;color:var(--pr2);width:28px;text-align:right}
+.btn-retry{width:100%;padding:15px;background:var(--card2);border:1.5px solid var(--pr);
+  color:var(--pr2);border-radius:var(--radius);font-size:15px;font-weight:700;cursor:pointer;transition:.2s;margin-top:4px}
+.btn-retry:hover{background:rgba(124,111,245,.15)}
+.btn-share{width:100%;padding:15px;background:linear-gradient(135deg,var(--pr),#9c8fff);
+  border:none;color:#fff;border-radius:var(--radius);font-size:15px;font-weight:700;cursor:pointer;transition:.2s;margin-top:10px}
+.btn-share:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(124,111,245,.4)}
+
+/* MODAL */
+#breed-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:100;
+  align-items:flex-end;justify-content:center;padding:0}
+#breed-modal.open{display:flex;animation:fadeUp .3s ease both}
+.modal-inner{background:var(--card);border-radius:20px 20px 0 0;padding:24px 20px 32px;
+  width:100%;max-width:480px;max-height:88vh;overflow-y:auto;position:relative}
+.modal-close{position:absolute;top:14px;right:16px;background:var(--card2);border:none;
+  color:var(--sub);font-size:18px;cursor:pointer;width:30px;height:30px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center}
+.modal-breed-icon{font-size:48px;text-align:center;margin-bottom:8px}
+.modal-breed-name{font-size:20px;font-weight:800;text-align:center;margin-bottom:4px}
+.modal-breed-catch{font-size:13px;color:var(--sub);text-align:center;margin-bottom:16px;line-height:1.5}
+.modal-traits{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:14px}
+.modal-trait{background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:5px 10px;font-size:12px}
+.modal-desc{font-size:13px;line-height:1.7;color:var(--sub)}
 </style>
 </head>
 <body>
 <div id="app">
+
+<!-- TOP -->
 <div id="top" class="screen active">
-  <div class="top-icon">🐶</div>
-  <div>
-    <div class="top-title">犬種パーソナリティ診断</div>
-    <div style="font-size:13px;color:#c47d45;margin-top:4px;margin-bottom:12px;font-weight:600;letter-spacing:.05em">あなたはどの犬タイプ？</div>
-    <div class="top-sub">10の質問で、あなたの性格に最も近い犬種がわかります。8種類の個性豊かな犬から、あなたのタイプを診断します。</div>
-  </div>
+  <div class="top-icon">🐕</div>
+  <div class="top-title">犬種パーソナリティ診断</div>
+  <div class="top-sub">20の質問であなたの犬種タイプがわかる。16犬種の中からあなたにぴったりの一匹を診断。</div>
   <div class="top-meta">
-    <span class="badge">⏱ 約2分</span>
-    <span class="badge">❓ 全10問</span>
-    <span class="badge">🐶 全8タイプ</span>
+    <span class="badge">🐾 16犬種</span>
+    <span class="badge">❓ 20問</span>
+    <span class="badge">⏱ 約3分</span>
   </div>
-  <div class="types-preview">
-    <div class="type-chip" onclick="showBreedSummary('shiba')"><span class="emoji">🐕</span>柴犬</div>
-    <div class="type-chip" onclick="showBreedSummary('golden')"><span class="emoji">🦮</span>ゴールデン</div>
-    <div class="type-chip" onclick="showBreedSummary('poodle')"><span class="emoji">🐩</span>トイプードル</div>
-    <div class="type-chip" onclick="showBreedSummary('border')"><span class="emoji">🐕‍🦺</span>ボーダーコリー</div>
-    <div class="type-chip" onclick="showBreedSummary('dachshund')"><span class="emoji">🐾</span>ダックスフント</div>
-    <div class="type-chip" onclick="showBreedSummary('chihuahua')"><span class="emoji">🐶</span>チワワ</div>
-    <div class="type-chip" onclick="showBreedSummary('labrador')"><span class="emoji">🦮</span>ラブラドール</div>
-    <div class="type-chip" onclick="showBreedSummary('husky')"><span class="emoji">🐺</span>ハスキー</div>
-  </div>
-  <button class="btn-start" onclick="startQuiz()">診断スタート 🐾</button>
+  <div class="breed-grid" id="breed-grid-preview"></div>
+  <button class="btn-start" onclick="startQuiz()">診断スタート 🐶</button>
 </div>
 
+<!-- QUESTION -->
 <div id="quiz" class="screen">
   <div class="progress-wrap">
-    <div class="progress-label"><span id="q-counter">Q 1 / 10</span><span id="q-pct">10%</span></div>
-    <div class="progress-bar"><div class="progress-fill" id="prog-fill" style="width:10%"></div></div>
+    <div class="progress-label">
+      <span id="q-label">質問 1 / 20</span>
+      <span id="q-pct">0%</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
   </div>
   <div class="q-card">
-    <div class="q-num" id="q-num-label">QUESTION 01</div>
+    <div class="q-num" id="q-num">Q1</div>
     <div class="q-text" id="q-text"></div>
   </div>
-  <div class="options" id="options-wrap"></div>
+  <div class="options" id="options"></div>
   <button class="btn-back" id="btn-back" onclick="goBack()">← 前の質問に戻る</button>
 </div>
 
-<div id="result" class="screen"></div>
+<!-- RESULT -->
+<div id="result" class="screen">
+  <div class="result-hero" id="result-hero">
+    <div class="result-icon" id="result-icon"></div>
+    <div class="result-type">あなたの犬種タイプ</div>
+    <div class="result-name" id="result-name"></div>
+    <div class="result-catch" id="result-catch"></div>
+  </div>
+  <div class="desc-card">
+    <div class="section-title">タイプ解説</div>
+    <div class="desc-text" id="result-desc"></div>
+  </div>
+  <div>
+    <div class="section-title">強み</div>
+    <div class="traits-grid" id="result-traits"></div>
+  </div>
+  <div style="margin-top:18px">
+    <div class="section-title">苦手なこと</div>
+    <div class="traits-grid" id="result-weaknesses"></div>
+  </div>
+  <div class="radar-wrap" style="margin-top:18px">
+    <div class="section-title">特性チャート</div>
+    <div id="result-stats"></div>
+  </div>
+  <div class="compat-card" id="result-compat">
+    <div class="compat-icon" id="compat-icon"></div>
+    <div>
+      <div class="compat-name">相性のいい犬種</div>
+      <div class="compat-breed" id="compat-breed"></div>
+      <div class="compat-why" id="compat-why"></div>
+    </div>
+  </div>
+  <button class="btn-share" onclick="shareResult()">📣 結果をシェアする</button>
+  <button class="btn-retry" onclick="retryQuiz()">🔄 もう一度診断する</button>
+</div>
 
-<div id="breed-modal" onclick="if(event.target===this)closeBreedModal()">
-  <div class="breed-modal-inner" id="breed-modal-content"></div>
 </div>
+
+<!-- BREED MODAL -->
+<div id="breed-modal">
+  <div class="modal-inner">
+    <button class="modal-close" onclick="closeBreedModal()">✕</button>
+    <div class="modal-breed-icon" id="modal-icon"></div>
+    <div class="modal-breed-name" id="modal-name"></div>
+    <div class="modal-breed-catch" id="modal-catch"></div>
+    <div class="modal-traits" id="modal-traits"></div>
+    <div class="modal-desc" id="modal-desc"></div>
+  </div>
 </div>
+
 <script>
-const SHARE_URL='https://hoshiyorudou.jp/inu';
-const LINE_OA='https://lin.ee/hoshiyorudou';
+const results = {
+  border:{color:'#4fc3f7',emoji:'🐕',name:'ボーダーコリー',
+    catch:'知性と行動力を兼ね備えた完璧主義者。常に最善を追い求める。',
+    traits:['🧠 超高知性','⚡ 素早い判断','🎯 集中力抜群','📐 完璧主義'],
+    weaknesses:['😤 手持ち無沙汰に弱い','🔄 柔軟性に欠けることも','😓 自分に厳しすぎる'],
+    desc:'ボーダーコリータイプのあなたは、抜群の知性と実行力を兼ね備えた戦略家。目標を定めたら一直線に突き進む集中力と、物事の本質を瞬時に見抜く洞察力が持ち味。完璧を目指す向上心が高く、チームの知的リーダーとして活躍します。',
+    compat:{emoji:'🐕‍🦺',name:'ゴールデンレトリバー',why:'あなたの完璧主義を温かく受け止め、緊張を解きほぐしてくれる最高のパートナー。'},
+    tend:{知性:98,行動力:80,社交性:45,共感力:60,自由度:55}},
 
-const questions=[
-  {text:'自分のこだわり、周囲とのズレを感じたとき？',opts:[
-    {text:'🏮 こだわりを貫く。自分軸は譲らない',scores:{shiba:3,border:1}},
-    {text:'🤝 相手に合わせる。関係を大切にしたい',scores:{golden:3,labrador:2}},
-    {text:'💡 話し合いで最適解を探す',scores:{poodle:3,border:2}},
+  akita:{color:'#ff7043',emoji:'🐺',name:'秋田犬',
+    catch:'誇り高き孤高の魂。一度決めたら揺るがない強い意志の持ち主。',
+    traits:['👑 高い誇り','🛡 強い意志','🤫 寡黙で深い','💪 芯の強さ'],
+    weaknesses:['🤝 協調が苦手なことも','😶 表現が不器用','🆕 変化への適応が遅い'],
+    desc:'秋田犬タイプのあなたは、揺るぎない信念と孤高の精神を持つ存在感抜群の人物。言葉より行動で示すタイプで、一度信頼した相手には深い忠誠心を示します。多くを語らずとも、その存在感だけで周囲を引き締める力を持っています。',
+    compat:{emoji:'🦮',name:'ラフコリー',why:'あなたの寡黙さを理解し、穏やかに橋渡しをしてくれる信頼できる存在。'},
+    tend:{知性:72,行動力:65,社交性:30,共感力:55,自由度:75}},
+
+  doberman:{color:'#5c6bc0',emoji:'🐕',name:'ドーベルマン',
+    catch:'知性と威厳を併せ持つ戦略的リーダー。目標達成への執念は誰にも負けない。',
+    traits:['🎖 自然なリーダーシップ','🧩 戦略的思考','⚡ 素早い決断','🔒 強い責任感'],
+    weaknesses:['😌 リラックスが苦手','🙈 弱みを見せない','👂 他の意見を聞きにくい'],
+    desc:'ドーベルマンタイプのあなたは、生まれながらのリーダー素質を持つ戦略家。冷静な判断力と圧倒的な実行力で目標を達成します。責任感が強く、任された役割には全力を尽くす。その威風堂々たる姿が周囲の信頼を勝ち取ります。',
+    compat:{emoji:'🐩',name:'ポメラニアン',why:'あなたの緊張をほぐし、遊び心を引き出してくれる最高の相棒。'},
+    tend:{知性:88,行動力:88,社交性:50,共感力:50,自由度:45}},
+
+  jrt:{color:'#26c6da',emoji:'🐶',name:'ジャックラッセルテリア',
+    catch:'エネルギーの塊！好奇心旺盛で何事も全力で楽しむ自由人。',
+    traits:['🎉 無限のエネルギー','🔍 旺盛な好奇心','😂 ユーモアの達人','🚀 行動力満点'],
+    weaknesses:['🛑 じっとしていられない','😅 衝動的な判断','📋 細かい作業が苦手'],
+    desc:'ジャックラッセルテリアタイプのあなたは、溢れるエネルギーと好奇心で人生をとことん楽しむ自由人。新しいことへの挑戦を恐れず、どんな状況でもユーモアを忘れない明るさが周囲を元気にします。飽きることを知らない探求心が最大の武器です。',
+    compat:{emoji:'🐕',name:'ボーダーコリー',why:'あなたのアイデアを形にする知性と計画性を持つ頼れるパートナー。'},
+    tend:{知性:70,行動力:95,社交性:80,共感力:60,自由度:92}},
+
+  rough_collie:{color:'#ffca28',emoji:'🦮',name:'ラフコリー',
+    catch:'知性と優しさを持つ天然のカウンセラー。誰もが居心地よくなる空間を作る。',
+    traits:['💛 深い共感力','🌟 思いやり','🗣 コミュニケーション上手','🛡 守護者気質'],
+    weaknesses:['😰 心配性すぎる','🙅 断るのが苦手','😔 自己犠牲になりがち'],
+    desc:'ラフコリータイプのあなたは、豊かな共感力と温かい包容力で周囲を支える存在。誰かが悩んでいれば自然と気づき、絶妙な言葉で寄り添います。チームの調和を保つ調停者として欠かせない存在で、その優しさが多くの人の心のよりどころになっています。',
+    compat:{emoji:'🐕',name:'ボーダーコリー',why:'あなたの感情的サポートと相手の論理的思考が完璧にかみ合うコンビ。'},
+    tend:{知性:78,行動力:60,社交性:88,共感力:96,自由度:50}},
+
+  cavalier:{color:'#ec407a',emoji:'🐶',name:'キャバリア',
+    catch:'愛情深く穏やか。誰とでも仲良くなれる究極の癒し系。',
+    traits:['❤️ 無限の愛情','😊 穏やかさ','🤝 誰とでも仲良し','✨ 癒しのオーラ'],
+    weaknesses:['😢 寂しがり屋','🧭 優柔不断になることも','💔 傷つきやすい'],
+    desc:'キャバリアタイプのあなたは、その場にいるだけで空気を和らげる天然の癒し系。誰に対しても分け隔てなく愛情を注ぎ、相手の良いところを自然と引き出します。人間関係を大切にし、繋がりの中に喜びを見出す、周囲になくてはならない存在です。',
+    compat:{emoji:'🐕',name:'ドーベルマン',why:'あなたの柔らかさが相手の鋭さを包み、互いの弱点を補い合える関係。'},
+    tend:{知性:60,行動力:55,社交性:95,共感力:92,自由度:60}},
+
+  golden:{color:'#ffa726',emoji:'🐕‍🦺',name:'ゴールデンレトリバー',
+    catch:'誰からも愛される太陽のような存在。ポジティブエネルギーで周囲を照らす。',
+    traits:['☀️ 圧倒的ポジティブ','🫂 高い親しみやすさ','🌈 明るい雰囲気メーカー','🤲 奉仕精神'],
+    weaknesses:['⚠️ 危険察知が遅れる','😤 怒れないことも','🎯 集中力の維持が難しい'],
+    desc:'ゴールデンレトリバータイプのあなたは、そこにいるだけで空間を明るくする太陽のような存在。困った人を放っておけない奉仕精神と、どんな状況でも前向きに捉えるポジティブさが持ち味。幅広い人間関係を築き、コミュニティの中心的存在になります。',
+    compat:{emoji:'🐕',name:'ボーダーコリー',why:'あなたの感情知性と相手の論理知性が組み合わさると最強のチームに。'},
+    tend:{知性:68,行動力:72,社交性:98,共感力:90,自由度:65}},
+
+  setter:{color:'#ff5722',emoji:'🐕',name:'アイリッシュセター',
+    catch:'情熱と自由を愛するロマンティスト。直感で動き、熱狂的に夢を追う。',
+    traits:['🔥 燃える情熱','🌊 自由な魂','💫 直感的判断','🎨 豊かな感受性'],
+    weaknesses:['📌 継続が難しい','🤔 計画性が不足','😤 感情的になりすぎることも'],
+    desc:'アイリッシュセタータイプのあなたは、豊かな感受性と燃えるような情熱で生きるアーティスト気質。直感を信じて動き、新しい体験や出会いに胸を躍らせます。その情熱は周囲を巻き込む力があり、夢に向かって突き進む姿が多くの人を鼓舞します。',
+    compat:{emoji:'🐕',name:'ベルネーゼ',why:'あなたの情熱を地に足のついた方法で形にする力を持つ理想の相棒。'},
+    tend:{知性:65,行動力:85,社交性:78,共感力:75,自由度:95}},
+
+  shepherd:{color:'#8d6e63',emoji:'🐕',name:'ジャーマンシェパード',
+    catch:'真面目で頼れる守り手。責任感と忠誠心で周囲を支え続ける。',
+    traits:['🛡 強い責任感','🎓 学習への真剣さ','💼 仕事への誠実さ','🤝 高い忠誠心'],
+    weaknesses:['😤 完璧を求めすぎる','🎭 遊び心が少ない','😓 責任を一人で抱える'],
+    desc:'ジャーマンシェパードタイプのあなたは、強い責任感と誠実さで信頼を積み重ねる頼れる存在。任されたことには全力を尽くし、チームのために自分を犠牲にすることも厭わない。その一貫した姿勢が周囲の深い信頼を生み、欠かせない柱となります。',
+    compat:{emoji:'🐶',name:'キャバリア',why:'あなたの真剣さを和らげ、人生の喜びを思い出させてくれる癒しの存在。'},
+    tend:{知性:82,行動力:78,社交性:55,共感力:68,自由度:40}},
+
+  bernese:{color:'#42a5f5',emoji:'🐕',name:'バーニーズマウンテンドッグ',
+    catch:'大らかで安定感抜群。その優しさと包容力で周囲の心を安らげる。',
+    traits:['🏔 揺るぎない安定感','🫂 大きな包容力','🌿 穏やかな強さ','🏠 家族への深い愛'],
+    weaknesses:['🔄 変化への適応が遅い','🐢 行動が慎重すぎる','🌍 冒険心が薄い'],
+    desc:'バーニーズマウンテンドッグタイプのあなたは、どっしりとした安定感と温かい包容力で周囲を守る大黒柱。感情的に揺れることなく、どんな状況でも冷静に支え続けます。信頼と安心感を与えることが得意で、困ったときに誰もが頼りにする存在です。',
+    compat:{emoji:'🐕',name:'アイリッシュセター',why:'あなたの安定感が相手の情熱に土台を与え、互いを高め合えるペア。'},
+    tend:{知性:68,行動力:55,社交性:75,共感力:85,自由度:45}},
+
+  rottweiler:{color:'#66bb6a',emoji:'🐕',name:'ロットワイラー',
+    catch:'堂々たる自信と静かな迫力。信念を持ち、大切なものを全力で守る。',
+    traits:['💪 圧倒的な存在感','🏋 精神的な強さ','🛡 守護者の本能','🎯 ブレない信念'],
+    weaknesses:['😤 頑固になりすぎる','🤗 親しみにくさを感じさせる','🌸 繊細さが伝わりにくい'],
+    desc:'ロットワイラータイプのあなたは、堂々たる存在感と揺るぎない精神力を持つ守り手。大切な人や信念を守るためなら力を惜しまず、その覚悟が周囲に安心感を与えます。誠実で公正な判断力を持ち、困難な状況でも冷静さを保てる頼れる存在です。',
+    compat:{emoji:'🐶',name:'ジャックラッセルテリア',why:'あなたの重厚さに軽やかさを加え、楽しい一面を引き出してくれる存在。'},
+    tend:{知性:75,行動力:70,社交性:42,共感力:60,自由度:50}},
+
+  labrador:{color:'#80cbc4',emoji:'🐕‍🦺',name:'ラブラドールレトリバー',
+    catch:'みんなの友だち。適応力と社交性で、どんな場面でも輝ける万能選手。',
+    traits:['🌟 高い適応力','🤝 誰とでも仲良し','😊 常にポジティブ','🎓 優れた学習能力'],
+    weaknesses:['🎭 自分の個性が薄れる','🙅 NOが言いにくい','🎯 優先順位が難しい'],
+    desc:'ラブラドールレトリバータイプのあなたは、高い適応力と社交性で、どんな環境にも自然に溶け込める万能型。親しみやすさと誠実さを兼ね備え、初対面の人とも瞬く間に打ち解けます。チームワークを大切にし、みんなが輝ける環境作りが得意です。',
+    compat:{emoji:'🐕',name:'ジャーマンシェパード',why:'あなたの柔軟さと相手の一貫性が組み合わさると、最強の信頼コンビに。'},
+    tend:{知性:75,行動力:78,社交性:96,共感力:85,自由度:60}},
+
+  husky:{color:'#78909c',emoji:'🐺',name:'シベリアンハスキー',
+    catch:'自由と冒険を愛する旅人。自分だけの道を突き進む、唯一無二の個性派。',
+    traits:['🌍 冒険心旺盛','🎭 個性的な魅力','🔋 無尽蔵のスタミナ','🌙 神秘的な存在感'],
+    weaknesses:['🏠 束縛が苦手','📏 ルールへの反発','🤝 チームワークが難しい'],
+    desc:'シベリアンハスキータイプのあなたは、自由を愛し冒険を求める独自の道を行く個性派。既成概念に縛られず、自分の感覚を信じて突き進む姿が人々を魅了します。そのユニークな視点と行動力が、誰も思いつかなかった答えを生み出すことがあります。',
+    compat:{emoji:'🐕',name:'ロットワイラー',why:'あなたの自由さに安定感を与え、互いの良さを引き出せる補完関係。'},
+    tend:{知性:70,行動力:88,社交性:62,共感力:55,自由度:98}},
+
+  shiba:{color:'#ff8a65',emoji:'🦊',name:'柴犬',
+    catch:'マイペースで凛とした個性派。自分軸をしっかり持ち、独自の美学で生きる。',
+    traits:['🦊 独自の美学','🏯 凛とした自立心','🎭 気まぐれな魅力','🔮 鋭い直感'],
+    weaknesses:['🤝 頼るのが苦手','💬 感情表現が少ない','🔄 融通が利かないことも'],
+    desc:'柴犬タイプのあなたは、しっかりとした自分軸を持つ独立心旺盛な個性派。他人に流されることなく自分のスタイルを貫き、その凛とした姿がひそかに多くの人を惹きつけます。気まぐれに見えても実は深い観察眼を持ち、大切な人には揺るぎない忠誠心を示します。',
+    compat:{emoji:'🐕‍🦺',name:'ゴールデンレトリバー',why:'あなたのクールさを優しく溶かし、自然と笑顔を引き出してくれる存在。'},
+    tend:{知性:78,行動力:65,社交性:38,共感力:58,自由度:88}},
+
+  boxer:{color:'#ef5350',emoji:'🐕',name:'ボクサー',
+    catch:'陽気で情熱的な永遠の子ども。エネルギーと笑顔で周囲を巻き込む天才。',
+    traits:['🎊 無邪気な明るさ','💥 爆発的なエネルギー','😄 ユーモアセンス','🥊 逆境に負けない心'],
+    weaknesses:['😅 少し騒がしすぎる','📋 計画通りに動くのが苦手','🎯 集中が続かないことも'],
+    desc:'ボクサータイプのあなたは、無邪気な明るさと爆発的なエネルギーで周囲を元気にする天性のムードメーカー。どんな困難も笑い飛ばせるユーモアと、逆境でも折れない精神力を持ちます。その純粋な情熱が周囲の心に火をつけ、みんなを動かす力があります。',
+    compat:{emoji:'🐕',name:'バーニーズマウンテンドッグ',why:'あなたの明るさを温かく受け止め、必要なときに落ち着かせてくれる存在。'},
+    tend:{知性:62,行動力:90,社交性:88,共感力:72,自由度:80}},
+
+  pomeranian:{color:'#ffee58',emoji:'🐩',name:'ポメラニアン',
+    catch:'小さな体に大きな自信と個性。華やかで社交的、注目の的になる生まれながらのスター。',
+    traits:['⭐ 天性のスター性','💄 ファッションセンス','🗣 表現力豊か','✨ 場を明るくする力'],
+    weaknesses:['😤 プライドが傷つきやすい','😥 批判に弱い','🌀 感情の波が激しい'],
+    desc:'ポメラニアンタイプのあなたは、生まれながらのスター性と独自のスタイルで周囲の目を引く表現者。自分を表現することへの喜びと情熱を持ち、その華やかさでどんな場も明るくします。外見だけでなく、豊かな内面と強い意志を持つ、深みのある個性の持ち主です。',
+    compat:{emoji:'🐕',name:'ジャーマンシェパード',why:'あなたの輝きを守り、地に足をつけてサポートしてくれる頼れる存在。'},
+    tend:{知性:68,行動力:72,社交性:90,共感力:70,自由度:82}}
+};
+
+const breedOrder = ['border','akita','doberman','jrt','rough_collie','cavalier','golden','setter','shepherd','bernese','rottweiler','labrador','husky','shiba','boxer','pomeranian'];
+
+const questions = [
+  {text:'自由な時間ができたとき、最初にしたいことは？',opts:[
+    {text:'📚 新しい知識やスキルを深める',scores:{border:3,rough_collie:1,shepherd:1}},
+    {text:'🌍 知らない場所や体験を探しに行く',scores:{husky:3,setter:2,jrt:2}},
+    {text:'🏡 大切な人とゆっくりくつろぐ',scores:{cavalier:3,bernese:2,labrador:1}},
   ]},
-  {text:'新しい挑戦に誘われたとき？',opts:[
-    {text:'🐕‍🦺 すぐ飛び込む！考えるより行動',scores:{husky:3,golden:2}},
-    {text:'📋 メリット・デメリットを整理してから',scores:{border:3,poodle:2}},
-    {text:'👥 仲間がいるなら一緒にやりたい',scores:{labrador:3,golden:1}},
+  {text:'グループプロジェクトでのあなたの役割は？',opts:[
+    {text:'🎯 方向性を決めてチームを引っ張る',scores:{border:2,doberman:3,shepherd:1}},
+    {text:'🤝 メンバーの意見をまとめて調整する',scores:{rough_collie:3,labrador:2,cavalier:2}},
+    {text:'⚡ 自分のアイデアで場を活性化する',scores:{jrt:3,boxer:2,pomeranian:2}},
   ]},
-  {text:'目標を達成するために大切にするのは？',opts:[
-    {text:'🎯 高い集中力と完璧なやり切り',scores:{border:3,shiba:2}},
-    {text:'💪 粘り強く諦めない根性',scores:{dachshund:3,chihuahua:2}},
-    {text:'😄 楽しみながら続けること',scores:{golden:3,labrador:2}},
+  {text:'困難な状況に直面したとき、どう乗り越える？',opts:[
+    {text:'🧩 冷静に分析して最善策を考える',scores:{border:3,doberman:2,shepherd:2}},
+    {text:'💪 気合いで突き進む',scores:{rottweiler:3,akita:2,boxer:2}},
+    {text:'🤗 周囲に相談して一緒に解決する',scores:{golden:2,cavalier:3,rough_collie:2}},
   ]},
-  {text:'グループでの自分の役割は？',opts:[
-    {text:'🦮 みんなを笑顔にするムードメーカー',scores:{golden:3,labrador:2}},
-    {text:'🧠 戦略や計画を考えるブレイン',scores:{poodle:3,border:2}},
-    {text:'🐶 自分の信念で突き進むエンジン',scores:{shiba:2,chihuahua:3,husky:1}},
+  {text:'友人からあなたはどんな人と言われる？',opts:[
+    {text:'🔍 頭が良くて分析的',scores:{border:3,doberman:2,shiba:1}},
+    {text:'🌟 明るくて場を盛り上げる',scores:{golden:3,boxer:3,pomeranian:2}},
+    {text:'🛡 頼れて安心感がある',scores:{bernese:3,rottweiler:2,shepherd:2}},
   ]},
-  {text:'自由時間の使い方は？',opts:[
-    {text:'🌍 新しい場所や体験を探しに行く',scores:{husky:3,golden:2}},
-    {text:'📚 スキルアップや自己成長に使う',scores:{poodle:3,border:2}},
-    {text:'🏡 好きなことを自分のペースで楽しむ',scores:{shiba:3,dachshund:2}},
+  {text:'新しい挑戦の前、あなたの心境は？',opts:[
+    {text:'🎲 やってみないとわからない！とりあえず飛び込む',scores:{jrt:3,setter:3,husky:2}},
+    {text:'📋 リスクを計算してから行動する',scores:{border:2,doberman:3,shepherd:2}},
+    {text:'😊 楽しそうならやってみる',scores:{golden:2,cavalier:2,labrador:3}},
   ]},
-  {text:'誰かから批判や指摘を受けたとき？',opts:[
-    {text:'🔍 冷静に事実を分析して改善する',scores:{border:3,poodle:2}},
-    {text:'💪 悔しくて余計に頑張る',scores:{chihuahua:3,dachshund:2}},
-    {text:'🤗 素直に受け入れて修正する',scores:{labrador:3,golden:2}},
+  {text:'理想の週末の過ごし方は？',opts:[
+    {text:'🏞 アウトドアや冒険',scores:{husky:3,setter:2,jrt:2}},
+    {text:'📖 自宅でゆっくり・読書・趣味',scores:{shiba:3,border:1,akita:2}},
+    {text:'🎉 友人と賑やかに過ごす',scores:{boxer:3,golden:2,pomeranian:2}},
   ]},
-  {text:'人間関係で一番大切にすることは？',opts:[
-    {text:'❤️ 誰にでも優しく、愛情深く接する',scores:{golden:3,labrador:2}},
-    {text:'🤝 深い信頼と誠実さ',scores:{shiba:3,dachshund:2}},
-    {text:'🌸 互いを尊重した適度な距離感',scores:{husky:3,poodle:1}},
+  {text:'仕事や勉強で最も大切にすることは？',opts:[
+    {text:'🏆 結果・成果',scores:{doberman:3,border:2,rottweiler:2}},
+    {text:'🤝 プロセスや仲間との関係',scores:{rough_collie:3,cavalier:2,labrador:2}},
+    {text:'🎨 自分の成長・自己表現',scores:{setter:2,pomeranian:3,husky:2}},
   ]},
-  {text:'仕事やプロジェクトに取り組む姿勢は？',opts:[
-    {text:'📊 データと計画で確実にやり遂げる',scores:{border:3,poodle:2}},
-    {text:'❤️ 熱量と誠実さで粘り強く取り組む',scores:{dachshund:3,golden:2}},
-    {text:'🐕‍🦺 エネルギッシュに勢いで突き進む',scores:{husky:3,chihuahua:2}},
+  {text:'あなたのコミュニケーションスタイルは？',opts:[
+    {text:'💬 積極的に話しかけ、会話の中心になる',scores:{golden:2,boxer:3,pomeranian:2}},
+    {text:'🎯 必要なことだけを的確に伝える',scores:{akita:3,doberman:2,rottweiler:2}},
+    {text:'👂 相手の話をよく聞いて寄り添う',scores:{cavalier:3,rough_collie:3,bernese:1}},
   ]},
-  {text:'友人があなたをどう見ている？',opts:[
-    {text:'☀️ 明るい・元気・一緒にいると楽しい',scores:{golden:3,labrador:2}},
-    {text:'🏮 頑固・芯がある・ぶれない',scores:{shiba:3,chihuahua:2}},
-    {text:'🧠 賢い・計算高い・頼れる',scores:{poodle:3,border:2}},
+  {text:'ストレスを感じたとき、どう解消する？',opts:[
+    {text:'🏃 身体を動かして発散する',scores:{jrt:3,boxer:2,setter:2}},
+    {text:'🧘 一人の時間を作って内省する',scores:{shiba:3,akita:2,border:1}},
+    {text:'😊 誰かと話して気持ちを共有する',scores:{cavalier:3,golden:2,labrador:2}},
   ]},
-  {text:'理想の自分の生き方は？',opts:[
-    {text:'🏆 自分の信念を貫いた職人のような人生',scores:{shiba:3,border:2}},
-    {text:'🌈 多くの人に愛され、愛し続ける人生',scores:{golden:3,labrador:2}},
-    {text:'🌊 自由に、縛られずに生きる人生',scores:{husky:3,chihuahua:1}},
+  {text:'あなたの長所は何だと思う？',opts:[
+    {text:'🧠 論理的思考・問題解決力',scores:{border:3,doberman:2,shepherd:2}},
+    {text:'❤️ 共感力・人への思いやり',scores:{rough_collie:3,cavalier:3,bernese:2}},
+    {text:'🔥 熱意・行動力',scores:{setter:3,jrt:2,boxer:2}},
+  ]},
+  {text:'理想のリーダー像は？',opts:[
+    {text:'📊 データと戦略で引っ張るリーダー',scores:{border:2,doberman:3,shepherd:1}},
+    {text:'🤗 みんなの意見を聞いて一緒に進むリーダー',scores:{golden:3,rough_collie:2,labrador:2}},
+    {text:'⚡ 直感と情熱で走るリーダー',scores:{setter:3,akita:2,rottweiler:2}},
+  ]},
+  {text:'あなたの部屋はどんな感じ？',opts:[
+    {text:'🗂 整理整頓されていてスッキリ',scores:{border:2,doberman:2,shepherd:2}},
+    {text:'🌸 居心地よくておしゃれ',scores:{cavalier:2,pomeranian:3,shiba:2}},
+    {text:'🌍 色々なものが雑然と置いてある',scores:{jrt:2,setter:2,husky:2}},
+  ]},
+  {text:'初対面の人と会ったとき、どう感じる？',opts:[
+    {text:'😄 すぐ打ち解けて友達になれる',scores:{golden:3,labrador:3,boxer:2}},
+    {text:'🔍 相手をしっかり観察してから関係を築く',scores:{akita:3,shiba:2,rottweiler:2}},
+    {text:'🤝 自分から積極的に話しかける',scores:{jrt:2,pomeranian:3,rough_collie:1}},
+  ]},
+  {text:'あなたが大切にしている価値観は？',opts:[
+    {text:'🏅 達成・成功・卓越',scores:{border:2,doberman:3,rottweiler:2}},
+    {text:'🕊 調和・絆・思いやり',scores:{cavalier:3,rough_collie:2,bernese:3}},
+    {text:'🌈 自由・冒険・個性',scores:{husky:3,setter:2,shiba:2}},
+  ]},
+  {text:'あなたが仕事や目標を持つ動機は？',opts:[
+    {text:'💡 自己成長・スキルアップ',scores:{border:3,jrt:1,shepherd:2}},
+    {text:'💰 安定・セキュリティ',scores:{bernese:3,labrador:2,rottweiler:2}},
+    {text:'🌟 認められたい・影響を与えたい',scores:{pomeranian:3,doberman:2,setter:2}},
+  ]},
+  {text:'意見の対立が起きたとき、あなたはどうする？',opts:[
+    {text:'🏆 自分の意見を論理的に主張する',scores:{border:2,doberman:3,akita:2}},
+    {text:'🤝 相手の気持ちを理解して妥協点を探す',scores:{rough_collie:3,cavalier:3,labrador:2}},
+    {text:'😄 冗談や笑いで場の空気を和らげる',scores:{boxer:3,golden:2,jrt:2}},
+  ]},
+  {text:'最も得意なことは？',opts:[
+    {text:'🎯 計画を立てて確実に実行する',scores:{border:2,shepherd:3,doberman:2}},
+    {text:'💃 臨機応変に対応する',scores:{labrador:3,jrt:2,husky:2}},
+    {text:'🎨 創造的なアイデアを出す',scores:{setter:3,pomeranian:2,border:1}},
+  ]},
+  {text:'あなたのエネルギーの源泉は？',opts:[
+    {text:'🏃 活動・挑戦・成果',scores:{jrt:3,boxer:3,doberman:1}},
+    {text:'🧘 静かな時間・内省',scores:{shiba:3,akita:3,border:1}},
+    {text:'👨‍👩‍👧 人との繋がり・温かさ',scores:{golden:3,cavalier:3,rough_collie:1}},
+  ]},
+  {text:'あなたの人生観に近いものは？',opts:[
+    {text:'🌊 流れに乗って楽しむ',scores:{setter:3,husky:2,jrt:2}},
+    {text:'🗺 しっかり計画して着実に進む',scores:{border:2,shepherd:3,bernese:2}},
+    {text:'❤️ 大切な人と深い絆を築く',scores:{cavalier:3,rough_collie:2,golden:2}},
+  ]},
+  {text:'あなたが周囲に与えたい印象は？',opts:[
+    {text:'💼 頼れる・信頼できる',scores:{shepherd:3,rottweiler:3,bernese:2}},
+    {text:'✨ 個性的・唯一無二',scores:{shiba:3,husky:2,pomeranian:2}},
+    {text:'☀️ 明るい・元気・ポジティブ',scores:{golden:3,boxer:2,labrador:2}},
   ]},
 ];
 
-const results={
-  shiba:{emoji:'🐕',name:'柴犬',catch:'信念の職人。自分の軸を絶対に曲げない',
-    traits:['揺るぎない自分軸と信念','深い誠実さと責任感','独自のこだわりと美学'],
-    weaknesses:['融通が利かないと思われることも','素直に甘えることが苦手'],
-    desc:'柴犬タイプのあなたは、強い信念と自分軸を持つ職人気質。周囲の意見や流行に流されず、自分の美学を貫きます。誠実で責任感が強く、深く信頼した相手には一途に向き合います。その揺るぎない姿が周囲の尊敬を集めます。',
-    compat:{emoji:'🦮',name:'ゴールデンタイプ',why:'信念と温かさが最高のバランスを生む'},
-    tend:{社交力:50,忠誠心:95,知性:70,包容力:60,自由度:65}},
-  golden:{emoji:'🦮',name:'ゴールデンレトリバー',catch:'太陽のような愛嬌で誰からも愛される存在',
-    traits:['誰にでも優しい深い愛情','場を明るくするムードメーカー力','人の気持ちに寄り添う共感力'],
-    weaknesses:['断れずに頑張りすぎることがある','感情が顔に出すぎることも'],
-    desc:'ゴールデンタイプのあなたは、太陽のような暖かさで誰からも愛されるキャラクター。その深い優しさと愛情で周囲を包み込み、自然とみんなが集まってきます。人の痛みや喜びに敏感に反応できる高い共感力が最大の魅力です。',
-    compat:{emoji:'🐕',name:'柴犬タイプ',why:'愛情と信念が最高のパートナーシップを築く'},
-    tend:{社交力:95,忠誠心:90,知性:65,包容力:95,自由度:55}},
-  poodle:{emoji:'🐩',name:'トイプードル',catch:'知性とオシャレ感度の高い戦略家',
-    traits:['高い知性と学習能力','洗練されたセンスと美意識','戦略的に物事を考える力'],
-    weaknesses:['計算高く見られることがある','完璧主義で疲れることも'],
-    desc:'トイプードルタイプのあなたは、高い知性と洗練された感覚を持つ戦略家。物事を論理的に分析して最適解を導く力と、トレンドを先読みする感度の高さを兼ね備えます。その知性と美意識が、周囲から一目置かれる存在感を生みます。',
-    compat:{emoji:'🐕‍🦺',name:'ボーダーコリータイプ',why:'知性と実行力が組み合わさる最強コンビ'},
-    tend:{社交力:70,忠誠心:65,知性:95,包容力:65,自由度:70}},
-  border:{emoji:'🐕‍🦺',name:'ボーダーコリー',catch:'完璧主義の集中力で圧倒的な結果を出す',
-    traits:['圧倒的な集中力と実行力','高い目標を達成しようとする向上心','精緻な計画を立てる論理力'],
-    weaknesses:['自分にも他人にも厳しくなりすぎることも','休むことが苦手なことがある'],
-    desc:'ボーダーコリータイプのあなたは、圧倒的な集中力と完璧主義で結果を出す実行者。高い目標を設定して、一点集中で達成していきます。論理的な思考と緻密な計画立案で、常に最高のパフォーマンスを目指します。',
-    compat:{emoji:'🐩',name:'トイプードルタイプ',why:'実行力と知性が最高の成果を生み出す'},
-    tend:{社交力:55,忠誠心:75,知性:90,包容力:55,自由度:60}},
-  dachshund:{emoji:'🐾',name:'ダックスフント',catch:'一度決めたら最後まで諦めない粘り腰',
-    traits:['一度決めたら諦めない粘り強さ','深く長くコミットする忠誠心','好奇心旺盛な探求心'],
-    weaknesses:['意地を張りすぎることがある','勝ち負けにこだわりすぎることも'],
-    desc:'ダックスフントタイプのあなたは、一度決めたら最後まで諦めない粘り腰が最大の武器。困難な状況でも粘り続け、最終的に結果を出します。深く長く誰かにコミットできる忠誠心と、好奇心旺盛な探求心も持ちます。',
-    compat:{emoji:'🦮',name:'ゴールデンタイプ',why:'粘り強さと温かさが最強のパートナーシップ'},
-    tend:{社交力:60,忠誠心:90,知性:65,包容力:70,自由度:55}},
-  chihuahua:{emoji:'🐶',name:'チワワ',catch:'小さな体に宿る大きな胆力と負けん気',
-    traits:['誰にも負けない強い意志と負けん気','小さくても怯まない大物感','強い忠誠心と一途さ'],
-    weaknesses:['警戒心が強く最初は打ち解けにくいことも','主張が激しくなりすぎることがある'],
-    desc:'チワワタイプのあなたは、小さな体に大きな胆力を持つ負けん気のチャンピオン。どんな相手にも怯まない強い意志と自信は、自分より大きな存在に対しても揺らぎません。信頼した相手には一途で深い愛情を注ぎます。',
-    compat:{emoji:'🦮',name:'ラブラドールタイプ',why:'強さと包容力が見事に補い合う'},
-    tend:{社交力:55,忠誠心:85,知性:65,包容力:50,自由度:70}},
-  labrador:{emoji:'🦮',name:'ラブラドールレトリバー',catch:'誰でも受け入れる懐の深い包容力',
-    traits:['誰でも受け入れる懐の深さ','温かく穏やかな安定感','困っている人を放っておけない優しさ'],
-    weaknesses:['お人好しすぎることがある','自分のことを後回しにしすぎることも'],
-    desc:'ラブラドールタイプのあなたは、誰でも受け入れる圧倒的な包容力を持ちます。人種や年齢を超えて誰とでも友好的に接でき、困っている人を放っておけない優しさが行動の根底にあります。その安定した温かさが、多くの人に安心感を与えます。',
-    compat:{emoji:'🐶',name:'チワワタイプ',why:'包容力が強さを包み込む最高の組み合わせ'},
-    tend:{社交力:90,忠誠心:85,知性:65,包容力:95,自由度:60}},
-  husky:{emoji:'🐺',name:'シベリアンハスキー',catch:'束縛を嫌い自分の道を行く自由人',
-    traits:['自由を愛する独立した精神','枠にはまらない個性と行動力','困難な環境でも生き抜く強さ'],
-    weaknesses:['自由すぎて周囲と合わないことも','飽きっぽく見られることがある'],
-    desc:'ハスキータイプのあなたは、束縛を嫌い自分の道を突き進む自由人。規則やルールよりも自分の感覚と信念を大切にします。広い世界への好奇心と高いエネルギーで、自分だけの冒険を続けます。その自由な生き方が周囲を惹きつけます。',
-    compat:{emoji:'🐕',name:'柴犬タイプ',why:'互いの自由と信念が深いところで共鳴する'},
-    tend:{社交力:65,忠誠心:55,知性:70,包容力:55,自由度:95}},
-};
+let scores={},currentQ=0,answerHistory=[],_shareText='';
 
-let scores={},currentQ=0,_shareText='',answerHistory=[];
-function resetScores(){scores={};answerHistory=[];Object.keys(results).forEach(k=>scores[k]=0);}
-function startQuiz(){resetScores();currentQ=0;showScreen('quiz');renderQuestion();}
-function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo({top:0,behavior:'smooth'});}
-function renderQuestion(){
-  const q=questions[currentQ];const n=currentQ+1;const pct=Math.round(n/questions.length*100);
-  document.getElementById('q-counter').textContent=`Q ${n} / ${questions.length}`;
-  document.getElementById('q-pct').textContent=pct+'%';
-  document.getElementById('prog-fill').style.width=pct+'%';
-  document.getElementById('q-num-label').textContent='QUESTION '+String(n).padStart(2,'0');
-  document.getElementById('q-text').textContent=q.text;
-  const wrap=document.getElementById('options-wrap');wrap.innerHTML='';
-  q.opts.forEach(opt=>{const btn=document.createElement('button');btn.className='opt';btn.textContent=opt.text;btn.onclick=()=>selectAnswer(opt.scores,btn);wrap.appendChild(btn);});
-  const bk=document.getElementById('btn-back');if(bk)bk.style.display=currentQ>0?'flex':'none';
+function resetScores(){
+  scores={};answerHistory=[];
+  breedOrder.forEach(k=>scores[k]=0);
 }
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function startQuiz(){
+  resetScores();currentQ=0;
+  renderQuestion();
+  showScreen('quiz');
+}
+
+function renderQuestion(){
+  const q=questions[currentQ];
+  document.getElementById('q-label').textContent=`質問 ${currentQ+1} / ${questions.length}`;
+  document.getElementById('q-pct').textContent=Math.round(currentQ/questions.length*100)+'%';
+  document.getElementById('progress-fill').style.width=(currentQ/questions.length*100)+'%';
+  document.getElementById('q-num').textContent=`Q${currentQ+1}`;
+  document.getElementById('q-text').textContent=q.text;
+  const opts=document.getElementById('options');
+  opts.innerHTML='';
+  q.opts.forEach(o=>{
+    const btn=document.createElement('button');
+    btn.className='opt';
+    btn.textContent=o.text;
+    btn.onclick=()=>selectAnswer(o.scores,btn);
+    opts.appendChild(btn);
+  });
+  const back=document.getElementById('btn-back');
+  if(back)back.style.display=currentQ>0?'flex':'none';
+}
+
 function selectAnswer(scoreMap,btn){
-  document.querySelectorAll('.opt').forEach(b=>b.style.pointerEvents='none');
-  btn.classList.add('selected');
+  document.querySelectorAll('.opt').forEach(b=>{b.disabled=true;b.style.opacity='.6';});
+  btn.style.borderColor='var(--pr2)';btn.style.background='rgba(124,111,245,.2)';
   answerHistory.push(Object.assign({},scoreMap));
   Object.entries(scoreMap).forEach(([k,v])=>{scores[k]=(scores[k]||0)+v;});
-  setTimeout(()=>{currentQ++;if(currentQ<questions.length){renderQuestion();const c=document.querySelector('.q-card');c.style.animation='none';c.offsetHeight;c.style.animation='fadeUp .35s ease both';}else showResult();},420);
+  currentQ++;
+  if(currentQ>=questions.length){setTimeout(showResult,400);}
+  else{setTimeout(renderQuestion,400);}
 }
+
 function goBack(){
   if(currentQ<=0)return;
   const last=answerHistory.pop();
   Object.entries(last).forEach(([k,v])=>{scores[k]=(scores[k]||0)-v;});
   currentQ--;
   renderQuestion();
-  const c=document.querySelector('.q-card');c.style.animation='none';c.offsetHeight;c.style.animation='fadeUp .35s ease both';
 }
-function showResult(){
-  const key=Object.entries(scores).sort((a,b)=>b[1]-a[1])[0][0];
-  const r=results[key];const el=document.getElementById('result');
-  _shareText='私は「'+r.name+'」タイプでした！\nあなたはどの犬？\n';
-  const tendHTML=Object.entries(r.tend).map(([label,val])=>
-    `<div class="tend-row"><div class="tend-label">${label}</div><div class="tend-bar-wrap"><div class="tend-bar" style="width:0" data-w="${val}%"></div></div><div class="tend-val">${val}</div></div>`
-  ).join('');
-  el.innerHTML=`
-    <div class="result-hero"><div class="result-icon">${r.emoji}</div><div class="result-label">あなたの犬タイプ</div><div class="result-name">${r.name}</div><div class="result-catch">${r.catch}</div></div>
-    <div class="result-section"><div class="section-title">✨ 長所・強み</div><div class="traits">${r.traits.map(t=>`<span class="trait">${t}</span>`).join('')}</div></div>
-    <div class="result-section"><div class="section-title">💬 詳細解説</div><div class="desc">${r.desc}</div></div>
-    <div class="result-section"><div class="section-title">△ 気をつけたいこと</div><div class="weaknesses">${r.weaknesses.map(w=>`<div class="weakness">${w}</div>`).join('')}</div></div>
-    <div class="result-section"><div class="section-title">💕 相性の良いタイプ</div><div class="compat"><div class="compat-icon">${r.compat.emoji}</div><div><div class="compat-name">${r.compat.name}</div><div class="compat-why">${r.compat.why}</div></div></div></div>
-    <div class="result-section"><div class="section-title">📊 あなたの傾向</div><div class="tendency-bars">${tendHTML}</div></div>
-    <div class="share-section"><div class="share-title">📣 結果をシェアしよう</div><div class="share-btns">
-      <button class="btn-x" onclick="shareX()"><svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.742l7.742-8.852L1.512 2.25h6.961l4.263 5.623 5.508-5.623zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>Xでシェア</button>
-      <button class="btn-line" onclick="shareLINE()"><svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>LINEでシェア</button>
-      <button class="btn-retry" onclick="startQuiz()">🔄 もう一度診断する</button>
-    </div></div>
-    <div class="line-cta"><div class="line-cta-icon">🔮</div><div class="line-cta-title">本格占いは星夜堂へ</div><div class="line-cta-text">犬タイプだけでなく、あなたの生年月日から<br>今日の運勢・今月の流れを毎日お届けします</div><a class="btn-line-cta" href="${LINE_OA}" target="_blank"><svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>星夜堂でもっと詳しく占う</a></div>
-    <div class="result-footer">© 星夜堂 — 犬種パーソナリティ診断</div>
-  `;
-  showScreen('result');
-  setTimeout(()=>{document.querySelectorAll('.tend-bar').forEach(b=>b.style.width=b.dataset.w);},400);
-}
-function shareX(){window.open('https://twitter.com/intent/tweet?text='+encodeURIComponent(_shareText+SHARE_URL),'_blank');}
-function shareLINE(){window.open('https://social-plugins.line.me/lineit/share?url='+encodeURIComponent(SHARE_URL)+'&text='+encodeURIComponent(_shareText),'_blank');}
 
-const breedInfo={
-  shiba:{emoji:'🐕',name:'柴犬',keywords:['自分軸が強い','誠実で一途','こだわり職人'],
-    summary:'信念を曲げない揺るぎない自分軸の持ち主。深く信頼した相手には一途に向き合います。'},
-  golden:{emoji:'🦮',name:'ゴールデンレトリバー',keywords:['誰からも愛される','高い共感力','ムードメーカー'],
-    summary:'太陽のような温かさで誰からも愛されるキャラクター。場を自然と明るくします。'},
-  poodle:{emoji:'🐩',name:'トイプードル',keywords:['知性派','センスが高い','戦略的思考'],
-    summary:'高い知性と洗練されたセンスを持つ戦略家。トレンドを先読みする感度も抜群。'},
-  border:{emoji:'🐕‍🦺',name:'ボーダーコリー',keywords:['圧倒的集中力','完璧主義','抜群の実行力'],
-    summary:'一点集中で圧倒的な結果を出す実行者。論理的な計画で高い目標を達成します。'},
-  dachshund:{emoji:'🐾',name:'ダックスフント',keywords:['粘り強い','諦めない','探求心旺盛'],
-    summary:'一度決めたら最後まで諦めない粘り腰が最大の武器。好奇心と探求心も旺盛。'},
-  chihuahua:{emoji:'🐶',name:'チワワ',keywords:['胆力がある','負けん気が強い','一途な愛情'],
-    summary:'小さな体に大きな胆力。誰にも怯まない強い意志と、信頼した相手への一途な愛情。'},
-  labrador:{emoji:'🦮',name:'ラブラドールレトリバー',keywords:['包容力抜群','安定感','誰にでも優しい'],
-    summary:'誰でも受け入れる圧倒的な包容力。安定した温かさで多くの人に安心感を与えます。'},
-  husky:{emoji:'🐺',name:'シベリアンハスキー',keywords:['自由人','独立心が強い','冒険好き'],
-    summary:'束縛を嫌い自分の道を突き進む自由人。広い世界への好奇心と高いエネルギー。'},
-};
+function showResult(){
+  const top=Object.entries(scores).sort((a,b)=>b[1]-a[1])[0][0];
+  const r=results[top];
+  const hero=document.getElementById('result-hero');
+  hero.style.setProperty('--bc',r.color);
+  document.getElementById('result-icon').textContent=r.emoji;
+  document.getElementById('result-name').textContent=r.name;
+  document.getElementById('result-catch').textContent=r.catch;
+  document.getElementById('result-desc').textContent=r.desc;
+  const traitsEl=document.getElementById('result-traits');
+  traitsEl.innerHTML=r.traits.map(t=>`<div class="trait-chip">${t}</div>`).join('');
+  const weakEl=document.getElementById('result-weaknesses');
+  weakEl.innerHTML=r.weaknesses.map(t=>`<div class="trait-chip weak">${t}</div>`).join('');
+  const statsEl=document.getElementById('result-stats');
+  statsEl.innerHTML=Object.entries(r.tend).map(([label,val])=>`
+    <div class="stat-row">
+      <div class="stat-label">${label}</div>
+      <div class="stat-bar-bg"><div class="stat-bar-fill" style="width:0%" data-val="${val}"></div></div>
+      <div class="stat-val">${val}</div>
+    </div>`).join('');
+  document.getElementById('compat-icon').textContent=r.compat.emoji;
+  document.getElementById('compat-breed').textContent=r.compat.name;
+  document.getElementById('compat-why').textContent=r.compat.why;
+  _shareText=`私の犬種タイプは「${r.name}」でした！${r.catch}\n#犬種診断 #星夜堂`;
+  showScreen('result');
+  setTimeout(()=>{
+    document.querySelectorAll('.stat-bar-fill').forEach(el=>{
+      el.style.width=el.dataset.val+'%';
+    });
+  },100);
+}
+
+function retryQuiz(){showScreen('top');}
+
+function shareResult(){
+  if(navigator.share){navigator.share({text:_shareText});}
+  else{navigator.clipboard.writeText(_shareText).then(()=>alert('クリップボードにコピーしました！'));}
+}
+
 function showBreedSummary(key){
-  const b=breedInfo[key];if(!b)return;
+  const r=results[key];
+  if(!r)return;
+  document.getElementById('modal-icon').textContent=r.emoji;
+  document.getElementById('modal-name').textContent=r.name;
+  document.getElementById('modal-catch').textContent=r.catch;
+  document.getElementById('modal-traits').innerHTML=r.traits.map(t=>`<span class="modal-trait">${t}</span>`).join('');
+  document.getElementById('modal-desc').textContent=r.desc;
   const modal=document.getElementById('breed-modal');
-  document.getElementById('breed-modal-content').innerHTML=
-    '<button class="bm-close" onclick="closeBreedModal()">✕</button>'+
-    '<span class="bm-emoji">'+b.emoji+'</span>'+
-    '<div class="bm-name">'+b.name+'</div>'+
-    '<div class="bm-catch">'+b.keywords.join(' · ')+'</div>'+
-    '<div class="bm-keywords">'+b.keywords.map(k=>'<span class="bm-kw">'+k+'</span>').join('')+'</div>'+
-    '<div class="bm-desc">'+b.summary+'</div>'+
-    '<button class="bm-startbtn" onclick="closeBreedModal();startQuiz()">🐾 診断してみる</button>';
-  modal.style.display='block';
+  modal.style.display='flex';
+  modal.classList.add('open');
   document.body.style.overflow='hidden';
 }
+
 function closeBreedModal(){
-  document.getElementById('breed-modal').style.display='none';
+  const modal=document.getElementById('breed-modal');
+  modal.style.display='none';
+  modal.classList.remove('open');
   document.body.style.overflow='';
 }
+
+// Build breed grid
+(function(){
+  const grid=document.getElementById('breed-grid-preview');
+  breedOrder.forEach(key=>{
+    const r=results[key];
+    const card=document.createElement('div');
+    card.className='breed-card';
+    card.style.setProperty('--bc',r.color);
+    card.innerHTML=`<div class="dog-portrait">${r.emoji}</div><div class="breed-card-name">${r.name}</div>`;
+    card.onclick=()=>showBreedSummary(key);
+    grid.appendChild(card);
+  });
+})();
+
+// Close modal on backdrop click
+document.getElementById('breed-modal').addEventListener('click',function(e){
+  if(e.target===this)closeBreedModal();
+});
 </script>
 </body>
 </html>
