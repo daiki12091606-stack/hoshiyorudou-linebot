@@ -94,6 +94,29 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Yu Gothic',sa
 .btn-line-cta{background:#06c755;color:#fff;border:none;border-radius:12px;padding:16px 24px;font-size:15px;font-weight:700;cursor:pointer;width:100%;display:flex;align-items:center;justify-content:center;gap:8px;transition:.2s;text-decoration:none}
 .btn-line-cta:hover{background:#05b34c;transform:translateY(-2px)}
 .result-footer{text-align:center;font-size:11px;color:var(--sub);padding-top:8px}
+
+.type-chip{cursor:pointer}
+.type-chip:hover{border-color:var(--pr2);background:rgba(192,57,109,.18);transform:translateY(-2px);transition:.2s}
+.btn-back{display:none;align-items:center;justify-content:center;gap:6px;margin-top:16px;
+  background:transparent;color:var(--sub);border:1.5px solid var(--border);border-radius:12px;
+  padding:10px 16px;font-size:14px;cursor:pointer;width:100%;transition:.2s}
+.btn-back:hover{border-color:var(--pr2);color:var(--pr2)}
+#breed-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:200;
+  overflow-y:auto;padding:20px;-webkit-overflow-scrolling:touch}
+.breed-modal-inner{max-width:440px;margin:20px auto;background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius);padding:32px 24px;animation:fadeUp .35s ease both}
+.bm-close{float:right;background:transparent;border:none;font-size:24px;cursor:pointer;color:var(--sub);line-height:1;padding:0}
+.bm-emoji{font-size:64px;display:block;text-align:center;margin-bottom:12px;filter:drop-shadow(0 0 16px rgba(192,57,109,.5))}
+.bm-name{font-size:24px;font-weight:900;text-align:center;letter-spacing:.06em;margin-bottom:6px;
+  background:linear-gradient(135deg,#f5cfa0,#fdf3e7);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.bm-catch{font-size:13px;color:var(--sub);text-align:center;margin-bottom:16px;line-height:1.5}
+.bm-keywords{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:16px}
+.bm-kw{background:linear-gradient(135deg,rgba(192,57,109,.35),rgba(232,116,154,.25));
+  border:1px solid rgba(232,116,154,.4);border-radius:20px;padding:5px 14px;font-size:13px;font-weight:600}
+.bm-desc{font-size:14px;color:var(--sub);line-height:1.6;margin-bottom:20px;text-align:center}
+.bm-startbtn{width:100%;padding:14px;background:linear-gradient(135deg,#c0396d,#e8749a);
+  color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;transition:.2s}
+.bm-startbtn:hover{transform:translateY(-2px)}
 </style>
 </head>
 <body>
@@ -103,7 +126,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Yu Gothic',sa
   <div>
     <div class="top-title">猫種パーソナリティ診断</div>
     <div style="font-size:13px;color:#e8749a;margin-top:4px;margin-bottom:12px;font-weight:600;letter-spacing:.05em">あなたはどんな猫タイプ？</div>
-    <div class="top-sub">10の質問で、あなたの性格に最も近い猫種がわかります。8種類の個性豊かな猫から、あなたはタイプを診断します。</div>
+    <div class="top-sub">10の質問で、あなたの性格に最も近い猫種がわかります。8種類の個性豊かな猫から、あなたのタイプを診断します。</div>
   </div>
   <div class="top-meta">
     <span class="badge">⏱ 約2分</span>
@@ -111,14 +134,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Yu Gothic',sa
     <span class="badge">🐱 全8タイプ</span>
   </div>
   <div class="types-preview">
-    <div class="type-chip"><span class="emoji">😸</span>アメショ</div>
-    <div class="type-chip"><span class="emoji">👑</span>ペルシャ</div>
-    <div class="type-chip"><span class="emoji">🥰</span>マンチカン</div>
-    <div class="type-chip"><span class="emoji">🌿</span>スコティッシュ</div>
-    <div class="type-chip"><span class="emoji">✨</span>シャム</div>
-    <div class="type-chip"><span class="emoji">🏔️</span>ノルウェジアン</div>
-    <div class="type-chip"><span class="emoji">☁️</span>ラグドール</div>
-    <div class="type-chip"><span class="emoji">⚡</span>ベンガル</div>
+    <div class="type-chip" onclick="showBreedSummary('ameshort')"><span class="emoji">😸</span>アメショ</div>
+    <div class="type-chip" onclick="showBreedSummary('persia')"><span class="emoji">😻</span>ペルシャ</div>
+    <div class="type-chip" onclick="showBreedSummary('munchkin')"><span class="emoji">😺</span>マンチカン</div>
+    <div class="type-chip" onclick="showBreedSummary('scottish')"><span class="emoji">🐱</span>スコティッシュ</div>
+    <div class="type-chip" onclick="showBreedSummary('siamese')"><span class="emoji">😼</span>シャム</div>
+    <div class="type-chip" onclick="showBreedSummary('norwegian')"><span class="emoji">🐈</span>ノルウェジアン</div>
+    <div class="type-chip" onclick="showBreedSummary('ragdoll')"><span class="emoji">😽</span>ラグドール</div>
+    <div class="type-chip" onclick="showBreedSummary('bengal')"><span class="emoji">🙀</span>ベンガル</div>
   </div>
   <button class="btn-start" onclick="startQuiz()">診断スタート 🐾</button>
 </div>
@@ -133,11 +156,54 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Yu Gothic',sa
     <div class="q-text" id="q-text"></div>
   </div>
   <div class="options" id="options-wrap"></div>
+  <button class="btn-back" id="btn-back" onclick="goBack()">← 前の質問に戻る</button>
 </div>
 
 <div id="result" class="screen"></div>
 </div>
+
+<div id="breed-modal" onclick="if(event.target===this)closeBreedModal()">
+  <div class="breed-modal-inner" id="breed-modal-content"></div>
+</div>
 <script>
+
+const breedInfo={
+  ameshort:{emoji:'😸',name:'アメリカンショートヘア',keywords:['社交的','適応力抜群','愛されキャラ'],
+    summary:'誰とでも上手くやれるバランス感覚の持ち主。フレンドリーで明るく、どんな環境にもすぐ馴染む。'},
+  persia:{emoji:'😻',name:'ペルシャ',keywords:['マイペース','上品','我が道を行く'],
+    summary:'ゆったりとした独自の世界観を持つ上品タイプ。自分のペースを何より大切にする。'},
+  munchkin:{emoji:'😺',name:'マンチカン',keywords:['甘え上手','愛嬌たっぷり','ムードメーカー'],
+    summary:'溢れる愛嬌と明るさで誰からも愛されるキャラ。ポジティブなエネルギーで場を和ませる。'},
+  scottish:{emoji:'🐱',name:'スコティッシュフォールド',keywords:['慎重派','深い思考','信頼できる'],
+    summary:'じっくり観察してから行動する思慮深いタイプ。一度信頼した相手には深く誠実に向き合う。'},
+  siamese:{emoji:'😼',name:'シャム',keywords:['強い個性','存在感抜群','知性派'],
+    summary:'強烈な個性と存在感で自然と注目を集める。自分の考えをはっきり表現できる知性と勇気を持つ。'},
+  norwegian:{emoji:'🐈',name:'ノルウェジアンフォレストキャット',keywords:['孤高','独立心','静かな強さ'],
+    summary:'高い独立心を持つ孤高タイプ。一人でいても充実感を感じられる強い精神の持ち主。'},
+  ragdoll:{emoji:'😽',name:'ラグドール',keywords:['癒し系','平和主義','包容力'],
+    summary:'おっとりとした温かさで周囲を癒す平和主義タイプ。その柔らかい存在感が場の雰囲気を和ませる。'},
+  bengal:{emoji:'🙀',name:'ベンガル',keywords:['好奇心旺盛','行動派','エネルギッシュ'],
+    summary:'旺盛な好奇心と尽きないエネルギーで人生を全力で楽しむ行動派。新しい刺激をいつも求めている。'},
+};
+
+function showBreedSummary(key){
+  const b=breedInfo[key];if(!b)return;
+  const modal=document.getElementById('breed-modal');
+  document.getElementById('breed-modal-content').innerHTML=
+    '<button class="bm-close" onclick="closeBreedModal()">✕</button>'+
+    '<span class="bm-emoji">'+b.emoji+'</span>'+
+    '<div class="bm-name">'+b.name+'</div>'+
+    '<div class="bm-catch">'+b.keywords.join(' · ')+'</div>'+
+    '<div class="bm-keywords">'+b.keywords.map(k=>'<span class="bm-kw">'+k+'</span>').join('')+'</div>'+
+    '<div class="bm-desc">'+b.summary+'</div>'+
+    '<button class="bm-startbtn" onclick="closeBreedModal();startQuiz()">🐱 診断してみる</button>';
+  modal.style.display='block';
+  document.body.style.overflow='hidden';
+}
+function closeBreedModal(){
+  document.getElementById('breed-modal').style.display='none';
+  document.body.style.overflow='';
+}
 const SHARE_URL='https://hoshiyorudou.jp/neko';
 const LINE_OA='https://lin.ee/hoshiyorudou';
 
@@ -150,7 +216,7 @@ const questions=[
   {text:'初対面の人と会ったとき？',opts:[
     {text:'😄 積極的に話しかけて打ち解ける',scores:{ameshort:3,munchkin:2}},
     {text:'👁️ まず相手を観察してから距離を縮める',scores:{scottish:3,siamese:2,norwegian:1}},
-    {text:'🌸 向こうから来てくれるのを待つ',scores:{ragdoll:3,persia:2}},
+    {text:'😽 向こうから来てくれるのを待つ',scores:{ragdoll:3,persia:2}},
   ]},
   {text:'グループで作業するとき、あなたは？',opts:[
     {text:'💡 リードして全体を引っ張る',scores:{siamese:3,ameshort:2}},
@@ -160,7 +226,7 @@ const questions=[
   {text:'好きな空間・環境は？',opts:[
     {text:'🌆 賑やかで刺激的な場所',scores:{bengal:3,siamese:2}},
     {text:'🏡 居心地がよくて落ち着く場所',scores:{ragdoll:3,persia:2,munchkin:1}},
-    {text:'🏔️ 静かで広々した自然の中',scores:{norwegian:3,scottish:2}},
+    {text:'🐈 静かで広々した自然の中',scores:{norwegian:3,scottish:2}},
   ]},
   {text:'ストレスを感じたときの対処法は？',opts:[
     {text:'🏃 体を動かしたり外に出る',scores:{bengal:3,ameshort:2}},
@@ -168,9 +234,9 @@ const questions=[
     {text:'👥 誰かと話して気持ちを切り替える',scores:{munchkin:3,ameshort:1,siamese:1}},
   ]},
   {text:'自分の個性・魅力って何だと思う？',opts:[
-    {text:'⚡ 独自の感性と表現力',scores:{siamese:3,bengal:2}},
+    {text:'🙀 独自の感性と表現力',scores:{siamese:3,bengal:2}},
     {text:'💞 誰にでも優しく愛嬌がある',scores:{munchkin:3,ameshort:2}},
-    {text:'🌿 飄々としたミステリアスな雰囲気',scores:{norwegian:3,scottish:2,persia:1}},
+    {text:'🐱 飄々としたミステリアスな雰囲気',scores:{norwegian:3,scottish:2,persia:1}},
   ]},
   {text:'失敗したとき、どうする？',opts:[
     {text:'🔍 原因を分析してすぐに改善に動く',scores:{ameshort:3,scottish:2}},
@@ -180,7 +246,7 @@ const questions=[
   {text:'友達との関係で大切にすることは？',opts:[
     {text:'🎉 楽しい時間を一緒に作ること',scores:{munchkin:3,ameshort:2}},
     {text:'💬 深い話ができる信頼関係',scores:{siamese:2,scottish:3,norwegian:1}},
-    {text:'🌸 お互いのペースを尊重すること',scores:{ragdoll:3,persia:2}},
+    {text:'😽 お互いのペースを尊重すること',scores:{ragdoll:3,persia:2}},
   ]},
   {text:'好奇心の向かう先は？',opts:[
     {text:'🌍 新しい場所や体験を探求したい',scores:{bengal:3,ameshort:2}},
@@ -188,56 +254,56 @@ const questions=[
     {text:'🛌 安らぎとくつろぎを求めたい',scores:{ragdoll:3,munchkin:2,persia:1}},
   ]},
   {text:'理想の一日の終わり方は？',opts:[
-    {text:'✨ 満足のいくことを達成した充実感',scores:{ameshort:3,bengal:2}},
+    {text:'😼 満足のいくことを達成した充実感',scores:{ameshort:3,bengal:2}},
     {text:'☕ 好きな音楽や本と穏やかに過ごす',scores:{persia:3,norwegian:2,ragdoll:1}},
-    {text:'🥰 大切な人と過ごして温かい気持ち',scores:{munchkin:3,ragdoll:2}},
+    {text:'😺 大切な人と過ごして温かい気持ち',scores:{munchkin:3,ragdoll:2}},
   ]},
 ];
 
 const results={
-  ameshort:{emoji:'😸',name:'アメリカンスョートヘア',catch:'バランス抜群の社交派・愛されキャラ',
+  ameshort:{emoji:'😸',name:'アメリカンショートヘア',catch:'バランス抜群の社交派・愛されキャラ',
     traits:['誰とでも上手くやれる適応力','明るく安定したメンタル','何でも器用にこなす器用さ'],
     weaknesses:['深みより広さを優先しすぎることも','八方美人に見られることがある'],
-    desc:'アメショのあなたの、フレンドリーで社交的な愛されキャラ。誰とでも適度な距離感で上手くやれる優れた適応力を持ちます。物事に柔軟に対応できるバランス感覚が魅力で、どんな環境でもその場に溶け込む力があります。',
-    compat:{emoji:'🥰',name:'マンチカンタイプ',why:'明るいエネルギーが互いを引き立て合う'},
+    desc:'アメショのあなたは、フレンドリーで社交的な愛されキャラ。誰とでも適度な距離感で上手くやれる優れた適応力を持ちます。物事に柔軟に対応できるバランス感覚が魅力で、どんな環境でもその場に溶け込む力があります。',
+    compat:{emoji:'😺',name:'マンチカンタイプ',why:'明るいエネルギーが互いを引き立て合う'},
     tend:{社交力:85,マイペース度:55,独自性:60,包容力:75,行動力:70}},
-  persia:{emoji:'👑',name:'ペルシャ',catch:'上品でゆったり、我が道を行くマイペース王',
+  persia:{emoji:'😻',name:'ペルシャ',catch:'上品でゆったり、我が道を行くマイペース王',
     traits:['品のある落ち着いた存在感','自分のペースを大切にする意志','上品な美意識と感性'],
-    weaknesses:['頑固に見られることがある','新しい環境への適応に時間かかることも'],
+    weaknesses:['頑固に見られることがある','新しい環境への適応に時間がかかることも'],
     desc:'ペルシャのあなたは、上品でゆったりとした独自の世界観を持ちます。周囲のペースに合わせる必要はなく、自分らしい心地よいスタイルを確立しています。その品格と落ち着きが、自然と周囲の尊敬を集めます。',
-    compat:{emoji:'☁️',name:me:'ラグドールタイプ',why:'お互いのペースを尊重し合える穏やかな関係'},
+    compat:{emoji:'😽',name:'ラグドールタイプ',why:'お互いのペースを尊重し合える穏やかな関係'},
     tend:{社交力:45,マイペース度:95,独自性:75,包容力:70,行動力:40}},
-  munchkin:{emoji:'🥰',name:'マンチカン',catch:'甘え上手で明るい！愛嬌たっぷりの愛されキャラ',
+  munchkin:{emoji:'😺',name:'マンチカン',catch:'甘え上手で明るい！愛嬌たっぷりの愛されキャラ',
     traits:['溢れる愛嬌と明るさ','誰からも愛される甘え上手','ポジティブなムードメーカー'],
     weaknesses:['依存しすぎてしまうことがある','寂しがり屋で落ち込みやすいことも'],
     desc:'マンチカンのあなたは、その愛くるしい明るさで誰からも愛されるキャラクター。甘え上手で、周囲の人を自然と笑顔にする力を持ちます。ポジティブなエネルギーと素直な感情表現が、人の心を和ませます。',
     compat:{emoji:'😸',name:'アメショタイプ',why:'お互いの明るさが最高の組み合わせ'},
     tend:{社交力:90,マイペース度:50,独自性:55,包容力:85,行動力:65}},
-  scottish:{emoji:'🌿',name:'スコティッシュフォールド',catch:'じっくり観察する慎重な思考派',
-    traits:['じっくり観察してから行動する慎重さ','深か考える思考力','信頼した人への深い忠誠心'],
+  scottish:{emoji:'🐱',name:'スコティッシュフォールド',catch:'じっくり観察する慎重な思考派',
+    traits:['じっくり観察してから行動する慎重さ','深く考える思考力','信頼した人への深い忠誠心'],
     weaknesses:['決断が遅いと感じさせることも','警戒心が強く見られることがある'],
     desc:'スコティッシュのあなたは、慎重に観察してから行動する思慮深いタイプ。新しい環境や人に対してすぐには打ち解けませんが、一度信頼した相手には深く誠実に向き合います。その丁寧な関わり方が長期的な信頼を生みます。',
-    compat:{emoji:'🌸',name:'ラグドールタイプ',why:'慎重さと穏やかさが心地よく共鳴する'},
+    compat:{emoji:'😽',name:'ラグドールタイプ',why:'慎重さと穏やかさが心地よく共鳴する'},
     tend:{社交力:50,マイペース度:80,独自性:70,包容力:65,行動力:50}},
-  siamese:{emoji:'✨',name:'シャム',catch:'強い個性と自己表現で場を支配する存在感タイプ',
+  siamese:{emoji:'😼',name:'シャム',catch:'強い個性と自己表現で場を支配する存在感タイプ',
     traits:['強烈な個性と存在感','自分の意見をはっきり伝える力','知性的で観察眼が鋭い'],
     weaknesses:['我が強いと思われることも','自己主張が強く衝突することがある'],
     desc:'シャムのあなたは、その強烈な個性と存在感で自然と周囲の注目を集めます。自分の考えをはっきり表現できる知性と勇気を持ち、妥協を嫌います。独自の視点と深い洞察力で、周囲に刺激と新しい視点を与えます。',
-    compat:{emoji:'🏔️',name:'ノルウェジアンタイプ',why:'強い個性同士がお互いを高め合える'},
+    compat:{emoji:'🐈',name:'ノルウェジアンタイプ',why:'強い個性同士がお互いを高め合える'},
     tend:{社交力:65,マイペース度:75,独自性:95,包容力:50,行動力:75}},
-  norwegian:{emoji:'🏔️',name:'ノルウェジアンフォレストキャット',catch:'孤高の独立心と圧倒的な存在感',
+  norwegian:{emoji:'🐈',name:'ノルウェジアンフォレストキャット',catch:'孤高の独立心と圧倒的な存在感',
     traits:['高い独立心と自己完結能力','一人でいても充実できる精神力','深く静かな観察眼'],
-    weaknesses:['冷たく見られることがある','距離ゑｮきすぎて孤立することも'],
+    weaknesses:['冷たく見られることがある','距離を置きすぎて孤立することも'],
     desc:'ノルウェジアンのあなたは、圧倒的な独立心を持つ孤高タイプ。一人でいても充実感を感じられる強い精神と、深い観察眼で本質を見抜きます。多くは語らないが、その存在感と知性が自然と周囲の尊敬を集めます。',
-    compat:{emoji:'✨',name:'シャムタイプ',why:'孤高の魂同士が深いところで繋がれる'},
+    compat:{emoji:'😼',name:'シャムタイプ',why:'孤高の魂同士が深いところで繋がれる'},
     tend:{社交力:35,マイペース度:95,独自性:85,包容力:55,行動力:60}},
-  ragdoll:{emoji:'☁️',name:'ラグドール',catch:'おっとりのんびり、場を和ませる癒し系',
+  ragdoll:{emoji:'😽',name:'ラグドール',catch:'おっとりのんびり、場を和ませる癒し系',
     traits:['温かみのある穏やかな包容力','争いを好まない平和主義','人を安心させる柔らかさ'],
     weaknesses:['優柔不断になることがある','意見を言えず流されてしまうことも'],
     desc:'ラグドールのあなたは、おっとりとした温かさで周囲を癒す平和主義タイプ。争いを好まず、誰に対しても穏やかに接します。その柔らかい存在感が場の雰囲気を和ませ、ホッとする安心感を与えます。',
-    compat:{emoji:'👑',name:'ペルシャタイプ',why:'穏やかで上品な二人が最高の癒し空間を作る'},
+    compat:{emoji:'😻',name:'ペルシャタイプ',why:'穏やかで上品な二人が最高の癒し空間を作る'},
     tend:{社交力:65,マイペース度:80,独自性:50,包容力:95,行動力:40}},
-  bengal:{emoji:'⚡',name:'ベンガル',catch:'好奇心旺盛でエネルギッシュな行動派',
+  bengal:{emoji:'🙀',name:'ベンガル',catch:'好奇心旺盛でエネルギッシュな行動派',
     traits:['止まらない好奇心と探求欲','高いエネルギーと行動力','新しいことへの抵抗がない柔軟性'],
     weaknesses:['じっとしていられないことも','衝動的に動いて後悔することがある'],
     desc:'ベンガルのあなたは、旺盛な好奇心と尽きないエネルギーで人生を全力で楽しむ行動派。新しい刺激や体験を常に求め、自分の可能性を広げ続けます。そのエネルギッシュな姿勢が周囲に活力を与え、一緒にいると楽しくなる存在です。',
@@ -245,8 +311,18 @@ const results={
     tend:{社交力:80,マイペース度:55,独自性:80,包容力:55,行動力:95}},
 };
 
+
+let answerHistory=[];
 let scores={},currentQ=0,_shareText='';
-function resetScores(){scores={};Object.keys(results).forEach(k=>scores[k]=0);}
+function resetScores(){scores={};answerHistory=[];Object.keys(results).forEach(k=>scores[k]=0);}
+function goBack(){
+  if(currentQ<=0)return;
+  const last=answerHistory.pop();
+  Object.entries(last).forEach(([k,v])=>{scores[k]=(scores[k]||0)-v;});
+  currentQ--;
+  renderQuestion();
+  const c=document.querySelector('.q-card');c.style.animation='none';c.offsetHeight;c.style.animation='fadeUp .35s ease both';
+}
 function startQuiz(){resetScores();currentQ=0;showScreen('quiz');renderQuestion();}
 function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo({top:0,behavior:'smooth'});}
 function renderQuestion(){
@@ -256,14 +332,16 @@ function renderQuestion(){
   document.getElementById('prog-fill').style.width=pct+'%';
   document.getElementById('q-num-label').textContent='QUESTION '+String(n).padStart(2,'0');
   document.getElementById('q-text').textContent=q.text;
+  const back=document.getElementById('btn-back');if(back)back.style.display=currentQ>0?'flex':'none';
   const wrap=document.getElementById('options-wrap');wrap.innerHTML='';
   q.opts.forEach(opt=>{const btn=document.createElement('button');btn.className='opt';btn.textContent=opt.text;btn.onclick=()=>selectAnswer(opt.scores,btn);wrap.appendChild(btn);});
 }
 function selectAnswer(scoreMap,btn){
   document.querySelectorAll('.opt').forEach(b=>b.style.pointerEvents='none');
   btn.classList.add('selected');
+  answerHistory.push(Object.assign({},scoreMap));
   Object.entries(scoreMap).forEach(([k,v])=>{scores[k]=(scores[k]||0)+v;});
-  setTimeout(()=>{currentQ++;if(currentQ<questions.length){renderQuestion();const c=document.querySelector('.q-card');c.style.animation='none';c.offsetHeight;c.style.animation='fadeUp .35s ease both';}else showResult();},420);
+  setTimeout(()=>{currentQ++;if(currentQ<questions.length){renderQuestion();}else showResult();},420);
 }
 function showResult(){
   const key=Object.entries(scores).sort((a,b)=>b[1]-a[1])[0][0];
@@ -274,7 +352,7 @@ function showResult(){
   ).join('');
   el.innerHTML=`
     <div class="result-hero"><div class="result-icon">${r.emoji}</div><div class="result-label">あなたの猫タイプ</div><div class="result-name">${r.name}</div><div class="result-catch">${r.catch}</div></div>
-    <div class="result-section"><div class="section-title">✨ 長所・強み</div><div class="traits">${r.traits.map(t=>`<span class="trait">${t}</span>`).join('')}</div></div>
+    <div class="result-section"><div class="section-title">😼 長所・強み</div><div class="traits">${r.traits.map(t=>`<span class="trait">${t}</span>`).join('')}</div></div>
     <div class="result-section"><div class="section-title">💬 詳細解説</div><div class="desc">${r.desc}</div></div>
     <div class="result-section"><div class="section-title">△ 気をつけたいこと</div><div class="weaknesses">${r.weaknesses.map(w=>`<div class="weakness">${w}</div>`).join('')}</div></div>
     <div class="result-section"><div class="section-title">💕 相性の良いタイプ</div><div class="compat"><div class="compat-icon">${r.compat.emoji}</div><div><div class="compat-name">${r.compat.name}</div><div class="compat-why">${r.compat.why}</div></div></div></div>
@@ -282,9 +360,9 @@ function showResult(){
     <div class="share-section"><div class="share-title">📣 結果をシェアしよう</div><div class="share-btns">
       <button class="btn-x" onclick="shareX()"><svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.742l7.742-8.852L1.512 2.25h6.961l4.263 5.623 5.508-5.623zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>Xでシェア</button>
       <button class="btn-line" onclick="shareLINE()"><svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>LINEでシェア</button>
-      <button class="btn-retry" onclick="startQuiz()">🔄 もぅ一度診断する</button>
+      <button class="btn-retry" onclick="startQuiz()">🔄 もう一度診断する</button>
     </div></div>
-    <div class="line-cta"><div class="line-cta-icon">🔮</div><div class="line-cta-title">本格占いは星夜堂へ</div><div class="line-cta-text">猫タイプだけでなく、あなたの生年月日から<br>今日の運勢・今月の流れを毎日お届けします</div><a class="btn-line-cta" href="${LINE_OA}" target="_blank"><svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>星夜堂でもっと詳しく卡う</a></div>
+    <div class="line-cta"><div class="line-cta-icon">🔮</div><div class="line-cta-title">本格占いは星夜堂へ</div><div class="line-cta-text">猫タイプだけでなく、あなたの生年月日から<br>今日の運勢・今月の流れを毎日お届けします</div><a class="btn-line-cta" href="${LINE_OA}" target="_blank"><svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>星夜堂でもっと詳しく占う</a></div>
     <div class="result-footer">© 星夜堂 — 猫種パーソナリティ診断</div>
   `;
   showScreen('result');
