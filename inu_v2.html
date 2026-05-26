@@ -134,13 +134,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Yu Gothic',sa
     <span class="badge">🐶 全8タイプ</span>
   </div>
   <div class="types-preview">
-    <div class="type-chip" onclick="showBreedSummary('shiba')"><span class="emoji">🦊</span>柴犬</div>
-    <div class="type-chip" onclick="showBreedSummary('golden')"><span class="emoji">🌟</span>ゴールデン</div>
+    <div class="type-chip" onclick="showBreedSummary('shiba')"><span class="emoji">🐕</span>柴犬</div>
+    <div class="type-chip" onclick="showBreedSummary('golden')"><span class="emoji">🦮</span>ゴールデン</div>
     <div class="type-chip" onclick="showBreedSummary('poodle')"><span class="emoji">🐩</span>トイプードル</div>
-    <div class="type-chip" onclick="showBreedSummary('border')"><span class="emoji">⚡</span>ボーダーコリー</div>
-    <div class="type-chip" onclick="showBreedSummary('dachshund')"><span class="emoji">🌭</span>ダックスフント</div>
-    <div class="type-chip" onclick="showBreedSummary('chihuahua')"><span class="emoji">🔥</span>チワワ</div>
-    <div class="type-chip" onclick="showBreedSummary('labrador')"><span class="emoji">💛</span>ラブラドール</div>
+    <div class="type-chip" onclick="showBreedSummary('border')"><span class="emoji">🐕‍🦺</span>ボーダーコリー</div>
+    <div class="type-chip" onclick="showBreedSummary('dachshund')"><span class="emoji">🐾</span>ダックスフント</div>
+    <div class="type-chip" onclick="showBreedSummary('chihuahua')"><span class="emoji">🐶</span>チワワ</div>
+    <div class="type-chip" onclick="showBreedSummary('labrador')"><span class="emoji">🦮</span>ラブラドール</div>
     <div class="type-chip" onclick="showBreedSummary('husky')"><span class="emoji">🐺</span>ハスキー</div>
   </div>
   <button class="btn-start" onclick="startQuiz()">診断スタート 🐾</button>
@@ -176,7 +176,7 @@ const questions=[
     {text:'💡 話し合いで最適解を探す',scores:{poodle:3,border:2}},
   ]},
   {text:'新しい挑戦に誘われたとき？',opts:[
-    {text:'⚡ すぐ飛び込む！考えるより行動',scores:{husky:3,golden:2}},
+    {text:'🐕‍🦺 すぐ飛び込む！考えるより行動',scores:{husky:3,golden:2}},
     {text:'📋 メリット・デメリットを整理してから',scores:{border:3,poodle:2}},
     {text:'👥 仲間がいるなら一緒にやりたい',scores:{labrador:3,golden:1}},
   ]},
@@ -186,9 +186,9 @@ const questions=[
     {text:'😄 楽しみながら続けること',scores:{golden:3,labrador:2}},
   ]},
   {text:'グループでの自分の役割は？',opts:[
-    {text:'🌟 みんなを笑顔にするムードメーカー',scores:{golden:3,labrador:2}},
+    {text:'🦮 みんなを笑顔にするムードメーカー',scores:{golden:3,labrador:2}},
     {text:'🧠 戦略や計画を考えるブレイン',scores:{poodle:3,border:2}},
-    {text:'🔥 自分の信念で突き進むエンジン',scores:{shiba:2,chihuahua:3,husky:1}},
+    {text:'🐶 自分の信念で突き進むエンジン',scores:{shiba:2,chihuahua:3,husky:1}},
   ]},
   {text:'自由時間の使い方は？',opts:[
     {text:'🌍 新しい場所や体験を探しに行く',scores:{husky:3,golden:2}},
@@ -208,7 +208,7 @@ const questions=[
   {text:'仕事やプロジェクトに取り組む姿勢は？',opts:[
     {text:'📊 データと計画で確実にやり遂げる',scores:{border:3,poodle:2}},
     {text:'❤️ 熱量と誠実さで粘り強く取り組む',scores:{dachshund:3,golden:2}},
-    {text:'⚡ エネルギッシュに勢いで突き進む',scores:{husky:3,chihuahua:2}},
+    {text:'🐕‍🦺 エネルギッシュに勢いで突き進む',scores:{husky:3,chihuahua:2}},
   ]},
   {text:'友人があなたをどう見ている？',opts:[
     {text:'☀️ 明るい・元気・一緒にいると楽しい',scores:{golden:3,labrador:2}},
@@ -223,53 +223,53 @@ const questions=[
 ];
 
 const results={
-  shiba:{emoji:'🦊',name:'柴犬',catch:'信念の職人。自分の軸を絶対に曲げない',
+  shiba:{emoji:'🐕',name:'柴犬',catch:'信念の職人。自分の軸を絶対に曲げない',
     traits:['揺るぎない自分軸と信念','深い誠実さと責任感','独自のこだわりと美学'],
     weaknesses:['融通が利かないと思われることも','素直に甘えることが苦手'],
     desc:'柴犬タイプのあなたは、強い信念と自分軸を持つ職人気質。周囲の意見や流行に流されず、自分の美学を貫きます。誠実で責任感が強く、深く信頼した相手には一途に向き合います。その揺るぎない姿が周囲の尊敬を集めます。',
-    compat:{emoji:'🌟',name:'ゴールデンタイプ',why:'信念と温かさが最高のバランスを生む'},
+    compat:{emoji:'🦮',name:'ゴールデンタイプ',why:'信念と温かさが最高のバランスを生む'},
     tend:{社交力:50,忠誠心:95,知性:70,包容力:60,自由度:65}},
-  golden:{emoji:'🌟',name:'ゴールデンレトリバー',catch:'太陽のような愛嬌で誰からも愛される存在',
+  golden:{emoji:'🦮',name:'ゴールデンレトリバー',catch:'太陽のような愛嬌で誰からも愛される存在',
     traits:['誰にでも優しい深い愛情','場を明るくするムードメーカー力','人の気持ちに寄り添う共感力'],
     weaknesses:['断れずに頑張りすぎることがある','感情が顔に出すぎることも'],
     desc:'ゴールデンタイプのあなたは、太陽のような暖かさで誰からも愛されるキャラクター。その深い優しさと愛情で周囲を包み込み、自然とみんなが集まってきます。人の痛みや喜びに敏感に反応できる高い共感力が最大の魅力です。',
-    compat:{emoji:'🦊',name:'柴犬タイプ',why:'愛情と信念が最高のパートナーシップを築く'},
+    compat:{emoji:'🐕',name:'柴犬タイプ',why:'愛情と信念が最高のパートナーシップを築く'},
     tend:{社交力:95,忠誠心:90,知性:65,包容力:95,自由度:55}},
   poodle:{emoji:'🐩',name:'トイプードル',catch:'知性とオシャレ感度の高い戦略家',
     traits:['高い知性と学習能力','洗練されたセンスと美意識','戦略的に物事を考える力'],
     weaknesses:['計算高く見られることがある','完璧主義で疲れることも'],
     desc:'トイプードルタイプのあなたは、高い知性と洗練された感覚を持つ戦略家。物事を論理的に分析して最適解を導く力と、トレンドを先読みする感度の高さを兼ね備えます。その知性と美意識が、周囲から一目置かれる存在感を生みます。',
-    compat:{emoji:'⚡',name:'ボーダーコリータイプ',why:'知性と実行力が組み合わさる最強コンビ'},
+    compat:{emoji:'🐕‍🦺',name:'ボーダーコリータイプ',why:'知性と実行力が組み合わさる最強コンビ'},
     tend:{社交力:70,忠誠心:65,知性:95,包容力:65,自由度:70}},
-  border:{emoji:'⚡',name:'ボーダーコリー',catch:'完璧主義の集中力で圧倒的な結果を出す',
+  border:{emoji:'🐕‍🦺',name:'ボーダーコリー',catch:'完璧主義の集中力で圧倒的な結果を出す',
     traits:['圧倒的な集中力と実行力','高い目標を達成しようとする向上心','精緻な計画を立てる論理力'],
     weaknesses:['自分にも他人にも厳しくなりすぎることも','休むことが苦手なことがある'],
     desc:'ボーダーコリータイプのあなたは、圧倒的な集中力と完璧主義で結果を出す実行者。高い目標を設定して、一点集中で達成していきます。論理的な思考と緻密な計画立案で、常に最高のパフォーマンスを目指します。',
     compat:{emoji:'🐩',name:'トイプードルタイプ',why:'実行力と知性が最高の成果を生み出す'},
     tend:{社交力:55,忠誠心:75,知性:90,包容力:55,自由度:60}},
-  dachshund:{emoji:'🌭',name:'ダックスフント',catch:'一度決めたら最後まで諦めない粘り腰',
+  dachshund:{emoji:'🐾',name:'ダックスフント',catch:'一度決めたら最後まで諦めない粘り腰',
     traits:['一度決めたら諦めない粘り強さ','深く長くコミットする忠誠心','好奇心旺盛な探求心'],
     weaknesses:['意地を張りすぎることがある','勝ち負けにこだわりすぎることも'],
     desc:'ダックスフントタイプのあなたは、一度決めたら最後まで諦めない粘り腰が最大の武器。困難な状況でも粘り続け、最終的に結果を出します。深く長く誰かにコミットできる忠誠心と、好奇心旺盛な探求心も持ちます。',
-    compat:{emoji:'🌟',name:'ゴールデンタイプ',why:'粘り強さと温かさが最強のパートナーシップ'},
+    compat:{emoji:'🦮',name:'ゴールデンタイプ',why:'粘り強さと温かさが最強のパートナーシップ'},
     tend:{社交力:60,忠誠心:90,知性:65,包容力:70,自由度:55}},
-  chihuahua:{emoji:'🔥',name:'チワワ',catch:'小さな体に宿る大きな胆力と負けん気',
+  chihuahua:{emoji:'🐶',name:'チワワ',catch:'小さな体に宿る大きな胆力と負けん気',
     traits:['誰にも負けない強い意志と負けん気','小さくても怯まない大物感','強い忠誠心と一途さ'],
     weaknesses:['警戒心が強く最初は打ち解けにくいことも','主張が激しくなりすぎることがある'],
     desc:'チワワタイプのあなたは、小さな体に大きな胆力を持つ負けん気のチャンピオン。どんな相手にも怯まない強い意志と自信は、自分より大きな存在に対しても揺らぎません。信頼した相手には一途で深い愛情を注ぎます。',
-    compat:{emoji:'💛',name:'ラブラドールタイプ',why:'強さと包容力が見事に補い合う'},
+    compat:{emoji:'🦮',name:'ラブラドールタイプ',why:'強さと包容力が見事に補い合う'},
     tend:{社交力:55,忠誠心:85,知性:65,包容力:50,自由度:70}},
-  labrador:{emoji:'💛',name:'ラブラドールレトリバー',catch:'誰でも受け入れる懐の深い包容力',
+  labrador:{emoji:'🦮',name:'ラブラドールレトリバー',catch:'誰でも受け入れる懐の深い包容力',
     traits:['誰でも受け入れる懐の深さ','温かく穏やかな安定感','困っている人を放っておけない優しさ'],
     weaknesses:['お人好しすぎることがある','自分のことを後回しにしすぎることも'],
     desc:'ラブラドールタイプのあなたは、誰でも受け入れる圧倒的な包容力を持ちます。人種や年齢を超えて誰とでも友好的に接でき、困っている人を放っておけない優しさが行動の根底にあります。その安定した温かさが、多くの人に安心感を与えます。',
-    compat:{emoji:'🔥',name:'チワワタイプ',why:'包容力が強さを包み込む最高の組み合わせ'},
+    compat:{emoji:'🐶',name:'チワワタイプ',why:'包容力が強さを包み込む最高の組み合わせ'},
     tend:{社交力:90,忠誠心:85,知性:65,包容力:95,自由度:60}},
   husky:{emoji:'🐺',name:'シベリアンハスキー',catch:'束縛を嫌い自分の道を行く自由人',
     traits:['自由を愛する独立した精神','枠にはまらない個性と行動力','困難な環境でも生き抜く強さ'],
     weaknesses:['自由すぎて周囲と合わないことも','飽きっぽく見られることがある'],
     desc:'ハスキータイプのあなたは、束縛を嫌い自分の道を突き進む自由人。規則やルールよりも自分の感覚と信念を大切にします。広い世界への好奇心と高いエネルギーで、自分だけの冒険を続けます。その自由な生き方が周囲を惹きつけます。',
-    compat:{emoji:'🦊',name:'柴犬タイプ',why:'互いの自由と信念が深いところで共鳴する'},
+    compat:{emoji:'🐕',name:'柴犬タイプ',why:'互いの自由と信念が深いところで共鳴する'},
     tend:{社交力:65,忠誠心:55,知性:70,包容力:55,自由度:95}},
 };
 
@@ -332,19 +332,19 @@ function shareX(){window.open('https://twitter.com/intent/tweet?text='+encodeURI
 function shareLINE(){window.open('https://social-plugins.line.me/lineit/share?url='+encodeURIComponent(SHARE_URL)+'&text='+encodeURIComponent(_shareText),'_blank');}
 
 const breedInfo={
-  shiba:{emoji:'🦊',name:'柴犬',keywords:['自分軸が強い','誠実で一途','こだわり職人'],
+  shiba:{emoji:'🐕',name:'柴犬',keywords:['自分軸が強い','誠実で一途','こだわり職人'],
     summary:'信念を曲げない揺るぎない自分軸の持ち主。深く信頼した相手には一途に向き合います。'},
-  golden:{emoji:'🌟',name:'ゴールデンレトリバー',keywords:['誰からも愛される','高い共感力','ムードメーカー'],
+  golden:{emoji:'🦮',name:'ゴールデンレトリバー',keywords:['誰からも愛される','高い共感力','ムードメーカー'],
     summary:'太陽のような温かさで誰からも愛されるキャラクター。場を自然と明るくします。'},
   poodle:{emoji:'🐩',name:'トイプードル',keywords:['知性派','センスが高い','戦略的思考'],
     summary:'高い知性と洗練されたセンスを持つ戦略家。トレンドを先読みする感度も抜群。'},
-  border:{emoji:'⚡',name:'ボーダーコリー',keywords:['圧倒的集中力','完璧主義','抜群の実行力'],
+  border:{emoji:'🐕‍🦺',name:'ボーダーコリー',keywords:['圧倒的集中力','完璧主義','抜群の実行力'],
     summary:'一点集中で圧倒的な結果を出す実行者。論理的な計画で高い目標を達成します。'},
-  dachshund:{emoji:'🌭',name:'ダックスフント',keywords:['粘り強い','諦めない','探求心旺盛'],
+  dachshund:{emoji:'🐾',name:'ダックスフント',keywords:['粘り強い','諦めない','探求心旺盛'],
     summary:'一度決めたら最後まで諦めない粘り腰が最大の武器。好奇心と探求心も旺盛。'},
-  chihuahua:{emoji:'🔥',name:'チワワ',keywords:['胆力がある','負けん気が強い','一途な愛情'],
+  chihuahua:{emoji:'🐶',name:'チワワ',keywords:['胆力がある','負けん気が強い','一途な愛情'],
     summary:'小さな体に大きな胆力。誰にも怯まない強い意志と、信頼した相手への一途な愛情。'},
-  labrador:{emoji:'💛',name:'ラブラドールレトリバー',keywords:['包容力抜群','安定感','誰にでも優しい'],
+  labrador:{emoji:'🦮',name:'ラブラドールレトリバー',keywords:['包容力抜群','安定感','誰にでも優しい'],
     summary:'誰でも受け入れる圧倒的な包容力。安定した温かさで多くの人に安心感を与えます。'},
   husky:{emoji:'🐺',name:'シベリアンハスキー',keywords:['自由人','独立心が強い','冒険好き'],
     summary:'束縛を嫌い自分の道を突き進む自由人。広い世界への好奇心と高いエネルギー。'},
