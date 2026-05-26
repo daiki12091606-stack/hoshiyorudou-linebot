@@ -103,6 +103,26 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Yu Gothic',sa
   font-size:15px;font-weight:700;cursor:pointer;width:100%;display:flex;align-items:center;justify-content:center;gap:8px;transition:.2s;text-decoration:none}
 .btn-line-cta:hover{background:#05b34c;transform:translateY(-2px)}
 .result-footer{text-align:center;font-size:11px;color:var(--sub);padding-top:8px}
+.btn-back{display:none;align-items:center;justify-content:center;gap:6px;margin-top:16px;
+  background:transparent;border:1px solid var(--border);border-radius:10px;padding:10px 16px;
+  font-size:13px;color:var(--sub);cursor:pointer;width:100%;transition:.2s}
+.btn-back:hover{border-color:var(--pr2);color:var(--pr2)}
+#type-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:200;
+  overflow-y:auto;padding:20px 16px}
+.type-modal-inner{max-width:440px;margin:20px auto;background:var(--card);border:1px solid var(--border);
+  border-radius:20px;padding:28px 24px;position:relative}
+.bm-close{float:right;background:transparent;border:none;font-size:24px;cursor:pointer;color:var(--sub);line-height:1;padding:0}
+.bm-emoji{font-size:64px;display:block;text-align:center;margin-bottom:12px;filter:drop-shadow(0 0 16px rgba(21,101,192,.5))}
+.bm-name{font-size:24px;font-weight:900;text-align:center;letter-spacing:.06em;margin-bottom:6px;
+  background:linear-gradient(135deg,#1565c0,#42a5f5);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.bm-catch{font-size:13px;color:var(--sub);text-align:center;margin-bottom:16px;line-height:1.5}
+.bm-keywords{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:16px}
+.bm-kw{background:linear-gradient(135deg,rgba(21,101,192,.35),rgba(21,101,192,.25));
+  border:1px solid rgba(21,101,192,.5);border-radius:20px;padding:6px 14px;font-size:12px;font-weight:700}
+.bm-desc{font-size:14px;color:var(--sub);line-height:1.6;margin-bottom:20px;text-align:center}
+.bm-startbtn{width:100%;padding:14px;background:linear-gradient(135deg,#1565c0,#42a5f5);
+  border:none;border-radius:12px;color:#fff;font-size:15px;font-weight:700;cursor:pointer;transition:.2s}
+.bm-startbtn:hover{transform:translateY(-2px)}
 </style>
 </head>
 <body>
@@ -121,12 +141,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Yu Gothic',sa
     <span class="badge">🦁 全6タイプ</span>
   </div>
   <div class="types-preview">
-    <div class="type-chip"><span class="emoji">🐯</span>白虎</div>
-    <div class="type-chip"><span class="emoji">🐉</span>青龍</div>
-    <div class="type-chip"><span class="emoji">🦅</span>朱雀</div>
-    <div class="type-chip"><span class="emoji">🐢</span>玄武</div>
-    <div class="type-chip"><span class="emoji">🦄</span>麒麟</div>
-    <div class="type-chip"><span class="emoji">🦚</span>鳳凰</div>
+    <div class="type-chip" onclick="showTypeInfo('byakko')"><span class="emoji">🐯</span>白虎</div>
+    <div class="type-chip" onclick="showTypeInfo('seiryu')"><span class="emoji">🐉</span>青龍</div>
+    <div class="type-chip" onclick="showTypeInfo('suzaku')"><span class="emoji">🦅</span>朱雀</div>
+    <div class="type-chip" onclick="showTypeInfo('genbu')"><span class="emoji">🐢</span>玄武</div>
+    <div class="type-chip" onclick="showTypeInfo('kirin')"><span class="emoji">🦄</span>麒麟</div>
+    <div class="type-chip" onclick="showTypeInfo('hooh')"><span class="emoji">🦚</span>鳳凰</div>
   </div>
   <button class="btn-start" onclick="startQuiz()">診断スタート ✨</button>
 </div>
@@ -144,10 +164,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Yu Gothic',sa
     <div class="q-text" id="q-text"></div>
   </div>
   <div class="options" id="options-wrap"></div>
+  <button class="btn-back" id="btn-back" onclick="goBack()">← 前の質問に戻る</button>
 </div>
 
 <div id="result" class="screen"></div>
 
+<div id="type-modal" onclick="if(event.target===this)closeTypeModal()">
+  <div class="type-modal-inner" id="type-modal-content"></div>
+</div>
 </div>
 <script>
 const SHARE_URL = 'https://hoshiyorudou.jp/shinjuu';
@@ -287,8 +311,57 @@ const results = {
   }
 };
 
+
+function showTypeInfo(key){
+  const b=typeInfo[key];if(!b)return;
+  const modal=document.getElementById('type-modal');
+  document.getElementById('type-modal-content').innerHTML=
+    '<button class="bm-close" onclick="closeTypeModal()">✕</button>'+
+    '<span class="bm-emoji">'+b.emoji+'</span>'+
+    '<div class="bm-name">'+b.name+'</div>'+
+    '<div class="bm-catch">'+b.catch+'</div>'+
+    '<div class="bm-keywords">'+b.keywords.map(k=>'<span class="bm-kw">'+k+'</span>').join('')+'</div>'+
+    '<div class="bm-desc">'+b.summary+'</div>'+
+    '<button class="bm-startbtn" onclick="closeTypeModal();startQuiz()">⚡ 診断してみる</button>';
+  modal.style.display='block';document.body.style.overflow='hidden';
+}
+function closeTypeModal(){
+  document.getElementById('type-modal').style.display='none';
+  document.body.style.overflow='';
+}
+
+let answerHistory=[];
+
+const typeInfo = {
+  byakko:{emoji:'🐯',name:'白虎',catch:'勇気と純粋さを象徴する西方の神獣',keywords:['勇気と行動力','純粋な正義感','困難を跳ね返す強さ'],summary:'圧倒的な勇気と正義感で道を切り拓く神獣。純粋な心と強い意志で困難を跳ね返し、仲間のために体を張れる真のヒーロー。'},
+  seiryu:{emoji:'🐉',name:'青龍',catch:'知恵と成長の力を宿す東方の神獣',keywords:['深い知性','成長力','先見の明'],summary:'知恵と洞察で未来を見通す神獣。物事の本質を見抜き、常に成長し続ける。その深い思考と先見の明が、周囲を導く力となる。'},
+  suzaku:{emoji:'🦅',name:'朱雀',catch:'情熱と再生の炎を灯す南方の神獣',keywords:['情熱','輝くカリスマ','再生の力'],summary:'炎のように燃える情熱と輝くカリスマを持つ神獣。どんな逆境からも立ち上がる再生の力と、周囲を照らす明るさで場を盛り上げる。'},
+  genbu:{emoji:'🐢',name:'玄武',catch:'忍耐と守護の力を持つ北方の神獣',keywords:['忍耐力','守護の意志','深い信頼感'],summary:'揺るぎない忍耐力と守護の意志を持つ神獣。どっしりした安定感と深い知恵で、大切な人をしっかりと守り続ける。'},
+  kirin:{emoji:'🦄',name:'麒麟',catch:'高貴さと平和の徳を体現する神獣',keywords:['高貴さ','平和の象徴','深い共感力'],summary:'高貴さと優しさで平和をもたらす神獣。深い共感力と徳の高さで、自然と人々の心を結びつける。その存在は周囲に調和と幸運をもたらす。'},
+  hooh:{emoji:'🦚',name:'鳳凰',catch:'変革と不死の力で時代を切り開く神獣',keywords:['変革力','不死の魂','時代を超える輝き'],summary:'変革と再生を繰り返し、時代を切り開く神獣。高い理想を掲げ、輝く存在感で周囲を魅了する。どんな変化にも動じない不死の精神を持つ。'},
+};
+
+function showTypeInfo(key){
+  const b=typeInfo[key];if(!b)return;
+  const modal=document.getElementById('type-modal');
+  document.getElementById('type-modal-content').innerHTML=
+    '<button class="bm-close" onclick="closeTypeModal()">✕</button>'+
+    '<span class="bm-emoji">'+b.emoji+'</span>'+
+    '<div class="bm-name">'+b.name+'</div>'+
+    '<div class="bm-catch">'+b.catch+'</div>'+
+    '<div class="bm-keywords">'+b.keywords.map(k=>'<span class="bm-kw">'+k+'</span>').join('')+'</div>'+
+    '<div class="bm-desc">'+b.summary+'</div>'+
+    '<button class="bm-startbtn" onclick="closeTypeModal();startQuiz()">⚡ 診断してみる</button>';
+  modal.style.display='block';document.body.style.overflow='hidden';
+}
+function closeTypeModal(){
+  document.getElementById('type-modal').style.display='none';
+  document.body.style.overflow='';
+}
+
 let scores={}, currentQ=0, _shareText='';
-function resetScores(){ scores={}; Object.keys(results).forEach(k=>scores[k]=0); }
+function resetScores(){ scores={};answerHistory=[]; Object.keys(results).forEach(k=>scores[k]=0); }
+function goBack(){if(currentQ<=0)return;const last=answerHistory.pop();Object.entries(last).forEach(([k,v])=>{scores[k]=(scores[k]||0)-v;});currentQ--;renderQuestion();const c=document.querySelector('.q-card');c.style.animation='none';c.offsetHeight;c.style.animation='fadeUp .35s ease both';}
 function startQuiz(){ resetScores(); currentQ=0; showScreen('quiz'); renderQuestion(); }
 function showScreen(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
@@ -302,6 +375,7 @@ function renderQuestion(){
   document.getElementById('prog-fill').style.width=pct+'%';
   document.getElementById('q-num-label').textContent='QUESTION '+String(n).padStart(2,'0');
   document.getElementById('q-text').textContent=q.text;
+  const back=document.getElementById('btn-back');if(back)back.style.display=currentQ>0?'flex':'none';
   const wrap=document.getElementById('options-wrap'); wrap.innerHTML='';
   q.opts.forEach(opt=>{
     const btn=document.createElement('button'); btn.className='opt';
@@ -311,6 +385,7 @@ function renderQuestion(){
 function selectAnswer(scoreMap,btn){
   document.querySelectorAll('.opt').forEach(b=>b.style.pointerEvents='none');
   btn.classList.add('selected');
+  answerHistory.push(Object.assign({},scoreMap));
   Object.entries(scoreMap).forEach(([k,v])=>{scores[k]=(scores[k]||0)+v;});
   setTimeout(()=>{
     currentQ++;
