@@ -41,7 +41,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Yu Gothic',sa
 .dog-portrait{width:52px;height:52px;border-radius:50%;border:2.5px solid var(--bc,var(--pr));
   display:flex;align-items:center;justify-content:center;font-size:26px;margin:0 auto 5px;
   background:rgba(0,0,0,.3)}
-.breed-card-name{font-size:9px;color:var(--sub);line-height:1.3}
+.breed-card-name{font-size:9px;color:var(--text);font-weight:700;line-height:1.3;margin-bottom:2px}
+.breed-card-habit{font-size:8px;color:var(--bc,var(--pr2));line-height:1.3;opacity:.9}
 
 /* START BTN */
 .btn-start{width:100%;max-width:320px;padding:16px;
@@ -204,7 +205,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Yu Gothic',sa
 
 <script>
 const results = {
-  border:{color:'#4fc3f7',emoji:'🐕',name:'ボーダーコリー',
+  border:{color:'#4fc3f7',emoji:'🐕',name:'ボーダーコリー',habit:'最高の牧羊犬',
     catch:'知性と行動力を兼ね備えた完璧主義者。常に最善を追い求める。',
     traits:['🧠 超高知性','⚡ 素早い判断','🎯 集中力抜群','📐 完璧主義'],
     weaknesses:['😤 手持ち無沙汰に弱い','🔄 柔軟性に欠けることも','😓 自分に厳しすぎる'],
@@ -212,7 +213,7 @@ const results = {
     compat:{emoji:'🐕‍🦺',name:'ゴールデンレトリバー',why:'あなたの完璧主義を温かく受け止め、緊張を解きほぐしてくれる最高のパートナー。'},
     tend:{知性:98,行動力:80,社交性:45,共感力:60,自由度:55}},
 
-  akita:{color:'#ff7043',emoji:'🐺',name:'秋田犬',
+  akita:{color:'#ff7043',emoji:'🐺',name:'秋田犬',habit:'孤高の忠実犬',
     catch:'誇り高き孤高の魂。一度決めたら揺るがない強い意志の持ち主。',
     traits:['👑 高い誇り','🛡 強い意志','🤫 寡黙で深い','💪 芯の強さ'],
     weaknesses:['🤝 協調が苦手なことも','😶 表現が不器用','🆕 変化への適応が遅い'],
@@ -220,7 +221,7 @@ const results = {
     compat:{emoji:'🦮',name:'ラフコリー',why:'あなたの寡黙さを理解し、穏やかに橋渡しをしてくれる信頼できる存在。'},
     tend:{知性:72,行動力:65,社交性:30,共感力:55,自由度:75}},
 
-  doberman:{color:'#5c6bc0',emoji:'🐕',name:'ドーベルマン',
+  doberman:{color:'#5c6bc0',emoji:'🐕',name:'ドーベルマン',habit:'生まれながらのリーダー',
     catch:'知性と威厳を併せ持つ戦略的リーダー。目標達成への執念は誰にも負けない。',
     traits:['🎖 自然なリーダーシップ','🧩 戦略的思考','⚡ 素早い決断','🔒 強い責任感'],
     weaknesses:['😌 リラックスが苦手','🙈 弱みを見せない','👂 他の意見を聞きにくい'],
@@ -228,7 +229,7 @@ const results = {
     compat:{emoji:'🐩',name:'ポメラニアン',why:'あなたの緊張をほぐし、遊び心を引き出してくれる最高の相棒。'},
     tend:{知性:88,行動力:88,社交性:50,共感力:50,自由度:45}},
 
-  jrt:{color:'#26c6da',emoji:'🐶',name:'ジャックラッセルテリア',
+  jrt:{color:'#26c6da',emoji:'🐶',name:'ジャック・ラッセル・テリア',habit:'知的挑戦者犬',
     catch:'エネルギーの塊！好奇心旺盛で何事も全力で楽しむ自由人。',
     traits:['🎉 無限のエネルギー','🔍 旺盛な好奇心','😂 ユーモアの達人','🚀 行動力満点'],
     weaknesses:['🛑 じっとしていられない','😅 衝動的な判断','📋 細かい作業が苦手'],
@@ -236,7 +237,7 @@ const results = {
     compat:{emoji:'🐕',name:'ボーダーコリー',why:'あなたのアイデアを形にする知性と計画性を持つ頼れるパートナー。'},
     tend:{知性:70,行動力:95,社交性:80,共感力:60,自由度:92}},
 
-  rough_collie:{color:'#ffca28',emoji:'🦮',name:'ラフコリー',
+  rough_collie:{color:'#ffca28',emoji:'🦮',name:'ラフ・コリー',habit:'希少な羽衣犬',
     catch:'知性と優しさを持つ天然のカウンセラー。誰もが居心地よくなる空間を作る。',
     traits:['💛 深い共感力','🌟 思いやり','🗣 コミュニケーション上手','🛡 守護者気質'],
     weaknesses:['😰 心配性すぎる','🙅 断るのが苦手','😔 自己犠牲になりがち'],
@@ -244,7 +245,7 @@ const results = {
     compat:{emoji:'🐕',name:'ボーダーコリー',why:'あなたの感情的サポートと相手の論理的思考が完璧にかみ合うコンビ。'},
     tend:{知性:78,行動力:60,社交性:88,共感力:96,自由度:50}},
 
-  cavalier:{color:'#ec407a',emoji:'🐶',name:'キャバリア',
+  cavalier:{color:'#ec407a',emoji:'🐶',name:'キャバリア・キング・チャールズ',habit:'謎的な夢想犬',
     catch:'愛情深く穏やか。誰とでも仲良くなれる究極の癒し系。',
     traits:['❤️ 無限の愛情','😊 穏やかさ','🤝 誰とでも仲良し','✨ 癒しのオーラ'],
     weaknesses:['😢 寂しがり屋','🧭 優柔不断になることも','💔 傷つきやすい'],
@@ -252,7 +253,7 @@ const results = {
     compat:{emoji:'🐕',name:'ドーベルマン',why:'あなたの柔らかさが相手の鋭さを包み、互いの弱点を補い合える関係。'},
     tend:{知性:60,行動力:55,社交性:95,共感力:92,自由度:60}},
 
-  golden:{color:'#ffa726',emoji:'🐕‍🦺',name:'ゴールデンレトリバー',
+  golden:{color:'#ffa726',emoji:'🐕‍🦺',name:'ゴールデン・レトリーバー',habit:'みんなのリーダー犬',
     catch:'誰からも愛される太陽のような存在。ポジティブエネルギーで周囲を照らす。',
     traits:['☀️ 圧倒的ポジティブ','🫂 高い親しみやすさ','🌈 明るい雰囲気メーカー','🤲 奉仕精神'],
     weaknesses:['⚠️ 危険察知が遅れる','😤 怒れないことも','🎯 集中力の維持が難しい'],
@@ -260,7 +261,7 @@ const results = {
     compat:{emoji:'🐕',name:'ボーダーコリー',why:'あなたの感情知性と相手の論理知性が組み合わさると最強のチームに。'},
     tend:{知性:68,行動力:72,社交性:98,共感力:90,自由度:65}},
 
-  setter:{color:'#ff5722',emoji:'🐕',name:'アイリッシュセター',
+  setter:{color:'#ff5722',emoji:'🐕',name:'アイリッシュ・セター',habit:'自由奔放な猟銃犬',
     catch:'情熱と自由を愛するロマンティスト。直感で動き、熱狂的に夢を追う。',
     traits:['🔥 燃える情熱','🌊 自由な魂','💫 直感的判断','🎨 豊かな感受性'],
     weaknesses:['📌 継続が難しい','🤔 計画性が不足','😤 感情的になりすぎることも'],
@@ -268,7 +269,7 @@ const results = {
     compat:{emoji:'🐕',name:'ベルネーゼ',why:'あなたの情熱を地に足のついた方法で形にする力を持つ理想の相棒。'},
     tend:{知性:65,行動力:85,社交性:78,共感力:75,自由度:95}},
 
-  shepherd:{color:'#8d6e63',emoji:'🐕',name:'ジャーマンシェパード',
+  shepherd:{color:'#8d6e63',emoji:'🐕',name:'ジャーマン・シェパード',habit:'誠実な番犬',
     catch:'真面目で頼れる守り手。責任感と忠誠心で周囲を支え続ける。',
     traits:['🛡 強い責任感','🎓 学習への真剣さ','💼 仕事への誠実さ','🤝 高い忠誠心'],
     weaknesses:['😤 完璧を求めすぎる','🎭 遊び心が少ない','😓 責任を一人で抱える'],
@@ -276,15 +277,15 @@ const results = {
     compat:{emoji:'🐶',name:'キャバリア',why:'あなたの真剣さを和らげ、人生の喜びを思い出させてくれる癒しの存在。'},
     tend:{知性:82,行動力:78,社交性:55,共感力:68,自由度:40}},
 
-  bernese:{color:'#42a5f5',emoji:'🐕',name:'バーニーズマウンテンドッグ',
+  bernese:{color:'#42a5f5',emoji:'🐕',name:'セント・バーナード',habit:'献身的な守護犬',
     catch:'大らかで安定感抜群。その優しさと包容力で周囲の心を安らげる。',
     traits:['🏔 揺るぎない安定感','🫂 大きな包容力','🌿 穏やかな強さ','🏠 家族への深い愛'],
     weaknesses:['🔄 変化への適応が遅い','🐢 行動が慎重すぎる','🌍 冒険心が薄い'],
-    desc:'バーニーズマウンテンドッグタイプのあなたは、どっしりとした安定感と温かい包容力で周囲を守る大黒柱。感情的に揺れることなく、どんな状況でも冷静に支え続けます。信頼と安心感を与えることが得意で、困ったときに誰もが頼りにする存在です。',
-    compat:{emoji:'🐕',name:'アイリッシュセター',why:'あなたの安定感が相手の情熱に土台を与え、互いを高め合えるペア。'},
+    desc:'セント・バーナードタイプのあなたは、どっしりとした安定感と温かい包容力で周囲を守る大黒柱。感情的に揺れることなく、どんな状況でも冷静に支え続けます。信頼と安心感を与えることが得意で、困ったときに誰もが頼りにする存在です。',
+    compat:{emoji:'🐕',name:'アイリッシュ・セター',why:'あなたの安定感が相手の情熱に土台を与え、互いを高め合えるペア。'},
     tend:{知性:68,行動力:55,社交性:75,共感力:85,自由度:45}},
 
-  rottweiler:{color:'#66bb6a',emoji:'🐕',name:'ロットワイラー',
+  rottweiler:{color:'#66bb6a',emoji:'🐕',name:'ロットワイラー',habit:'秩序の番人犬',
     catch:'堂々たる自信と静かな迫力。信念を持ち、大切なものを全力で守る。',
     traits:['💪 圧倒的な存在感','🏋 精神的な強さ','🛡 守護者の本能','🎯 ブレない信念'],
     weaknesses:['😤 頑固になりすぎる','🤗 親しみにくさを感じさせる','🌸 繊細さが伝わりにくい'],
@@ -292,7 +293,7 @@ const results = {
     compat:{emoji:'🐶',name:'ジャックラッセルテリア',why:'あなたの重厚さに軽やかさを加え、楽しい一面を引き出してくれる存在。'},
     tend:{知性:75,行動力:70,社交性:42,共感力:60,自由度:50}},
 
-  labrador:{color:'#80cbc4',emoji:'🐕‍🦺',name:'ラブラドールレトリバー',
+  labrador:{color:'#80cbc4',emoji:'🐕‍🦺',name:'ラブラドール・レトリーバー',habit:'みんなの友達犬',
     catch:'みんなの友だち。適応力と社交性で、どんな場面でも輝ける万能選手。',
     traits:['🌟 高い適応力','🤝 誰とでも仲良し','😊 常にポジティブ','🎓 優れた学習能力'],
     weaknesses:['🎭 自分の個性が薄れる','🙅 NOが言いにくい','🎯 優先順位が難しい'],
@@ -300,7 +301,7 @@ const results = {
     compat:{emoji:'🐕',name:'ジャーマンシェパード',why:'あなたの柔軟さと相手の一貫性が組み合わさると、最強の信頼コンビに。'},
     tend:{知性:75,行動力:78,社交性:96,共感力:85,自由度:60}},
 
-  husky:{color:'#78909c',emoji:'🐺',name:'シベリアンハスキー',
+  husky:{color:'#78909c',emoji:'🐺',name:'シベリアン・ハスキー',habit:'自立した職人犬',
     catch:'自由と冒険を愛する旅人。自分だけの道を突き進む、唯一無二の個性派。',
     traits:['🌍 冒険心旺盛','🎭 個性的な魅力','🔋 無尽蔵のスタミナ','🌙 神秘的な存在感'],
     weaknesses:['🏠 束縛が苦手','📏 ルールへの反発','🤝 チームワークが難しい'],
@@ -308,7 +309,7 @@ const results = {
     compat:{emoji:'🐕',name:'ロットワイラー',why:'あなたの自由さに安定感を与え、互いの良さを引き出せる補完関係。'},
     tend:{知性:70,行動力:88,社交性:62,共感力:55,自由度:98}},
 
-  shiba:{color:'#ff8a65',emoji:'🦊',name:'柴犬',
+  shiba:{color:'#ff8a65',emoji:'🦊',name:'柴犬',habit:'独自の美学を持つ犬',
     catch:'マイペースで凛とした個性派。自分軸をしっかり持ち、独自の美学で生きる。',
     traits:['🦊 独自の美学','🏯 凛とした自立心','🎭 気まぐれな魅力','🔮 鋭い直感'],
     weaknesses:['🤝 頼るのが苦手','💬 感情表現が少ない','🔄 融通が利かないことも'],
@@ -316,7 +317,7 @@ const results = {
     compat:{emoji:'🐕‍🦺',name:'ゴールデンレトリバー',why:'あなたのクールさを優しく溶かし、自然と笑顔を引き出してくれる存在。'},
     tend:{知性:78,行動力:65,社交性:38,共感力:58,自由度:88}},
 
-  boxer:{color:'#ef5350',emoji:'🐕',name:'ボクサー',
+  boxer:{color:'#ef5350',emoji:'🐕',name:'ボクサー',habit:'行動派冒険犬',
     catch:'陽気で情熱的な永遠の子ども。エネルギーと笑顔で周囲を巻き込む天才。',
     traits:['🎊 無邪気な明るさ','💥 爆発的なエネルギー','😄 ユーモアセンス','🥊 逆境に負けない心'],
     weaknesses:['😅 少し騒がしすぎる','📋 計画通りに動くのが苦手','🎯 集中が続かないことも'],
@@ -324,7 +325,7 @@ const results = {
     compat:{emoji:'🐕',name:'バーニーズマウンテンドッグ',why:'あなたの明るさを温かく受け止め、必要なときに落ち着かせてくれる存在。'},
     tend:{知性:62,行動力:90,社交性:88,共感力:72,自由度:80}},
 
-  pomeranian:{color:'#ffee58',emoji:'🐩',name:'ポメラニアン',
+  pomeranian:{color:'#ffee58',emoji:'🐩',name:'ポメラニアン',habit:'場を華やかにする太陽犬',
     catch:'小さな体に大きな自信と個性。華やかで社交的、注目の的になる生まれながらのスター。',
     traits:['⭐ 天性のスター性','💄 ファッションセンス','🗣 表現力豊か','✨ 場を明るくする力'],
     weaknesses:['😤 プライドが傷つきやすい','😥 批判に弱い','🌀 感情の波が激しい'],
@@ -562,7 +563,7 @@ function closeBreedModal(){
     const card=document.createElement('div');
     card.className='breed-card';
     card.style.setProperty('--bc',r.color);
-    card.innerHTML=`<div class="dog-portrait">${r.emoji}</div><div class="breed-card-name">${r.name}</div>`;
+    card.innerHTML=`<div class="dog-portrait">${r.emoji}</div><div class="breed-card-name">${r.name}</div><div class="breed-card-habit">${r.habit||''}</div>`;
     card.onclick=()=>showBreedSummary(key);
     grid.appendChild(card);
   });
