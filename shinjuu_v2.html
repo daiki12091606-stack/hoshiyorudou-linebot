@@ -1,348 +1,558 @@
 <!DOCTYPE html>
-<html lang="ja">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>神獣診断 — あなたの魂に宿る神獣は？</title>
-<meta name="description" content="10の質問で魂に宿る神獣がわかる。白虎・青龍・朱雀・玄武・麒麟・鳳凰 — 星夜堂の神獣診断。">
+<html lang="ja"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>神獣パーソナリティ診断 ✨</title>
 <style>
-:root{
-  --pr:#c47d45;--pr2:#e8a96a;--bg:#130d08;--card:#221508;--card2:#2c1c0c;--border:#4a2e15;
-  --text:#fdf3e7;--sub:#b8956a;--fg:#fdf3e7;
-  --radius:16px;--shadow:0 8px 32px rgba(0,0,0,.5);
-}
+:root{--pr:#5898da;--pr2:#90c8f8;--bg:#030810;--card:#081020;--card2:#0e1a30;--border:#18386a;--text:#f0f8ff;--sub:#6090c8;--fg:#f0f8ff}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Yu Gothic',sans-serif;
-  background:var(--bg);color:var(--text);min-height:100vh;
-  background-image:radial-gradient(ellipse at 30% 20%,rgba(21,101,192,.18) 0%,transparent 60%),
-    radial-gradient(ellipse at 70% 80%,rgba(66,165,245,.1) 0%,transparent 60%);
-}
-#app{max-width:480px;margin:0 auto;padding:16px 16px 40px;min-height:100vh;display:flex;flex-direction:column}
-.screen{display:none;animation:fadeUp .4s ease both}
-.screen.active{display:flex;flex-direction:column;flex:1}
-@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
-
-#top{align-items:center;justify-content:center;text-align:center;gap:20px;padding:24px 0}
-.top-icon{font-size:80px;filter:drop-shadow(0 0 20px rgba(196,125,69,.6));animation:float 3s ease-in-out infinite}
-@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
-.top-title{font-size:28px;font-weight:800;letter-spacing:.04em;
-  background:background:linear-gradient(135deg,#e8a96a,#fdf3e7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.top-sub{font-size:14px;color:var(--sub);line-height:1.7;max-width:320px}
-.top-meta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
-.badge{background:var(--card2);border:1px solid var(--border);border-radius:20px;padding:6px 14px;font-size:12px;color:var(--sub)}
-.btn-start{width:100%;max-width:320px;padding:18px;background:background:linear-gradient(135deg,#6b3a1f,#c47d45);
-  color:#fff;border:none;border-radius:var(--radius);font-size:18px;font-weight:700;cursor:pointer;
-  box-shadow:0 4px 20px rgba(21,101,192,.4);transition:.2s;letter-spacing:.05em}
-.btn-start:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(107,58,31,.5)}
-.types-preview{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:100%}
-.type-chip{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:10px 6px;text-align:center;font-size:13px}
-.type-chip .emoji{font-size:22px;display:block;margin-bottom:4px}
-
-.progress-wrap{padding:8px 0 20px}
-.progress-label{display:flex;justify-content:space-between;font-size:13px;color:var(--sub);margin-bottom:8px}
-.progress-bar{height:6px;background:var(--card2);border-radius:3px;overflow:hidden}
-.progress-fill{height:100%;background:linear-gradient(90deg,#1565c0,#42a5f5);border-radius:3px;transition:width .4s ease}
-.q-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:24px 20px;margin-bottom:20px;box-shadow:var(--shadow)}
-.q-num{font-size:12px;color:var(--pr2);font-weight:700;letter-spacing:.1em;margin-bottom:10px}
-.q-text{font-size:17px;font-weight:700;line-height:1.6}
-.options{display:flex;flex-direction:column;gap:10px}
-.opt{background:var(--card2);border:1.5px solid var(--border);border-radius:12px;padding:16px 18px;
-  font-size:15px;line-height:1.5;cursor:pointer;transition:.2s;text-align:left;color:var(--text)}
-.opt:hover{border-color:var(--pr2);background:rgba(21,101,192,.2);transform:translateX(4px)}
-.opt.selected{border-color:#42a5f5;background:rgba(66,165,245,.15);color:#90caf9}
-
-#result{gap:0;padding-top:0}
-.result-hero{background:linear-gradient(135deg,var(--card2),var(--card));border:1px solid var(--border);
-  border-radius:var(--radius);padding:32px 20px 24px;text-align:center;margin-bottom:16px;box-shadow:var(--shadow);
-  animation:heroIn .6s ease both}
-@keyframes heroIn{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:none}}
-.result-icon{font-size:72px;margin-bottom:12px;filter:drop-shadow(0 0 24px rgba(66,165,245,.7))}
-.result-label{font-size:12px;color:#42a5f5;font-weight:700;letter-spacing:.15em;margin-bottom:8px}
-.result-name{font-size:32px;font-weight:900;letter-spacing:.06em;margin-bottom:10px;
-  background:background:linear-gradient(135deg,#e8a96a,#fdf3e7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.result-catch{font-size:15px;color:var(--sub);line-height:1.6}
-.result-section{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:12px}
-.section-title{font-size:13px;font-weight:700;color:var(--pr2);letter-spacing:.08em;margin-bottom:14px}
+body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Yu Gothic',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+/* NAV */
+.app-nav{display:flex;justify-content:center;background:rgba(0,0,0,.85);backdrop-filter:blur(10px);position:sticky;top:0;z-index:100;border-bottom:1px solid #18386a88}
+.nav-btn{padding:14px 18px;cursor:pointer;font-size:.82rem;color:var(--sub);background:transparent;border:none;border-bottom:2px solid transparent;transition:.2s;color:var(--sub)}
+.nav-btn.active{color:var(--pr);border-bottom-color:var(--pr)}
+/* SCREENS */
+.screen{display:none;animation:fadeUp .38s ease both}
+.screen.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+main{max-width:480px;margin:0 auto;padding:16px 16px 48px}
+/* HOME */
+.hero{text-align:center;padding:28px 16px 16px}
+.hero h1{font-size:1.65rem;font-weight:800;background:linear-gradient(135deg,#90c8f8,#d0ecff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:6px}
+.hero p{color:var(--sub);font-size:.92rem;margin-bottom:16px;line-height:1.6}
+.hero-badges{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:20px}
+.badge{background:var(--card2);border:1px solid #18386a88;border-radius:20px;padding:5px 12px;font-size:.75rem;color:var(--sub)}
+.tgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:16px 0}
+.tc{background:var(--card);border-radius:12px;padding:10px 6px 8px;text-align:center;transition:.2s;border:1px solid #18386a66;cursor:pointer}
+.tc:hover{transform:translateY(-2px);border-color:#5898da88;background:var(--card2)}
+.tc:active{transform:scale(.96)}
+.tc-emoji{margin:0 auto 8px;display:block}
+.tc-name{font-size:.58rem;color:var(--sub);margin-bottom:4px;line-height:1.3}
+.tc-tag{font-size:.5rem;border-radius:10px;padding:2px 5px;display:inline-block}
+.sec-label{font-size:.78rem;color:var(--pr);font-weight:600;text-align:center;margin:20px 0 12px;letter-spacing:.05em}
+.btn{display:block;width:100%;background:linear-gradient(135deg,#102060,#5898da);color:#fff;border:none;border-radius:24px;padding:14px 28px;font-size:1.05rem;font-weight:700;cursor:pointer;transition:.2s;text-align:center;margin-top:8px}
+.btn:hover{opacity:.88;transform:translateY(-1px)}
+/* QUIZ */
+.prog-wrap{padding:8px 0 18px}
+.prog-label{display:flex;justify-content:space-between;font-size:.8rem;color:var(--sub);margin-bottom:8px}
+.prog-bar{height:6px;background:var(--card2);border-radius:3px;overflow:hidden}
+.prog-fill{height:100%;background:linear-gradient(90deg,#5898da,#90c8f8);border-radius:3px;transition:width .4s ease}
+.q-card{background:var(--card);border:1px solid #18386a55;border-radius:16px;padding:22px 18px;margin-bottom:18px;box-shadow:0 6px 24px rgba(0,0,0,.4)}
+.q-num{font-size:.75rem;color:var(--pr2);font-weight:700;letter-spacing:.1em;margin-bottom:10px}
+.q-text{font-size:1.05rem;font-weight:700;line-height:1.65}
+.opts{display:flex;flex-direction:column;gap:10px}
+.opt{background:var(--card2);border:1.5px solid #18386a88;border-radius:12px;padding:14px 16px;font-size:.9rem;line-height:1.5;cursor:pointer;transition:.2s;text-align:left;color:var(--text);display:flex;align-items:center;gap:10px}
+.opt-icon{font-size:1.15rem;flex-shrink:0}
+.opt:hover{border-color:var(--pr2);background:#5898da18;transform:translateX(3px)}
+.opt.selected{border-color:var(--pr2);background:#5898da20;color:#90c8f8}
+.btn-back{display:none;align-items:center;justify-content:center;gap:6px;margin-top:14px;background:transparent;color:var(--sub);border:1.5px solid #18386a88;border-radius:12px;padding:10px 16px;font-size:.85rem;cursor:pointer;width:100%;transition:.2s}
+.btn-back:hover{border-color:var(--pr);color:var(--pr)}
+/* RESULT */
+.result-hero{background:linear-gradient(135deg,var(--card2),var(--card));border:1px solid #18386a66;border-radius:16px;padding:28px 18px 22px;text-align:center;margin-bottom:14px;box-shadow:0 6px 24px rgba(0,0,0,.5)}
+.result-icon{font-size:70px;margin-bottom:10px;filter:drop-shadow(0 0 20px #5898daaa)}
+.result-label{font-size:.75rem;color:var(--pr);font-weight:700;letter-spacing:.15em;margin-bottom:6px}
+.result-name{font-size:2rem;font-weight:900;letter-spacing:.06em;margin-bottom:8px;background:linear-gradient(135deg,#90c8f8,#d0ecff);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.result-catch{font-size:.9rem;color:var(--sub);line-height:1.6}
+.result-section{background:var(--card);border:1px solid #18386a55;border-radius:14px;padding:18px;margin-bottom:12px}
+.section-title{font-size:.78rem;font-weight:700;color:var(--pr2);letter-spacing:.08em;margin-bottom:12px}
 .traits{display:flex;flex-wrap:wrap;gap:8px}
-.trait{background:linear-gradient(135deg,rgba(21,101,192,.3),rgba(66,165,245,.2));
-  border:1px solid rgba(66,165,245,.4);border-radius:20px;padding:6px 14px;font-size:13px;font-weight:600}
+.trait{background:linear-gradient(135deg,#5898da30,#90c8f820);border:1px solid #5898da55;border-radius:20px;padding:5px 12px;font-size:.8rem;font-weight:600}
 .weaknesses{display:flex;flex-direction:column;gap:6px}
-.weakness{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--sub)}
-.weakness::before{content:'△';font-size:11px;color:#f39c12}
-.desc{font-size:14px;line-height:1.8}
-.compat{display:flex;align-items:center;gap:12px;background:var(--card2);border-radius:10px;padding:14px}
-.compat-icon{font-size:32px}
-.compat-name{font-size:16px;font-weight:700;color:#90caf9}
-.compat-why{font-size:12px;color:var(--sub);margin-top:2px}
+.weakness{display:flex;align-items:flex-start;gap:8px;font-size:.85rem;color:var(--sub)}
+.weakness::before{content:'△';font-size:.7rem;color:var(--pr);margin-top:2px;flex-shrink:0}
+.desc{font-size:.85rem;line-height:1.8}
+.compat{display:flex;align-items:center;gap:12px;background:var(--card2);border-radius:10px;padding:12px}
+.compat-icon{font-size:2rem;flex-shrink:0}
+.compat-name{font-size:1rem;font-weight:700;color:var(--pr2)}
+.compat-why{font-size:.78rem;color:var(--sub);margin-top:2px}
 .tendency-bars{display:flex;flex-direction:column;gap:10px}
-.tend-row{display:flex;align-items:center;gap:10px;font-size:13px}
-.tend-label{width:80px;flex-shrink:0;color:var(--sub)}
+.tend-row{display:flex;align-items:center;gap:10px;font-size:.8rem}
+.tend-label{width:70px;flex-shrink:0;color:var(--sub)}
 .tend-bar-wrap{flex:1;height:8px;background:var(--card2);border-radius:4px;overflow:hidden}
-.tend-bar{height:100%;background:linear-gradient(90deg,#1565c0,#42a5f5);border-radius:4px;transition:width 1s ease .3s}
-.tend-val{width:28px;text-align:right;font-size:12px;color:#42a5f5}
-
-.share-section{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:12px}
-.share-title{font-size:13px;font-weight:700;color:var(--sub);text-align:center;margin-bottom:14px}
+.tend-bar{height:100%;background:linear-gradient(90deg,#5898da,#90c8f8);border-radius:4px;transition:width 1s ease .3s;width:0}
+.tend-val{width:26px;text-align:right;font-size:.75rem;color:var(--pr2)}
+.share-section{background:var(--card);border:1px solid #18386a55;border-radius:14px;padding:18px;margin-bottom:12px}
+.share-title{font-size:.78rem;font-weight:700;color:var(--sub);text-align:center;margin-bottom:12px}
 .share-btns{display:flex;flex-direction:column;gap:10px}
-.btn-x{background:#000;color:#fff;border:1.5px solid #333;border-radius:12px;padding:14px;
-  font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:.2s}
-.btn-x:hover{background:#1a1a1a;transform:translateY(-1px)}
-.btn-line{background:#06c755;color:#fff;border:none;border-radius:12px;padding:14px;
-  font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:.2s}
+.btn-x{background:#000;color:#fff;border:1.5px solid #333;border-radius:12px;padding:13px;font-size:.9rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:.2s}
+.btn-x:hover{background:#111;transform:translateY(-1px)}
+.btn-line{background:#06c755;color:#fff;border:none;border-radius:12px;padding:13px;font-size:.9rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:.2s}
 .btn-line:hover{background:#05b34c;transform:translateY(-1px)}
-.btn-retry{background:transparent;color:var(--sub);border:1.5px solid var(--border);border-radius:12px;padding:12px;
-  font-size:14px;cursor:pointer;width:100%;transition:.2s}
-.btn-retry:hover{border-color:var(--pr2);color:var(--pr2)}
-.line-cta{background:linear-gradient(135deg,#0a2a1a,#0d3b24);border:1px solid #1a5c35;
-  border-radius:var(--radius);padding:24px 20px;text-align:center;margin-bottom:12px}
-.line-cta-icon{font-size:36px;margin-bottom:8px}
-.line-cta-title{font-size:17px;font-weight:800;color:#06c755;margin-bottom:8px}
-.line-cta-text{font-size:13px;color:#7fbf93;line-height:1.6;margin-bottom:16px}
-.btn-line-cta{background:#06c755;color:#fff;border:none;border-radius:12px;padding:16px 24px;
-  font-size:15px;font-weight:700;cursor:pointer;width:100%;display:flex;align-items:center;justify-content:center;gap:8px;transition:.2s;text-decoration:none}
-.btn-line-cta:hover{background:#05b34c;transform:translateY(-2px)}
-.result-footer{text-align:center;font-size:11px;color:var(--sub);padding-top:8px}
-.btn-back{display:none;align-items:center;justify-content:center;gap:6px;margin-top:16px;
-  background:transparent;border:1px solid var(--border);border-radius:10px;padding:10px 16px;
-  font-size:13px;color:var(--sub);cursor:pointer;width:100%;transition:.2s}
-.btn-back:hover{border-color:var(--pr2);color:var(--pr2)}
-#type-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:200;
-  overflow-y:auto;padding:20px 16px}
-.type-modal-inner{max-width:440px;margin:20px auto;background:var(--card);border:1px solid var(--border);
-  border-radius:20px;padding:28px 24px;position:relative}
-.bm-close{float:right;background:transparent;border:none;font-size:24px;cursor:pointer;color:var(--sub);line-height:1;padding:0}
-.bm-emoji{font-size:64px;display:block;text-align:center;margin-bottom:12px;filter:drop-shadow(0 0 16px rgba(107,58,31,.5))}
-.bm-name{font-size:24px;font-weight:900;text-align:center;letter-spacing:.06em;margin-bottom:6px;
-  background:background:linear-gradient(135deg,#6b3a1f,#c47d45);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.bm-catch{font-size:13px;color:var(--sub);text-align:center;margin-bottom:16px;line-height:1.5}
-.bm-keywords{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:16px}
-.bm-kw{background:linear-gradient(135deg,rgba(21,101,192,.35),rgba(21,101,192,.25));
-  border:1px solid rgba(107,58,31,.5);border-radius:20px;padding:6px 14px;font-size:12px;font-weight:700}
-.bm-desc{font-size:14px;color:var(--sub);line-height:1.6;margin-bottom:20px;text-align:center}
-.bm-startbtn{width:100%;padding:14px;background:background:linear-gradient(135deg,#6b3a1f,#c47d45);
-  border:none;border-radius:12px;color:#fff;font-size:15px;font-weight:700;cursor:pointer;transition:.2s}
+.btn-retry{background:transparent;color:var(--sub);border:1.5px solid #18386a88;border-radius:12px;padding:11px;font-size:.85rem;cursor:pointer;width:100%;transition:.2s}
+.btn-retry:hover{border-color:var(--pr);color:var(--pr)}
+.line-cta{background:linear-gradient(135deg,#0a2a1a,#0d3b24);border:1px solid #1a5c35;border-radius:14px;padding:22px 18px;text-align:center;margin-bottom:12px}
+.line-cta-icon{font-size:2rem;margin-bottom:6px}
+.line-cta-title{font-size:1.05rem;font-weight:800;color:#06c755;margin-bottom:6px}
+.line-cta-text{font-size:.8rem;color:#7fbf93;line-height:1.6;margin-bottom:14px}
+.btn-line-cta{background:#06c755;color:#fff;border:none;border-radius:12px;padding:14px 20px;font-size:.9rem;font-weight:700;cursor:pointer;width:100%;display:flex;align-items:center;justify-content:center;gap:8px;transition:.2s;text-decoration:none}
+.btn-line-cta:hover{background:#05b34c;transform:translateY(-1px)}
+.result-footer{text-align:center;font-size:.7rem;color:var(--sub);padding-top:8px}
+/* LIBRARY */
+.lib-hero{text-align:center;padding:20px 0 10px}
+.lib-hero h2{font-size:1.2rem;font-weight:800;margin-bottom:4px}
+.lgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+/* MODAL */
+#type-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:200;overflow-y:auto;padding:20px}
+.type-modal-inner{max-width:440px;margin:20px auto;background:var(--card);border:1px solid #18386a88;border-radius:20px;padding:28px 20px 36px;animation:fadeUp .32s ease both}
+.bm-close{float:right;background:transparent;border:none;font-size:1.4rem;cursor:pointer;color:var(--sub);line-height:1;padding:0}
+.bm-emoji{font-size:60px;display:block;text-align:center;margin-bottom:10px}
+.bm-name{font-size:1.4rem;font-weight:900;text-align:center;letter-spacing:.04em;margin-bottom:4px;background:linear-gradient(135deg,#90c8f8,#d0ecff);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.bm-catch{font-size:.82rem;color:var(--sub);text-align:center;margin-bottom:14px;line-height:1.5}
+.bm-keywords{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:14px}
+.bm-kw{background:linear-gradient(135deg,#5898da35,#90c8f825);border:1px solid #5898da55;border-radius:20px;padding:5px 12px;font-size:.8rem;font-weight:600}
+.bm-desc{font-size:.85rem;color:var(--sub);line-height:1.6;margin-bottom:18px;text-align:center}
+.bm-startbtn{width:100%;padding:13px;background:linear-gradient(135deg,#102060,#5898da);color:#fff;border:none;border-radius:12px;font-size:.9rem;font-weight:700;cursor:pointer;transition:.2s}
 .bm-startbtn:hover{transform:translateY(-2px)}
+footer{text-align:center;padding:20px 16px;color:var(--sub);font-size:.7rem;border-top:1px solid #18386a44;margin-top:20px}
 </style>
 </head>
 <body>
-<div id="app">
+<nav class="app-nav" id="app-nav">
+  <button class="nav-btn active" id="nav-home" onclick="showScreen('home')">ホーム</button>
+  <button class="nav-btn" id="nav-quiz" onclick="startQuiz()">診断</button>
+  <button class="nav-btn" id="nav-library" onclick="showScreen('library')">一覧</button>
+</nav>
 
-<div id="top" class="screen active">
-  <div class="top-icon">🦁</div>
-  <div>
-    <div class="top-title">神獣診断</div>
-    <div style="font-size:13px;color:#42a5f5;margin-top:4px;margin-bottom:12px;font-weight:600;letter-spacing:.05em">あなたの魂に宿る神獣は？</div>
-    <div class="top-sub">10の質問で、あなたの魂に宿る神聖な獣がわかります。古代から伝わる6種の神獣から、あなたを守護する存在を診断します。</div>
+<main>
+<div id="home" class="screen active">
+  <div class="hero">
+    <h1>神獣パーソナリティ診断 ✨</h1>
+    <p>あなたの魂に宿る神獣は何？<br>10問の質問で診断します</p>
+    <div class="hero-badges">
+      <span class="badge">⏱ 約3分</span>
+      <span class="badge">❓ 全10問</span>
+      <span class="badge">✨ 全6タイプ</span>
+    </div>
   </div>
-  <div class="top-meta">
-    <span class="badge">⏱ 約2分</span>
-    <span class="badge">❓ 全10問</span>
-    <span class="badge">🦁 全6タイプ</span>
+  <div class="sec-label">▼ タイプ一覧 — タップで詳細</div>
+  <div class="tgrid">
+<div class="tc" onclick="showTypeInfo('byakko')">
+<div class="tc-emoji"><div style="width:54px;height:54px;border-radius:50%;overflow:hidden;border:3px solid #e07030;margin:0 auto;display:block"><svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block">
+<circle cx="80" cy="80" r="80" fill="#e8e8f0"/>
+<ellipse cx="80" cy="84" rx="50" ry="46" fill="#f0f0f8"/>
+<path d="M38 80 Q44 58 60 50" stroke="#303050" stroke-width="5" fill="none" stroke-linecap="round" opacity="0.6"/>
+<path d="M50 54 Q60 42 80 38" stroke="#303050" stroke-width="4" fill="none" stroke-linecap="round" opacity="0.6"/>
+<path d="M80 38 Q100 42 110 54" stroke="#303050" stroke-width="4" fill="none" stroke-linecap="round" opacity="0.6"/>
+<path d="M122 80 Q116 58 100 50" stroke="#303050" stroke-width="5" fill="none" stroke-linecap="round" opacity="0.6"/>
+<ellipse cx="80" cy="106" rx="28" ry="20" fill="#f8f8fc"/>
+<polygon points="28,62 18,10 52,42" fill="#d8d8e8"/><polygon points="132,62 142,10 108,42" fill="#d8d8e8"/>
+<polygon points="30,60 22,14 50,41" fill="#f0c0a0" opacity="0.6"/><polygon points="130,60 138,14 110,41" fill="#f0c0a0" opacity="0.6"/>
+<circle cx="60" cy="74" r="11" fill="#100800"/><circle cx="100" cy="74" r="11" fill="#100800"/>
+<circle cx="60" cy="74" r="8" fill="#e06000"/><circle cx="100" cy="74" r="8" fill="#e06000"/>
+<circle cx="60" cy="74" r="4.5" fill="#903800"/><circle cx="100" cy="74" r="4.5" fill="#903800"/>
+<circle cx="57" cy="71" r="2.5" fill="white"/><circle cx="97" cy="71" r="2.5" fill="white"/>
+<ellipse cx="80" cy="100" rx="8" ry="5.5" fill="#c04040"/>
+<line x1="26" y1="100" x2="62" y2="102" stroke="white" stroke-width="1.5" opacity="0.9"/>
+<line x1="26" y1="108" x2="62" y2="106" stroke="white" stroke-width="1.5" opacity="0.9"/>
+<line x1="98" y1="102" x2="134" y2="100" stroke="white" stroke-width="1.5" opacity="0.9"/>
+<line x1="98" y1="106" x2="134" y2="108" stroke="white" stroke-width="1.5" opacity="0.9"/>
+</svg></div></div>
+<div class="tc-name">白虎</div>
+<span class="tc-tag" style="background:#e0703022;color:#e07030">勇気と純粋さ</span>
+</div>
+<div class="tc" onclick="showTypeInfo('seiryu')">
+<div class="tc-emoji"><div style="width:54px;height:54px;border-radius:50%;overflow:hidden;border:3px solid #2890e0;margin:0 auto;display:block"><svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block">
+<circle cx="80" cy="80" r="80" fill="#0a2050"/>
+<ellipse cx="80" cy="80" rx="52" ry="50" fill="#1038a0" opacity="0.6"/>
+<ellipse cx="80" cy="80" rx="42" ry="42" fill="#0a2878"/>
+<path d="M28 80 Q32 56 46 44 Q36 64 36 80Z" fill="#1848c0" opacity="0.5"/>
+<path d="M132 80 Q128 56 114 44 Q124 64 124 80Z" fill="#1848c0" opacity="0.5"/>
+<path d="M60 30 Q68 18 80 16 Q92 18 100 30 Q92 24 80 22 Q68 24 60 30Z" fill="#4a9ae0" opacity="0.8"/>
+<line x1="60" y1="30" x2="52" y2="14" stroke="#4a9ae0" stroke-width="3" opacity="0.8"/>
+<line x1="100" y1="30" x2="108" y2="14" stroke="#4a9ae0" stroke-width="3" opacity="0.8"/>
+<ellipse cx="80" cy="84" rx="36" ry="32" fill="#0d3080"/>
+<ellipse cx="80" cy="108" rx="22" ry="16" fill="#1848a0" opacity="0.7"/>
+<circle cx="62" cy="76" r="11.5" fill="#040c20"/><circle cx="98" cy="76" r="11.5" fill="#040c20"/>
+<circle cx="62" cy="76" r="8.5" fill="#00c8f0"/><circle cx="98" cy="76" r="8.5" fill="#00c8f0"/>
+<circle cx="62" cy="76" r="4.5" fill="#008ab0"/><circle cx="98" cy="76" r="4.5" fill="#008ab0"/>
+<circle cx="59" cy="73" r="2.5" fill="white" opacity="0.9"/><circle cx="95" cy="73" r="2.5" fill="white" opacity="0.9"/>
+<ellipse cx="80" cy="102" rx="10" ry="7" fill="#2060c0"/>
+<path d="M65 112 Q80 120 95 112" stroke="#2060c0" stroke-width="2" fill="none" stroke-linecap="round"/>
+</svg></div></div>
+<div class="tc-name">青龍</div>
+<span class="tc-tag" style="background:#2890e022;color:#2890e0">知恵と成長</span>
+</div>
+<div class="tc" onclick="showTypeInfo('suzaku')">
+<div class="tc-emoji"><div style="width:54px;height:54px;border-radius:50%;overflow:hidden;border:3px solid #e04020;margin:0 auto;display:block"><svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block">
+<circle cx="80" cy="80" r="80" fill="#c02010"/>
+<ellipse cx="80" cy="80" rx="50" ry="50" fill="#e83818" opacity="0.7"/>
+<path d="M80 16 Q80 16 80 16" fill="none"/>
+<path d="M30 50 Q40 20 60 28 Q46 38 42 56Z" fill="#f07020" opacity="0.9"/>
+<path d="M130 50 Q120 20 100 28 Q114 38 118 56Z" fill="#f07020" opacity="0.9"/>
+<path d="M50 30 Q58 10 70 22 Q62 32 56 44Z" fill="#ffa030" opacity="0.8"/>
+<path d="M110 30 Q102 10 90 22 Q98 32 104 44Z" fill="#ffa030" opacity="0.8"/>
+<path d="M66 20 Q72 6 80 14 Q80 26 74 32Z" fill="#ffcc50" opacity="0.9"/>
+<path d="M94 20 Q88 6 80 14 Q80 26 86 32Z" fill="#ffcc50" opacity="0.9"/>
+<ellipse cx="80" cy="84" rx="34" ry="32" fill="#c02010"/>
+<ellipse cx="80" cy="84" rx="24" ry="22" fill="#e84020"/>
+<ellipse cx="80" cy="106" rx="20" ry="14" fill="#f07030" opacity="0.8"/>
+<path d="M64 90 Q80 84 96 90 Q88 102 80 108 Q72 102 64 90Z" fill="#f0a040"/>
+<circle cx="63" cy="76" r="10.5" fill="#200800"/><circle cx="97" cy="76" r="10.5" fill="#200800"/>
+<circle cx="63" cy="76" r="7.5" fill="#f0c000"/><circle cx="97" cy="76" r="7.5" fill="#f0c000"/>
+<circle cx="63" cy="76" r="4" fill="#c08000"/><circle cx="97" cy="76" r="4" fill="#c08000"/>
+<circle cx="60" cy="73" r="2.5" fill="white"/><circle cx="94" cy="73" r="2.5" fill="white"/>
+</svg></div></div>
+<div class="tc-name">朱雀</div>
+<span class="tc-tag" style="background:#e0402022;color:#e04020">情熱と再生</span>
+</div>
+<div class="tc" onclick="showTypeInfo('genbu')">
+<div class="tc-emoji"><div style="width:54px;height:54px;border-radius:50%;overflow:hidden;border:3px solid #7030c0;margin:0 auto;display:block"><svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block">
+<circle cx="80" cy="80" r="80" fill="#080e18"/>
+<ellipse cx="80" cy="80" rx="52" ry="50" fill="#101828"/>
+<ellipse cx="80" cy="80" rx="44" ry="40" fill="#1a2838" opacity="0.9"/>
+<path d="M36 80 Q36 52 52 38 Q38 56 38 80Z" fill="#284060" opacity="0.6"/>
+<path d="M124 80 Q124 52 108 38 Q122 56 122 80Z" fill="#284060" opacity="0.6"/>
+<line x1="80" y1="40" x2="80" y2="120" stroke="#304868" stroke-width="3" opacity="0.5"/>
+<line x1="40" y1="80" x2="120" y2="80" stroke="#304868" stroke-width="3" opacity="0.5"/>
+<line x1="54" y1="48" x2="106" y2="112" stroke="#304868" stroke-width="2" opacity="0.4"/>
+<line x1="106" y1="48" x2="54" y2="112" stroke="#304868" stroke-width="2" opacity="0.4"/>
+<ellipse cx="80" cy="84" rx="32" ry="30" fill="#1a2838"/>
+<ellipse cx="80" cy="108" rx="22" ry="16" fill="#253545" opacity="0.8"/>
+<circle cx="63" cy="76" r="11" fill="#050810"/><circle cx="97" cy="76" r="11" fill="#050810"/>
+<circle cx="63" cy="76" r="8" fill="#8030d0"/><circle cx="97" cy="76" r="8" fill="#8030d0"/>
+<circle cx="63" cy="76" r="4.5" fill="#5010a0"/><circle cx="97" cy="76" r="4.5" fill="#5010a0"/>
+<circle cx="60" cy="73" r="2.5" fill="white" opacity="0.8"/><circle cx="94" cy="73" r="2.5" fill="white" opacity="0.8"/>
+<ellipse cx="80" cy="102" rx="9" ry="6" fill="#283848"/>
+<path d="M65 110 Q80 118 95 110" stroke="#283848" stroke-width="2" fill="none" stroke-linecap="round"/>
+</svg></div></div>
+<div class="tc-name">玄武</div>
+<span class="tc-tag" style="background:#7030c022;color:#7030c0">忍耐と守護</span>
+</div>
+<div class="tc" onclick="showTypeInfo('kirin')">
+<div class="tc-emoji"><div style="width:54px;height:54px;border-radius:50%;overflow:hidden;border:3px solid #c8a020;margin:0 auto;display:block"><svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block">
+<circle cx="80" cy="80" r="80" fill="#c8a020"/>
+<ellipse cx="80" cy="84" rx="46" ry="44" fill="#e8c040"/>
+<path d="M74 20 Q80 8 86 20 Q82 28 80 34 Q78 28 74 20Z" fill="#f0d060"/>
+<path d="M76 34 L80 14 L84 34" stroke="#c8a020" stroke-width="2" fill="none"/>
+<ellipse cx="80" cy="106" rx="26" ry="18" fill="#f8e888"/>
+<polygon points="30,60 20,12 52,42" fill="#d8b030"/><polygon points="130,60 140,12 108,42" fill="#d8b030"/>
+<polygon points="32,58 24,16 50,41" fill="#f0c840" opacity="0.7"/><polygon points="128,58 136,16 110,41" fill="#f0c840" opacity="0.7"/>
+<circle cx="60" cy="74" r="11" fill="#100800"/><circle cx="100" cy="74" r="11" fill="#100800"/>
+<circle cx="60" cy="74" r="8" fill="#9030c0"/><circle cx="100" cy="74" r="8" fill="#9030c0"/>
+<circle cx="60" cy="74" r="4.5" fill="#601890"/><circle cx="100" cy="74" r="4.5" fill="#601890"/>
+<circle cx="57" cy="71" r="2.5" fill="white"/><circle cx="97" cy="71" r="2.5" fill="white"/>
+<ellipse cx="80" cy="100" rx="8" ry="5.5" fill="#c06060"/>
+<path d="M68 108 Q80 114 92 108" stroke="#803838" stroke-width="2" fill="none" stroke-linecap="round"/>
+<line x1="30" y1="102" x2="64" y2="103" stroke="white" stroke-width="1.2" opacity="0.7"/>
+<line x1="96" y1="103" x2="130" y2="102" stroke="white" stroke-width="1.2" opacity="0.7"/>
+</svg></div></div>
+<div class="tc-name">麒麟</div>
+<span class="tc-tag" style="background:#c8a02022;color:#c8a020">高貴と平和</span>
+</div>
+<div class="tc" onclick="showTypeInfo('hooh')">
+<div class="tc-emoji"><div style="width:54px;height:54px;border-radius:50%;overflow:hidden;border:3px solid #c030a0;margin:0 auto;display:block"><svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block">
+<circle cx="80" cy="80" r="80" fill="#2a1050"/>
+<path d="M80 16 Q96 22 110 36 Q96 28 80 26 Q64 28 50 36 Q64 22 80 16Z" fill="#e040c0" opacity="0.9"/>
+<path d="M20 52 Q30 34 50 36 Q38 46 34 60Z" fill="#8040e0" opacity="0.8"/>
+<path d="M140 52 Q130 34 110 36 Q122 46 126 60Z" fill="#8040e0" opacity="0.8"/>
+<path d="M24 70 Q22 52 34 60 Q26 62 24 70Z" fill="#40c0e0" opacity="0.7"/>
+<path d="M136 70 Q138 52 126 60 Q134 62 136 70Z" fill="#40c0e0" opacity="0.7"/>
+<path d="M80 18 Q80 18 80 18" fill="none"/>
+<ellipse cx="80" cy="84" rx="38" ry="36" fill="#3a1868"/>
+<ellipse cx="80" cy="108" rx="24" ry="18" fill="#6030b0" opacity="0.7"/>
+<ellipse cx="80" cy="60" rx="16" ry="10" fill="#e040c0" opacity="0.8"/>
+<circle cx="63" cy="78" r="11" fill="#100818"/><circle cx="97" cy="78" r="11" fill="#100818"/>
+<circle cx="63" cy="78" r="8" fill="#e040c0"/><circle cx="97" cy="78" r="8" fill="#e040c0"/>
+<circle cx="63" cy="78" r="4.5" fill="#a020a0"/><circle cx="97" cy="78" r="4.5" fill="#a020a0"/>
+<circle cx="60" cy="75" r="2.5" fill="white"/><circle cx="94" cy="75" r="2.5" fill="white"/>
+<path d="M68 106 Q80 100 92 106 Q88 114 80 118 Q72 114 68 106Z" fill="#e06000"/>
+<path d="M70 108 Q80 104 90 108" stroke="#c04000" stroke-width="1.5" fill="none"/>
+</svg></div></div>
+<div class="tc-name">鳳凰</div>
+<span class="tc-tag" style="background:#c030a022;color:#c030a0">変革と不死</span>
+</div>
   </div>
-  <div class="types-preview">
-    <div class="type-chip" onclick="showTypeInfo('byakko')"><span class="emoji">🐯</span>白虎</div>
-    <div class="type-chip" onclick="showTypeInfo('seiryu')"><span class="emoji">🐉</span>青龍</div>
-    <div class="type-chip" onclick="showTypeInfo('suzaku')"><span class="emoji">🦅</span>朱雀</div>
-    <div class="type-chip" onclick="showTypeInfo('genbu')"><span class="emoji">🐢</span>玄武</div>
-    <div class="type-chip" onclick="showTypeInfo('kirin')"><span class="emoji">🦄</span>麒麟</div>
-    <div class="type-chip" onclick="showTypeInfo('hooh')"><span class="emoji">🦚</span>鳳凰</div>
-  </div>
-  <button class="btn-start" onclick="startQuiz()">診断スタート ✨</button>
+  <button class="btn" onclick="startQuiz()">⚡ 無料で診断する（10問）</button>
 </div>
 
 <div id="quiz" class="screen">
-  <div class="progress-wrap">
-    <div class="progress-label">
-      <span id="q-counter">Q 1 / 10</span>
-      <span id="q-pct">10%</span>
-    </div>
-    <div class="progress-bar"><div class="progress-fill" id="prog-fill" style="width:10%"></div></div>
+  <div class="prog-wrap">
+    <div class="prog-label"><span id="q-counter">Q 1 / 10</span><span id="q-pct">0%</span></div>
+    <div class="prog-bar"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
   </div>
   <div class="q-card">
     <div class="q-num" id="q-num-label">QUESTION 01</div>
     <div class="q-text" id="q-text"></div>
   </div>
-  <div class="options" id="options-wrap"></div>
+  <div class="opts" id="options-wrap"></div>
   <button class="btn-back" id="btn-back" onclick="goBack()">← 前の質問に戻る</button>
 </div>
 
 <div id="result" class="screen"></div>
 
+<div id="library" class="screen">
+  <div class="lib-hero"><h2>✨ タイプ図鑑</h2><p style="font-size:.8rem;color:var(--sub)">全6タイプをチェックしよう</p></div>
+  <div class="lgrid">
+<div class="tc" onclick="showTypeInfo('byakko')">
+<div class="tc-emoji"><div style="width:54px;height:54px;border-radius:50%;overflow:hidden;border:3px solid #e07030;margin:0 auto;display:block"><svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block">
+<circle cx="80" cy="80" r="80" fill="#e8e8f0"/>
+<ellipse cx="80" cy="84" rx="50" ry="46" fill="#f0f0f8"/>
+<path d="M38 80 Q44 58 60 50" stroke="#303050" stroke-width="5" fill="none" stroke-linecap="round" opacity="0.6"/>
+<path d="M50 54 Q60 42 80 38" stroke="#303050" stroke-width="4" fill="none" stroke-linecap="round" opacity="0.6"/>
+<path d="M80 38 Q100 42 110 54" stroke="#303050" stroke-width="4" fill="none" stroke-linecap="round" opacity="0.6"/>
+<path d="M122 80 Q116 58 100 50" stroke="#303050" stroke-width="5" fill="none" stroke-linecap="round" opacity="0.6"/>
+<ellipse cx="80" cy="106" rx="28" ry="20" fill="#f8f8fc"/>
+<polygon points="28,62 18,10 52,42" fill="#d8d8e8"/><polygon points="132,62 142,10 108,42" fill="#d8d8e8"/>
+<polygon points="30,60 22,14 50,41" fill="#f0c0a0" opacity="0.6"/><polygon points="130,60 138,14 110,41" fill="#f0c0a0" opacity="0.6"/>
+<circle cx="60" cy="74" r="11" fill="#100800"/><circle cx="100" cy="74" r="11" fill="#100800"/>
+<circle cx="60" cy="74" r="8" fill="#e06000"/><circle cx="100" cy="74" r="8" fill="#e06000"/>
+<circle cx="60" cy="74" r="4.5" fill="#903800"/><circle cx="100" cy="74" r="4.5" fill="#903800"/>
+<circle cx="57" cy="71" r="2.5" fill="white"/><circle cx="97" cy="71" r="2.5" fill="white"/>
+<ellipse cx="80" cy="100" rx="8" ry="5.5" fill="#c04040"/>
+<line x1="26" y1="100" x2="62" y2="102" stroke="white" stroke-width="1.5" opacity="0.9"/>
+<line x1="26" y1="108" x2="62" y2="106" stroke="white" stroke-width="1.5" opacity="0.9"/>
+<line x1="98" y1="102" x2="134" y2="100" stroke="white" stroke-width="1.5" opacity="0.9"/>
+<line x1="98" y1="106" x2="134" y2="108" stroke="white" stroke-width="1.5" opacity="0.9"/>
+</svg></div></div>
+<div class="tc-name">白虎</div>
+<span class="tc-tag" style="background:#e0703022;color:#e07030">勇気と純粋さ</span>
+</div>
+<div class="tc" onclick="showTypeInfo('seiryu')">
+<div class="tc-emoji"><div style="width:54px;height:54px;border-radius:50%;overflow:hidden;border:3px solid #2890e0;margin:0 auto;display:block"><svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block">
+<circle cx="80" cy="80" r="80" fill="#0a2050"/>
+<ellipse cx="80" cy="80" rx="52" ry="50" fill="#1038a0" opacity="0.6"/>
+<ellipse cx="80" cy="80" rx="42" ry="42" fill="#0a2878"/>
+<path d="M28 80 Q32 56 46 44 Q36 64 36 80Z" fill="#1848c0" opacity="0.5"/>
+<path d="M132 80 Q128 56 114 44 Q124 64 124 80Z" fill="#1848c0" opacity="0.5"/>
+<path d="M60 30 Q68 18 80 16 Q92 18 100 30 Q92 24 80 22 Q68 24 60 30Z" fill="#4a9ae0" opacity="0.8"/>
+<line x1="60" y1="30" x2="52" y2="14" stroke="#4a9ae0" stroke-width="3" opacity="0.8"/>
+<line x1="100" y1="30" x2="108" y2="14" stroke="#4a9ae0" stroke-width="3" opacity="0.8"/>
+<ellipse cx="80" cy="84" rx="36" ry="32" fill="#0d3080"/>
+<ellipse cx="80" cy="108" rx="22" ry="16" fill="#1848a0" opacity="0.7"/>
+<circle cx="62" cy="76" r="11.5" fill="#040c20"/><circle cx="98" cy="76" r="11.5" fill="#040c20"/>
+<circle cx="62" cy="76" r="8.5" fill="#00c8f0"/><circle cx="98" cy="76" r="8.5" fill="#00c8f0"/>
+<circle cx="62" cy="76" r="4.5" fill="#008ab0"/><circle cx="98" cy="76" r="4.5" fill="#008ab0"/>
+<circle cx="59" cy="73" r="2.5" fill="white" opacity="0.9"/><circle cx="95" cy="73" r="2.5" fill="white" opacity="0.9"/>
+<ellipse cx="80" cy="102" rx="10" ry="7" fill="#2060c0"/>
+<path d="M65 112 Q80 120 95 112" stroke="#2060c0" stroke-width="2" fill="none" stroke-linecap="round"/>
+</svg></div></div>
+<div class="tc-name">青龍</div>
+<span class="tc-tag" style="background:#2890e022;color:#2890e0">知恵と成長</span>
+</div>
+<div class="tc" onclick="showTypeInfo('suzaku')">
+<div class="tc-emoji"><div style="width:54px;height:54px;border-radius:50%;overflow:hidden;border:3px solid #e04020;margin:0 auto;display:block"><svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block">
+<circle cx="80" cy="80" r="80" fill="#c02010"/>
+<ellipse cx="80" cy="80" rx="50" ry="50" fill="#e83818" opacity="0.7"/>
+<path d="M80 16 Q80 16 80 16" fill="none"/>
+<path d="M30 50 Q40 20 60 28 Q46 38 42 56Z" fill="#f07020" opacity="0.9"/>
+<path d="M130 50 Q120 20 100 28 Q114 38 118 56Z" fill="#f07020" opacity="0.9"/>
+<path d="M50 30 Q58 10 70 22 Q62 32 56 44Z" fill="#ffa030" opacity="0.8"/>
+<path d="M110 30 Q102 10 90 22 Q98 32 104 44Z" fill="#ffa030" opacity="0.8"/>
+<path d="M66 20 Q72 6 80 14 Q80 26 74 32Z" fill="#ffcc50" opacity="0.9"/>
+<path d="M94 20 Q88 6 80 14 Q80 26 86 32Z" fill="#ffcc50" opacity="0.9"/>
+<ellipse cx="80" cy="84" rx="34" ry="32" fill="#c02010"/>
+<ellipse cx="80" cy="84" rx="24" ry="22" fill="#e84020"/>
+<ellipse cx="80" cy="106" rx="20" ry="14" fill="#f07030" opacity="0.8"/>
+<path d="M64 90 Q80 84 96 90 Q88 102 80 108 Q72 102 64 90Z" fill="#f0a040"/>
+<circle cx="63" cy="76" r="10.5" fill="#200800"/><circle cx="97" cy="76" r="10.5" fill="#200800"/>
+<circle cx="63" cy="76" r="7.5" fill="#f0c000"/><circle cx="97" cy="76" r="7.5" fill="#f0c000"/>
+<circle cx="63" cy="76" r="4" fill="#c08000"/><circle cx="97" cy="76" r="4" fill="#c08000"/>
+<circle cx="60" cy="73" r="2.5" fill="white"/><circle cx="94" cy="73" r="2.5" fill="white"/>
+</svg></div></div>
+<div class="tc-name">朱雀</div>
+<span class="tc-tag" style="background:#e0402022;color:#e04020">情熱と再生</span>
+</div>
+<div class="tc" onclick="showTypeInfo('genbu')">
+<div class="tc-emoji"><div style="width:54px;height:54px;border-radius:50%;overflow:hidden;border:3px solid #7030c0;margin:0 auto;display:block"><svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block">
+<circle cx="80" cy="80" r="80" fill="#080e18"/>
+<ellipse cx="80" cy="80" rx="52" ry="50" fill="#101828"/>
+<ellipse cx="80" cy="80" rx="44" ry="40" fill="#1a2838" opacity="0.9"/>
+<path d="M36 80 Q36 52 52 38 Q38 56 38 80Z" fill="#284060" opacity="0.6"/>
+<path d="M124 80 Q124 52 108 38 Q122 56 122 80Z" fill="#284060" opacity="0.6"/>
+<line x1="80" y1="40" x2="80" y2="120" stroke="#304868" stroke-width="3" opacity="0.5"/>
+<line x1="40" y1="80" x2="120" y2="80" stroke="#304868" stroke-width="3" opacity="0.5"/>
+<line x1="54" y1="48" x2="106" y2="112" stroke="#304868" stroke-width="2" opacity="0.4"/>
+<line x1="106" y1="48" x2="54" y2="112" stroke="#304868" stroke-width="2" opacity="0.4"/>
+<ellipse cx="80" cy="84" rx="32" ry="30" fill="#1a2838"/>
+<ellipse cx="80" cy="108" rx="22" ry="16" fill="#253545" opacity="0.8"/>
+<circle cx="63" cy="76" r="11" fill="#050810"/><circle cx="97" cy="76" r="11" fill="#050810"/>
+<circle cx="63" cy="76" r="8" fill="#8030d0"/><circle cx="97" cy="76" r="8" fill="#8030d0"/>
+<circle cx="63" cy="76" r="4.5" fill="#5010a0"/><circle cx="97" cy="76" r="4.5" fill="#5010a0"/>
+<circle cx="60" cy="73" r="2.5" fill="white" opacity="0.8"/><circle cx="94" cy="73" r="2.5" fill="white" opacity="0.8"/>
+<ellipse cx="80" cy="102" rx="9" ry="6" fill="#283848"/>
+<path d="M65 110 Q80 118 95 110" stroke="#283848" stroke-width="2" fill="none" stroke-linecap="round"/>
+</svg></div></div>
+<div class="tc-name">玄武</div>
+<span class="tc-tag" style="background:#7030c022;color:#7030c0">忍耐と守護</span>
+</div>
+<div class="tc" onclick="showTypeInfo('kirin')">
+<div class="tc-emoji"><div style="width:54px;height:54px;border-radius:50%;overflow:hidden;border:3px solid #c8a020;margin:0 auto;display:block"><svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block">
+<circle cx="80" cy="80" r="80" fill="#c8a020"/>
+<ellipse cx="80" cy="84" rx="46" ry="44" fill="#e8c040"/>
+<path d="M74 20 Q80 8 86 20 Q82 28 80 34 Q78 28 74 20Z" fill="#f0d060"/>
+<path d="M76 34 L80 14 L84 34" stroke="#c8a020" stroke-width="2" fill="none"/>
+<ellipse cx="80" cy="106" rx="26" ry="18" fill="#f8e888"/>
+<polygon points="30,60 20,12 52,42" fill="#d8b030"/><polygon points="130,60 140,12 108,42" fill="#d8b030"/>
+<polygon points="32,58 24,16 50,41" fill="#f0c840" opacity="0.7"/><polygon points="128,58 136,16 110,41" fill="#f0c840" opacity="0.7"/>
+<circle cx="60" cy="74" r="11" fill="#100800"/><circle cx="100" cy="74" r="11" fill="#100800"/>
+<circle cx="60" cy="74" r="8" fill="#9030c0"/><circle cx="100" cy="74" r="8" fill="#9030c0"/>
+<circle cx="60" cy="74" r="4.5" fill="#601890"/><circle cx="100" cy="74" r="4.5" fill="#601890"/>
+<circle cx="57" cy="71" r="2.5" fill="white"/><circle cx="97" cy="71" r="2.5" fill="white"/>
+<ellipse cx="80" cy="100" rx="8" ry="5.5" fill="#c06060"/>
+<path d="M68 108 Q80 114 92 108" stroke="#803838" stroke-width="2" fill="none" stroke-linecap="round"/>
+<line x1="30" y1="102" x2="64" y2="103" stroke="white" stroke-width="1.2" opacity="0.7"/>
+<line x1="96" y1="103" x2="130" y2="102" stroke="white" stroke-width="1.2" opacity="0.7"/>
+</svg></div></div>
+<div class="tc-name">麒麟</div>
+<span class="tc-tag" style="background:#c8a02022;color:#c8a020">高貴と平和</span>
+</div>
+<div class="tc" onclick="showTypeInfo('hooh')">
+<div class="tc-emoji"><div style="width:54px;height:54px;border-radius:50%;overflow:hidden;border:3px solid #c030a0;margin:0 auto;display:block"><svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block">
+<circle cx="80" cy="80" r="80" fill="#2a1050"/>
+<path d="M80 16 Q96 22 110 36 Q96 28 80 26 Q64 28 50 36 Q64 22 80 16Z" fill="#e040c0" opacity="0.9"/>
+<path d="M20 52 Q30 34 50 36 Q38 46 34 60Z" fill="#8040e0" opacity="0.8"/>
+<path d="M140 52 Q130 34 110 36 Q122 46 126 60Z" fill="#8040e0" opacity="0.8"/>
+<path d="M24 70 Q22 52 34 60 Q26 62 24 70Z" fill="#40c0e0" opacity="0.7"/>
+<path d="M136 70 Q138 52 126 60 Q134 62 136 70Z" fill="#40c0e0" opacity="0.7"/>
+<path d="M80 18 Q80 18 80 18" fill="none"/>
+<ellipse cx="80" cy="84" rx="38" ry="36" fill="#3a1868"/>
+<ellipse cx="80" cy="108" rx="24" ry="18" fill="#6030b0" opacity="0.7"/>
+<ellipse cx="80" cy="60" rx="16" ry="10" fill="#e040c0" opacity="0.8"/>
+<circle cx="63" cy="78" r="11" fill="#100818"/><circle cx="97" cy="78" r="11" fill="#100818"/>
+<circle cx="63" cy="78" r="8" fill="#e040c0"/><circle cx="97" cy="78" r="8" fill="#e040c0"/>
+<circle cx="63" cy="78" r="4.5" fill="#a020a0"/><circle cx="97" cy="78" r="4.5" fill="#a020a0"/>
+<circle cx="60" cy="75" r="2.5" fill="white"/><circle cx="94" cy="75" r="2.5" fill="white"/>
+<path d="M68 106 Q80 100 92 106 Q88 114 80 118 Q72 114 68 106Z" fill="#e06000"/>
+<path d="M70 108 Q80 104 90 108" stroke="#c04000" stroke-width="1.5" fill="none"/>
+</svg></div></div>
+<div class="tc-name">鳳凰</div>
+<span class="tc-tag" style="background:#c030a022;color:#c030a0">変革と不死</span>
+</div>
+  </div>
+</div>
+</main>
+
 <div id="type-modal" onclick="if(event.target===this)closeTypeModal()">
   <div class="type-modal-inner" id="type-modal-content"></div>
 </div>
-</div>
+
+<footer>
+  <div style="margin-bottom:8px">
+    <a href="https://twitter.com/hoshiyorudou" style="margin:0 10px">𝕏 / Twitter</a>
+    <a href="https://lin.ee/hoshiyorudou" style="margin:0 10px">LINE公式</a>
+    <a href="https://hoshiyorudou.jp" style="margin:0 10px">星夜堂</a>
+  </div>
+  <div>© 星夜堂 — 神獣パーソナリティ診断 ✨</div>
+</footer>
+
 <script>
-const SHARE_URL = 'https://hoshiyorudou.jp/shinjuu';
-const LINE_OA   = 'https://lin.ee/hoshiyorudou';
+const SHARE_URL='https://hoshiyorudou.jp/shinjuu';
+const LINE_OA='https://lin.ee/hoshiyorudou';
 
-const questions = [
-  {
-    text: '困難な状況に直面したとき、あなたは？',
-    opts: [
-      { text: '🗡️ 真正面から全力で立ち向かう', scores: { byakko:3, suzaku:1 } },
-      { text: '🧠 冷静に分析して最善策を探す', scores: { seiryu:3, genbu:1 } },
-      { text: '🌊 柔軟に対応しながら流れに乗る', scores: { kirin:2, suzaku:2 } },
-    ]
-  },
-  {
-    text: '自分の一番の強みは何だと思う？',
-    opts: [
-      { text: '⚡ 瞬発力と決断の速さ', scores: { byakko:3, suzaku:2 } },
-      { text: '📚 深い知識と分析力', scores: { seiryu:3, genbu:1 } },
-      { text: '💞 人を惹きつける魅力と共感力', scores: { kirin:3, hooh:2 } },
-    ]
-  },
-  {
-    text: '夢や目標に対するスタンスは？',
-    opts: [
-      { text: '🏹 高い目標を設定して一点集中で突き進む', scores: { byakko:3, seiryu:1 } },
-      { text: '🌱 着実に積み上げて長期的に実現していく', scores: { genbu:3, seiryu:2 } },
-      { text: '🦋 インスピレーションで大きく変革していく', scores: { hooh:3, kirin:2 } },
-    ]
-  },
-  {
-    text: '友人や仲間との関係で大切にしていることは？',
-    opts: [
-      { text: '🤜 仲間のためなら体を張れる', scores: { byakko:3, genbu:2 } },
-      { text: '💡 互いを高め合い成長できる関係', scores: { seiryu:3, kirin:1 } },
-      { text: '🌸 深い信頼と温かい絆', scores: { kirin:3, hooh:1 } },
-    ]
-  },
-  {
-    text: '何か新しいことを学ぶとき？',
-    opts: [
-      { text: '🏃 まず体で覚える・実践ファースト', scores: { byakko:3, suzaku:2 } },
-      { text: '📖 体系的に理解してから応用する', scores: { seiryu:3, genbu:1 } },
-      { text: '✨ 感性で吸収して自分なりに昇華する', scores: { hooh:3, kirin:2 } },
-    ]
-  },
-  {
-    text: 'あなたが大切にしている価値観は？',
-    opts: [
-      { text: '⚔️ 正義と勇気・筋を通すこと', scores: { byakko:3, genbu:1 } },
-      { text: '🔬 真理と知恵・本質を見抜くこと', scores: { seiryu:3, kirin:1 } },
-      { text: '🕊️ 調和と平和・全てが共存すること', scores: { kirin:3, hooh:2 } },
-    ]
-  },
-  {
-    text: '逆境のとき、あなたを支えるのは？',
-    opts: [
-      { text: '🔥 内側から燃える闘志', scores: { byakko:3, suzaku:2 } },
-      { text: '🏔️ 積み重ねた経験と揺るぎない信念', scores: { genbu:3, seiryu:2 } },
-      { text: '🌟 未来への希望と可能性', scores: { hooh:3, kirin:2 } },
-    ]
-  },
-  {
-    text: '周囲の人からどう見られることが多い？',
-    opts: [
-      { text: '🦁 頼もしい・勇ましい', scores: { byakko:3, suzaku:1 } },
-      { text: '🦉 落ち着いている・賢い', scores: { seiryu:2, genbu:3 } },
-      { text: '🦋 個性的・華がある・オーラがある', scores: { hooh:3, kirin:2 } },
-    ]
-  },
-  {
-    text: '変化に対してどう感じる？',
-    opts: [
-      { text: '⚡ 変化は歓迎！スピードについていける', scores: { byakko:2, suzaku:3 } },
-      { text: '🌳 変化は慎重に。安定を優先したい', scores: { genbu:3, seiryu:2 } },
-      { text: '🦅 変化こそが成長のチャンス・大好き', scores: { hooh:3, kirin:2 } },
-    ]
-  },
-  {
-    text: '理想の自分のイメージは？',
-    opts: [
-      { text: '🗡️ 何があっても折れない強さを持つ人', scores: { byakko:3, genbu:2 } },
-      { text: '🌿 深く賢く、静かに人を導く人', scores: { seiryu:3, kirin:2 } },
-      { text: '🌈 新たな時代を切り開く変革者', scores: { hooh:3, suzaku:2 } },
-    ]
-  },
+const questions=[
+  {text:'困難な状況に直面したとき、あなたは？',opts:[
+    {text:'🗡️ 真正面から全力で立ち向かう',scores:{byakko:3,suzaku:1}},
+    {text:'🧠 冷静に分析して最善策を探す',scores:{seiryu:3,genbu:1}},
+    {text:'🌊 柔軟に対応しながら流れに乗る',scores:{kirin:2,suzaku:2}},
+  ]},
+  {text:'自分の一番の強みは何だと思う？',opts:[
+    {text:'⚡ 瞬発力と決断の速さ',scores:{byakko:3,suzaku:2}},
+    {text:'📚 深い知識と分析力',scores:{seiryu:3,genbu:1}},
+    {text:'💞 人を惹きつける魅力と共感力',scores:{kirin:3,hooh:2}},
+  ]},
+  {text:'夢や目標に対するスタンスは？',opts:[
+    {text:'🏹 高い目標を設定して一点集中で突き進む',scores:{byakko:3,seiryu:1}},
+    {text:'🌱 着実に積み上げて長期的に実現していく',scores:{genbu:3,seiryu:2}},
+    {text:'🦋 インスピレーションで大きく変革していく',scores:{hooh:3,kirin:2}},
+  ]},
+  {text:'友人や仲間との関係で大切にしていることは？',opts:[
+    {text:'🤜 仲間のためなら体を張れる',scores:{byakko:3,genbu:2}},
+    {text:'💡 互いを高め合い成長できる関係',scores:{seiryu:3,kirin:1}},
+    {text:'🌸 深い信頼と温かい絆',scores:{kirin:3,hooh:1}},
+  ]},
+  {text:'何か新しいことを学ぶとき？',opts:[
+    {text:'🏃 まず体で覚える・実践ファースト',scores:{byakko:3,suzaku:2}},
+    {text:'📖 体系的に理解してから応用する',scores:{seiryu:3,genbu:1}},
+    {text:'✨ 感性で吸収して自分なりに昇華する',scores:{hooh:3,kirin:2}},
+  ]},
+  {text:'あなたが大切にしている価値観は？',opts:[
+    {text:'⚔️ 正義と勇気・筋を通すこと',scores:{byakko:3,genbu:1}},
+    {text:'🔬 真理と知恵・本質を見抜くこと',scores:{seiryu:3,kirin:1}},
+    {text:'🕊️ 調和と平和・全てが共存すること',scores:{kirin:3,hooh:2}},
+  ]},
+  {text:'逆境のとき、あなたを支えるのは？',opts:[
+    {text:'🔥 内側から燃える闘志',scores:{byakko:3,suzaku:2}},
+    {text:'🏔️ 積み重ねた経験と揺るぎない信念',scores:{genbu:3,seiryu:2}},
+    {text:'🌟 未来への希望と可能性',scores:{hooh:3,kirin:2}},
+  ]},
+  {text:'周囲の人からどう見られることが多い？',opts:[
+    {text:'🦁 頼もしい・勇ましい',scores:{byakko:3,suzaku:1}},
+    {text:'🦉 落ち着いている・賢い',scores:{seiryu:2,genbu:3}},
+    {text:'🦋 個性的・華がある・オーラがある',scores:{hooh:3,kirin:2}},
+  ]},
+  {text:'変化に対してどう感じる？',opts:[
+    {text:'⚡ 変化は歓迎！スピードについていける',scores:{byakko:2,suzaku:3}},
+    {text:'🌳 変化は慎重に。安定を優先したい',scores:{genbu:3,seiryu:2}},
+    {text:'🦅 変化こそが成長のチャンス・大好き',scores:{hooh:3,kirin:2}},
+  ]},
+  {text:'理想の自分のイメージは？',opts:[
+    {text:'🗡️ 何があっても折れない強さを持つ人',scores:{byakko:3,genbu:2}},
+    {text:'🌿 深く賢く、静かに人を導く人',scores:{seiryu:3,kirin:2}},
+    {text:'🌈 新たな時代を切り開く変革者',scores:{hooh:3,suzaku:2}},
+  ]},
 ];
-
-const results = {
-  byakko: {
-    emoji:'🐯', name:'白虎', catch:'勇気と純粋さを象徴する西方の神獣',
+const results={
+  byakko:{emoji:'🐯',name:'白虎',catch:'勇気と純粋さを象徴する西方の神獣',
     traits:['圧倒的な勇気と行動力','純粋な正義感','困難を跳ね返す強さ'],
     weaknesses:['猪突猛進になりすぎることも','感情が表に出やすい'],
     desc:'白虎があなたの魂に宿っています。西方を守護する白虎は、純粋な勇気と行動力の象徴。正しいと信じることには全力で立ち向かう真っ直ぐさと、どんな困難も跳ね返す強さを持ちます。その純白の輝きが周囲を照らします。',
     compat:{emoji:'🐉',name:'青龍タイプ',why:'勇気と知恵が合わさる最強コンビ'},
-    tend:{勇気:95,知恵:55,魅力:65,忍耐:60,変革力:70}
-  },
-  seiryu: {
-    emoji:'🐉', name:'青龍', catch:'知恵と成長の力を宿す東方の神獣',
+    tend:{勇気:95,知恵:55,魅力:65,忍耐:60,変革力:70}},
+  seiryu:{emoji:'🐉',name:'青龍',catch:'知恵と成長の力を宿す東方の神獣',
     traits:['鋭い知性と洞察力','物事の本質を見抜く眼','継続的な成長への意欲'],
     weaknesses:['頭でっかちになることも','感情表現が苦手なことがある'],
     desc:'青龍があなたの魂に宿っています。東方を守護する青龍は、知恵と成長の象徴。物事の本質を見抜く深い洞察力と、常に学び続ける向上心を持ちます。その知性の光は、暗闇の中でも正しい道を照らし出します。',
     compat:{emoji:'🦚',name:'鳳凰タイプ',why:'知恵と変革が響き合い時代を動かす'},
-    tend:{勇気:65,知恵:95,魅力:60,忍耐:75,変革力:70}
-  },
-  suzaku: {
-    emoji:'🦅', name:'朱雀', catch:'情熱と再生の炎を灯す南方の神獣',
+    tend:{勇気:65,知恵:95,魅力:60,忍耐:75,変革力:70}},
+  suzaku:{emoji:'🦅',name:'朱雀',catch:'情熱と再生の炎を灯す南方の神獣',
     traits:['燃え盛る情熱と表現力','再生と変化への適応力','周囲を熱くする感化力'],
     weaknesses:['燃え尽きやすいことも','感情の波が激しいことがある'],
     desc:'朱雀があなたの魂に宿っています。南方を守護する朱雀は、情熱と再生の象徴。何度でも炎の中から蘇る不屈の精神と、周囲を熱く感化する表現力を持ちます。その緋色の翼は、希望の光として人々を鼓舞します。',
     compat:{emoji:'🐢',name:'玄武タイプ',why:'情熱と安定が見事に補い合う'},
-    tend:{勇気:80,知恵:60,魅力:85,忍耐:55,変革力:80}
-  },
-  genbu: {
-    emoji:'🐢', name:'玄武', catch:'忍耐と守護の力を持つ北方の神獣',
+    tend:{勇気:80,知恵:60,魅力:85,忍耐:55,変革力:80}},
+  genbu:{emoji:'🐢',name:'玄武',catch:'忍耐と守護の力を持つ北方の神獣',
     traits:['揺るぎない忍耐力と安定感','大切なものを守る強い意志','長期的な視点と深い慎重さ'],
     weaknesses:['変化への対応が遅れることも','頑固に見られることがある'],
     desc:'玄武があなたの魂に宿っています。北方を守護する玄武は、忍耐と守護の象徴。時間をかけて着実に積み上げ、大切なものを最後まで守り抜く力を持ちます。その重厚な存在感は、周囲に安心と信頼をもたらします。',
     compat:{emoji:'🦅',name:'朱雀タイプ',why:'安定と情熱が互いを支え合う'},
-    tend:{勇気:70,知恵:80,魅力:55,忍耐:95,変革力:40}
-  },
-  kirin: {
-    emoji:'🦄', name:'麒麟', catch:'高貴さと平和の徳を体現する神獣',
+    tend:{勇気:70,知恵:80,魅力:55,忍耐:95,変革力:40}},
+  kirin:{emoji:'🦄',name:'麒麟',catch:'高貴さと平和の徳を体現する神獣',
     traits:['高い徳と品格','争いを好まない平和的な心','人を惹きつける不思議な魅力'],
     weaknesses:['競争や争いが苦手なことも','優柔不断に見られることがある'],
     desc:'麒麟があなたの魂に宿っています。仁義の徳を体現する麒麟は、平和と高貴さの象徴。悪を踏まず、争いを好まず、その存在自体が周囲に幸運と平和をもたらします。静かでありながら、誰もが尊敬する圧倒的な品格を持ちます。',
     compat:{emoji:'🐉',name:'青龍タイプ',why:'高貴な魂と深い知恵が調和する'},
-    tend:{勇気:55,知恵:80,魅力:90,忍耐:75,変革力:60}
-  },
-  hooh: {
-    emoji:'🦚', name:'鳳凰', catch:'変革と不死の力で時代を切り開く神獣',
+    tend:{勇気:55,知恵:80,魅力:90,忍耐:75,変革力:60}},
+  hooh:{emoji:'🦚',name:'鳳凰',catch:'変革と不死の力で時代を切り開く神獣',
     traits:['時代を変える変革力','何度でも蘇る不死の精神','圧倒的な個性とカリスマ'],
     weaknesses:['自分のペースを崩されると辛いことも','独りよがりになることがある'],
     desc:'鳳凰があなたの魂に宿っています。不死と変革の象徴である鳳凰は、時代を変える力を持ちます。炎の中から何度でも蘇り、新たな時代の先駆けとなるカリスマを持ちます。その圧倒的な存在感と独自の美しさは、多くの人を魅了します。',
     compat:{emoji:'🐢',name:'玄武タイプ',why:'変革と安定が理想のバランスを生む'},
-    tend:{勇気:75,知恵:75,魅力:95,忍耐:65,変革力:95}
-  }
+    tend:{勇気:75,知恵:75,魅力:95,忍耐:65,変革力:95}},
 };
-
-
-function showTypeInfo(key){
-  const b=typeInfo[key];if(!b)return;
-  const modal=document.getElementById('type-modal');
-  document.getElementById('type-modal-content').innerHTML=
-    '<button class="bm-close" onclick="closeTypeModal()">✕</button>'+
-    '<span class="bm-emoji">'+b.emoji+'</span>'+
-    '<div class="bm-name">'+b.name+'</div>'+
-    '<div class="bm-catch">'+b.catch+'</div>'+
-    '<div class="bm-keywords">'+b.keywords.map(k=>'<span class="bm-kw">'+k+'</span>').join('')+'</div>'+
-    '<div class="bm-desc">'+b.summary+'</div>'+
-    '<button class="bm-startbtn" onclick="closeTypeModal();startQuiz()">⚡ 診断してみる</button>';
-  modal.style.display='block';document.body.style.overflow='hidden';
-}
-function closeTypeModal(){
-  document.getElementById('type-modal').style.display='none';
-  document.body.style.overflow='';
-}
-
-let answerHistory=[];
-
-const typeInfo = {
+const typeInfo={
   byakko:{emoji:'🐯',name:'白虎',catch:'勇気と純粋さを象徴する西方の神獣',keywords:['勇気と行動力','純粋な正義感','困難を跳ね返す強さ'],summary:'圧倒的な勇気と正義感で道を切り拓く神獣。純粋な心と強い意志で困難を跳ね返し、仲間のために体を張れる真のヒーロー。'},
   seiryu:{emoji:'🐉',name:'青龍',catch:'知恵と成長の力を宿す東方の神獣',keywords:['深い知性','成長力','先見の明'],summary:'知恵と洞察で未来を見通す神獣。物事の本質を見抜き、常に成長し続ける。その深い思考と先見の明が、周囲を導く力となる。'},
   suzaku:{emoji:'🦅',name:'朱雀',catch:'情熱と再生の炎を灯す南方の神獣',keywords:['情熱','輝くカリスマ','再生の力'],summary:'炎のように燃える情熱と輝くカリスマを持つ神獣。どんな逆境からも立ち上がる再生の力と、周囲を照らす明るさで場を盛り上げる。'},
   genbu:{emoji:'🐢',name:'玄武',catch:'忍耐と守護の力を持つ北方の神獣',keywords:['忍耐力','守護の意志','深い信頼感'],summary:'揺るぎない忍耐力と守護の意志を持つ神獣。どっしりした安定感と深い知恵で、大切な人をしっかりと守り続ける。'},
-  kirin:{emoji:'🦄',name:'麒麟',catch:'高貴さと平和の徳を体現する神獣',keywords:['高貴さ','平和の象徴','深い共感力'],summary:'高貴さと優しさで平和をもたらす神獣。深い共感力と徳の高さで、自然と人々の心を結びつける。その存在は周囲に調和と幸運をもたらす。'},
+  kirin:{emoji:'🦄',name:'麒麟',catch:'高貴さと平和の徳を体現する神獣',keywords:['高貴さ','平和の象徴','深い共感力'],summary:'高貴さと優しさで平和をもたらす神獣。深い共感力と徳の高さで、自然と人々の心を結びつける。'},
   hooh:{emoji:'🦚',name:'鳳凰',catch:'変革と不死の力で時代を切り開く神獣',keywords:['変革力','不死の魂','時代を超える輝き'],summary:'変革と再生を繰り返し、時代を切り開く神獣。高い理想を掲げ、輝く存在感で周囲を魅了する。どんな変化にも動じない不死の精神を持つ。'},
 };
 
+let answerHistory=[], scores={}, currentQ=0, _shareText='';
+
+function setActiveNav(id){
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  const el=document.getElementById('nav-'+id);
+  if(el)el.classList.add('active');
+}
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  setActiveNav(id);
+  window.scrollTo({top:0,behavior:'smooth'});
+}
 function showTypeInfo(key){
   const b=typeInfo[key];if(!b)return;
-  const modal=document.getElementById('type-modal');
   document.getElementById('type-modal-content').innerHTML=
     '<button class="bm-close" onclick="closeTypeModal()">✕</button>'+
     '<span class="bm-emoji">'+b.emoji+'</span>'+
@@ -350,35 +560,49 @@ function showTypeInfo(key){
     '<div class="bm-catch">'+b.catch+'</div>'+
     '<div class="bm-keywords">'+b.keywords.map(k=>'<span class="bm-kw">'+k+'</span>').join('')+'</div>'+
     '<div class="bm-desc">'+b.summary+'</div>'+
-    '<button class="bm-startbtn" onclick="closeTypeModal();startQuiz()">⚡ 診断してみる</button>';
-  modal.style.display='block';document.body.style.overflow='hidden';
+    '<button class="bm-startbtn" onclick="closeTypeModal();startQuiz()">⚡ 無料で診断する（10問）</button>';
+  document.getElementById('type-modal').style.display='block';
+  document.body.style.overflow='hidden';
 }
 function closeTypeModal(){
   document.getElementById('type-modal').style.display='none';
   document.body.style.overflow='';
 }
-
-let scores={}, currentQ=0, _shareText='';
-function resetScores(){ scores={};answerHistory=[]; Object.keys(results).forEach(k=>scores[k]=0); }
-function goBack(){if(currentQ<=0)return;const last=answerHistory.pop();Object.entries(last).forEach(([k,v])=>{scores[k]=(scores[k]||0)-v;});currentQ--;renderQuestion();const c=document.querySelector('.q-card');c.style.animation='none';c.offsetHeight;c.style.animation='fadeUp .35s ease both';}
-function startQuiz(){ resetScores(); currentQ=0; showScreen('quiz'); renderQuestion(); }
-function showScreen(id){
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  window.scrollTo({top:0,behavior:'smooth'});
+function resetScores(){
+  scores={};answerHistory=[];
+  Object.keys(results).forEach(k=>scores[k]=0);
+}
+function startQuiz(){
+  resetScores();currentQ=0;
+  showScreen('quiz');renderQuestion();
+}
+function goBack(){
+  if(currentQ<=0)return;
+  const last=answerHistory.pop();
+  Object.entries(last).forEach(([k,v])=>{scores[k]=(scores[k]||0)-v;});
+  currentQ--;renderQuestion();
+  const c=document.querySelector('.q-card');c.style.animation='none';c.offsetHeight;c.style.animation='fadeUp .35s ease both';
 }
 function renderQuestion(){
-  const q=questions[currentQ]; const n=currentQ+1; const pct=Math.round(n/questions.length*100);
-  document.getElementById('q-counter').textContent=`Q ${n} / ${questions.length}`;
+  const q=questions[currentQ],n=currentQ+1,pct=Math.round(n/questions.length*100);
+  document.getElementById('q-counter').textContent='Q '+n+' / '+questions.length;
   document.getElementById('q-pct').textContent=pct+'%';
   document.getElementById('prog-fill').style.width=pct+'%';
   document.getElementById('q-num-label').textContent='QUESTION '+String(n).padStart(2,'0');
   document.getElementById('q-text').textContent=q.text;
-  const back=document.getElementById('btn-back');if(back)back.style.display=currentQ>0?'flex':'none';
-  const wrap=document.getElementById('options-wrap'); wrap.innerHTML='';
+  const back=document.getElementById('btn-back');
+  if(back)back.style.display=currentQ>0?'flex':'none';
+  const wrap=document.getElementById('options-wrap');wrap.innerHTML='';
   q.opts.forEach(opt=>{
-    const btn=document.createElement('button'); btn.className='opt';
-    btn.textContent=opt.text; btn.onclick=()=>selectAnswer(opt.scores,btn); wrap.appendChild(btn);
+    const btn=document.createElement('button');btn.className='opt';
+    const m=opt.text.match(/^(\S+)\s(.+)$/);
+    if(m){
+      btn.innerHTML='<span class="opt-icon">'+m[1]+'</span>'+m[2];
+    } else {
+      btn.textContent=opt.text;
+    }
+    btn.onclick=()=>selectAnswer(opt.scores,btn);
+    wrap.appendChild(btn);
   });
 }
 function selectAnswer(scoreMap,btn){
@@ -388,34 +612,36 @@ function selectAnswer(scoreMap,btn){
   Object.entries(scoreMap).forEach(([k,v])=>{scores[k]=(scores[k]||0)+v;});
   setTimeout(()=>{
     currentQ++;
-    if(currentQ<questions.length){ renderQuestion(); const c=document.querySelector('.q-card'); c.style.animation='none'; c.offsetHeight; c.style.animation='fadeUp .35s ease both'; }
-    else showResult();
+    if(currentQ<questions.length){
+      renderQuestion();
+      const c=document.querySelector('.q-card');c.style.animation='none';c.offsetHeight;c.style.animation='fadeUp .35s ease both';
+    } else showResult();
   },420);
 }
 function showResult(){
   const key=Object.entries(scores).sort((a,b)=>b[1]-a[1])[0][0];
-  const r=results[key]; const el=document.getElementById('result');
-  _shareText='私の神獣は「'+r.name+'」でした！\nあなたの神獣は？\n';
+  const r=results[key];
+  _shareText='私の神獣は「'+r.name+'」でした！\nあなたのタイプは？\n';
   const tendHTML=Object.entries(r.tend).map(([label,val])=>
-    `<div class="tend-row"><div class="tend-label">${label}</div><div class="tend-bar-wrap"><div class="tend-bar" style="width:0" data-w="${val}%"></div></div><div class="tend-val">${val}</div></div>`
+    '<div class="tend-row"><div class="tend-label">'+label+'</div><div class="tend-bar-wrap"><div class="tend-bar" style="width:0" data-w="'+val+'%"></div></div><div class="tend-val">'+val+'</div></div>'
   ).join('');
-  el.innerHTML=`
+  document.getElementById('result').innerHTML=`
     <div class="result-hero">
       <div class="result-icon">${r.emoji}</div>
       <div class="result-label">あなたの神獣</div>
       <div class="result-name">${r.name}</div>
       <div class="result-catch">${r.catch}</div>
     </div>
-    <div class="result-section"><div class="section-title">✨ 長所・強み</div><div class="traits">${r.traits.map(t=>`<span class="trait">${t}</span>`).join('')}</div></div>
+    <div class="result-section"><div class="section-title">✨ 長所・強み</div><div class="traits">${r.traits.map(t=>'<span class="trait">'+t+'</span>').join('')}</div></div>
     <div class="result-section"><div class="section-title">💬 詳細解説</div><div class="desc">${r.desc}</div></div>
-    <div class="result-section"><div class="section-title">△ 気をつけたいこと</div><div class="weaknesses">${r.weaknesses.map(w=>`<div class="weakness">${w}</div>`).join('')}</div></div>
+    <div class="result-section"><div class="section-title">△ 気をつけたいこと</div><div class="weaknesses">${r.weaknesses.map(w=>'<div class="weakness">'+w+'</div>').join('')}</div></div>
     <div class="result-section"><div class="section-title">💕 相性の良いタイプ</div><div class="compat"><div class="compat-icon">${r.compat.emoji}</div><div><div class="compat-name">${r.compat.name}</div><div class="compat-why">${r.compat.why}</div></div></div></div>
     <div class="result-section"><div class="section-title">📊 あなたの傾向</div><div class="tendency-bars">${tendHTML}</div></div>
     <div class="share-section">
       <div class="share-title">📣 結果をシェアしよう</div>
       <div class="share-btns">
-        <button class="btn-x" onclick="shareX()"><svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.742l7.742-8.852L1.512 2.25h6.961l4.263 5.623 5.508-5.623zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>Xでシェア</button>
-        <button class="btn-line" onclick="shareLINE()"><svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>LINEでシェア</button>
+        <button class="btn-x" onclick="shareX()"><svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.742l7.742-8.852L1.512 2.25h6.961l4.263 5.623 5.508-5.623zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg> Xでシェア</button>
+        <button class="btn-line" onclick="shareLINE()"><svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg> LINEでシェア</button>
         <button class="btn-retry" onclick="startQuiz()">🔄 もう一度診断する</button>
       </div>
     </div>
@@ -423,15 +649,14 @@ function showResult(){
       <div class="line-cta-icon">🔮</div>
       <div class="line-cta-title">本格占いは星夜堂へ</div>
       <div class="line-cta-text">神獣だけでなく、あなたの生年月日から<br>今日の運勢・今月の流れを毎日お届けします</div>
-      <a class="btn-line-cta" href="${LINE_OA}" target="_blank"><svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>星夜堂でもっと詳しく占う</a>
+      <a class="btn-line-cta" href="${LINE_OA}" target="_blank"><svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg> 星夜堂でもっと詳しく占う</a>
     </div>
-    <div class="result-footer">© 星夜堂 — 神獣診断</div>
+    <div class="result-footer">© 星夜堂 — 神獣パーソナリティ診断 ✨</div>
   `;
   showScreen('result');
-  setTimeout(()=>{ document.querySelectorAll('.tend-bar').forEach(b=>b.style.width=b.dataset.w); },400);
+  setTimeout(()=>{document.querySelectorAll('.tend-bar').forEach(b=>b.style.width=b.dataset.w);},400);
 }
-function shareX(){ window.open('https://twitter.com/intent/tweet?text='+encodeURIComponent(_shareText+SHARE_URL),'_blank'); }
-function shareLINE(){ window.open('https://social-plugins.line.me/lineit/share?url='+encodeURIComponent(SHARE_URL)+'&text='+encodeURIComponent(_shareText),'_blank'); }
+function shareX(){window.open('https://twitter.com/intent/tweet?text='+encodeURIComponent(_shareText+SHARE_URL),'_blank');}
+function shareLINE(){window.open('https://social-plugins.line.me/lineit/share?url='+encodeURIComponent(SHARE_URL)+'&text='+encodeURIComponent(_shareText),'_blank');}
 </script>
-</body>
-</html>
+</body></html>
