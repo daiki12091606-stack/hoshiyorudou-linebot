@@ -1,368 +1,755 @@
 <!DOCTYPE html>
-<html lang="ja">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>猫種パーソナリティ診断 — あなたはどの猫？</title>
-<meta name="description" content="10の質問でわかる猫種パーソナリティ。アメショ・ペルシャ・マンチカン・スコティッシュ・シャム・ノルウェジアン・ラグドール・ベンガル — 星夜堂の猫種診断。">
+<html lang="ja"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>猫種パーソナリティ診断 🐱</title>
 <style>
-:root{
-  --pr:#c47d45;--pr2:#e8a96a;--bg:#130d08;--card:#221508;--card2:#2c1c0c;--border:#4a2e15;
-  --text:#fdf3e7;--sub:#b8956a;--fg:#fdf3e7;
-  --radius:16px;--shadow:0 8px 32px rgba(0,0,0,.5);
-}
+:root{--pr:#d45a8a;--pr2:#f090b8;--bg:#0f0810;--card:#1c0e18;--card2:#271428;--border:#5a2248;--text:#fdf0f8;--sub:#c080a8;--fg:#fdf0f8}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Yu Gothic',sans-serif;
-  background:var(--bg);color:var(--text);min-height:100vh;
-  background-image:radial-gradient(ellipse at 25% 25%,rgba(192,57,109,.18) 0%,transparent 60%),
-    radial-gradient(ellipse at 75% 75%,rgba(232,116,154,.1) 0%,transparent 60%);
-}
-#app{max-width:480px;margin:0 auto;padding:16px 16px 40px;min-height:100vh;display:flex;flex-direction:column}
-.screen{display:none;animation:fadeUp .4s ease both}
-.screen.active{display:flex;flex-direction:column;flex:1}
-@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
-#top{align-items:center;justify-content:center;text-align:center;gap:20px;padding:24px 0}
-.top-icon{font-size:80px;filter:drop-shadow(0 0 20px rgba(196,125,69,.6));animation:float 3s ease-in-out infinite}
-@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
-.top-title{font-size:28px;font-weight:800;letter-spacing:.04em;
-  background:linear-gradient(135deg,#f48fb1,#ffd6e7);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.top-sub{font-size:14px;color:var(--sub);line-height:1.7;max-width:320px}
-.top-meta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
-.badge{background:var(--card2);border:1px solid var(--border);border-radius:20px;padding:6px 14px;font-size:12px;color:var(--sub)}
-.btn-start{width:100%;max-width:320px;padding:18px;background:background:linear-gradient(135deg,#6b3a1f,#c47d45);
-  color:#fff;border:none;border-radius:var(--radius);font-size:18px;font-weight:700;cursor:pointer;
-  box-shadow:0 4px 20px rgba(192,57,109,.4);transition:.2s;letter-spacing:.05em}
-.btn-start:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(107,58,31,.5)}
-.types-preview{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;width:100%}
-.type-chip{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:10px 4px;text-align:center;font-size:11px}
-.type-chip .emoji{font-size:20px;display:block;margin-bottom:4px}
-.progress-wrap{padding:8px 0 20px}
-.progress-label{display:flex;justify-content:space-between;font-size:13px;color:var(--sub);margin-bottom:8px}
-.progress-bar{height:6px;background:var(--card2);border-radius:3px;overflow:hidden}
-.progress-fill{height:100%;background:linear-gradient(90deg,#c0396d,#e8749a);border-radius:3px;transition:width .4s ease}
-.q-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:24px 20px;margin-bottom:20px;box-shadow:var(--shadow)}
-.q-num{font-size:12px;color:var(--pr2);font-weight:700;letter-spacing:.1em;margin-bottom:10px}
-.q-text{font-size:17px;font-weight:700;line-height:1.6}
-.options{display:flex;flex-direction:column;gap:10px}
-.opt{background:var(--card2);border:1.5px solid var(--border);border-radius:12px;padding:16px 18px;
-  font-size:15px;line-height:1.5;cursor:pointer;transition:.2s;text-align:left;color:var(--text)}
-.opt:hover{border-color:var(--pr2);background:rgba(192,57,109,.2);transform:translateX(4px)}
-.opt.selected{border-color:#f48fb1;background:rgba(244,143,177,.12);color:#ffd6e7}
-#result{gap:0;padding-top:0}
-.result-hero{background:linear-gradient(135deg,var(--card2),var(--card));border:1px solid var(--border);
-  border-radius:var(--radius);padding:32px 20px 24px;text-align:center;margin-bottom:16px;box-shadow:var(--shadow);
-  animation:heroIn .6s ease both}
-@keyframes heroIn{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:none}}
-.result-icon{font-size:72px;margin-bottom:12px;filter:drop-shadow(0 0 24px rgba(232,116,154,.7))}
-.result-label{font-size:12px;color:#e8749a;font-weight:700;letter-spacing:.15em;margin-bottom:8px}
-.result-name{font-size:32px;font-weight:900;letter-spacing:.06em;margin-bottom:10px;
-  background:linear-gradient(135deg,#f48fb1,#ffd6e7);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.result-catch{font-size:15px;color:var(--sub);line-height:1.6}
-.result-section{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:12px}
-.section-title{font-size:13px;font-weight:700;color:var(--pr2);letter-spacing:.08em;margin-bottom:14px}
+body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Yu Gothic',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+/* NAV */
+.app-nav{display:flex;justify-content:center;background:rgba(0,0,0,.85);backdrop-filter:blur(10px);position:sticky;top:0;z-index:100;border-bottom:1px solid #5a224888}
+.nav-btn{padding:14px 18px;cursor:pointer;font-size:.82rem;color:var(--sub);background:transparent;border:none;border-bottom:2px solid transparent;transition:.2s;color:var(--sub)}
+.nav-btn.active{color:var(--pr);border-bottom-color:var(--pr)}
+/* SCREENS */
+.screen{display:none;animation:fadeUp .38s ease both}
+.screen.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+main{max-width:480px;margin:0 auto;padding:16px 16px 48px}
+/* HOME */
+.hero{text-align:center;padding:28px 16px 16px}
+.hero h1{font-size:1.65rem;font-weight:800;background:linear-gradient(135deg,#f090b8,#ffd6ea);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:6px}
+.hero p{color:var(--sub);font-size:.92rem;margin-bottom:16px;line-height:1.6}
+.hero-badges{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:20px}
+.badge{background:var(--card2);border:1px solid #5a224888;border-radius:20px;padding:5px 12px;font-size:.75rem;color:var(--sub)}
+.tgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:16px 0}
+.tc{background:var(--card);border-radius:12px;padding:10px 6px 8px;text-align:center;transition:.2s;border:1px solid #5a224866;cursor:pointer}
+.tc:hover{transform:translateY(-2px);border-color:#d45a8a88;background:var(--card2)}
+.tc:active{transform:scale(.96)}
+.tc-emoji{margin:0 auto 8px;display:block}
+.tc-name{font-size:.58rem;color:var(--sub);margin-bottom:4px;line-height:1.3}
+.tc-tag{font-size:.5rem;border-radius:10px;padding:2px 5px;display:inline-block}
+.sec-label{font-size:.78rem;color:var(--pr);font-weight:600;text-align:center;margin:20px 0 12px;letter-spacing:.05em}
+.btn{display:block;width:100%;background:linear-gradient(135deg,#8a2050,#d45a8a);color:#fff;border:none;border-radius:24px;padding:14px 28px;font-size:1.05rem;font-weight:700;cursor:pointer;transition:.2s;text-align:center;margin-top:8px}
+.btn:hover{opacity:.88;transform:translateY(-1px)}
+/* QUIZ */
+.prog-wrap{padding:8px 0 18px}
+.prog-label{display:flex;justify-content:space-between;font-size:.8rem;color:var(--sub);margin-bottom:8px}
+.prog-bar{height:6px;background:var(--card2);border-radius:3px;overflow:hidden}
+.prog-fill{height:100%;background:linear-gradient(90deg,#d45a8a,#f090b8);border-radius:3px;transition:width .4s ease}
+.q-card{background:var(--card);border:1px solid #5a224855;border-radius:16px;padding:22px 18px;margin-bottom:18px;box-shadow:0 6px 24px rgba(0,0,0,.4)}
+.q-num{font-size:.75rem;color:var(--pr2);font-weight:700;letter-spacing:.1em;margin-bottom:10px}
+.q-text{font-size:1.05rem;font-weight:700;line-height:1.65}
+.opts{display:flex;flex-direction:column;gap:10px}
+.opt{background:var(--card2);border:1.5px solid #5a224888;border-radius:12px;padding:14px 16px;font-size:.9rem;line-height:1.5;cursor:pointer;transition:.2s;text-align:left;color:var(--text);display:flex;align-items:center;gap:10px}
+.opt-icon{font-size:1.15rem;flex-shrink:0}
+.opt:hover{border-color:var(--pr2);background:#d45a8a18;transform:translateX(3px)}
+.opt.selected{border-color:var(--pr2);background:#d45a8a20;color:#f090b8}
+.btn-back{display:none;align-items:center;justify-content:center;gap:6px;margin-top:14px;background:transparent;color:var(--sub);border:1.5px solid #5a224888;border-radius:12px;padding:10px 16px;font-size:.85rem;cursor:pointer;width:100%;transition:.2s}
+.btn-back:hover{border-color:var(--pr);color:var(--pr)}
+/* RESULT */
+.result-hero{background:linear-gradient(135deg,var(--card2),var(--card));border:1px solid #5a224866;border-radius:16px;padding:28px 18px 22px;text-align:center;margin-bottom:14px;box-shadow:0 6px 24px rgba(0,0,0,.5)}
+.result-icon{font-size:70px;margin-bottom:10px;filter:drop-shadow(0 0 20px #d45a8aaa)}
+.result-label{font-size:.75rem;color:var(--pr);font-weight:700;letter-spacing:.15em;margin-bottom:6px}
+.result-name{font-size:2rem;font-weight:900;letter-spacing:.06em;margin-bottom:8px;background:linear-gradient(135deg,#f090b8,#ffd6ea);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.result-catch{font-size:.9rem;color:var(--sub);line-height:1.6}
+.result-section{background:var(--card);border:1px solid #5a224855;border-radius:14px;padding:18px;margin-bottom:12px}
+.section-title{font-size:.78rem;font-weight:700;color:var(--pr2);letter-spacing:.08em;margin-bottom:12px}
 .traits{display:flex;flex-wrap:wrap;gap:8px}
-.trait{background:linear-gradient(135deg,rgba(192,57,109,.25),rgba(232,116,154,.2));
-  border:1px solid rgba(232,116,154,.4);border-radius:20px;padding:6px 14px;font-size:13px;font-weight:600}
+.trait{background:linear-gradient(135deg,#d45a8a30,#f090b820);border:1px solid #d45a8a55;border-radius:20px;padding:5px 12px;font-size:.8rem;font-weight:600}
 .weaknesses{display:flex;flex-direction:column;gap:6px}
-.weakness{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--sub)}
-.weakness::before{content:'△';font-size:11px;color:#e8749a}
-.desc{font-size:14px;line-height:1.8}
-.compat{display:flex;align-items:center;gap:12px;background:var(--card2);border-radius:10px;padding:14px}
-.compat-icon{font-size:32px}
-.compat-name{font-size:16px;font-weight:700;color:#f48fb1}
-.compat-why{font-size:12px;color:var(--sub);margin-top:2px}
+.weakness{display:flex;align-items:flex-start;gap:8px;font-size:.85rem;color:var(--sub)}
+.weakness::before{content:'△';font-size:.7rem;color:var(--pr);margin-top:2px;flex-shrink:0}
+.desc{font-size:.85rem;line-height:1.8}
+.compat{display:flex;align-items:center;gap:12px;background:var(--card2);border-radius:10px;padding:12px}
+.compat-icon{font-size:2rem;flex-shrink:0}
+.compat-name{font-size:1rem;font-weight:700;color:var(--pr2)}
+.compat-why{font-size:.78rem;color:var(--sub);margin-top:2px}
 .tendency-bars{display:flex;flex-direction:column;gap:10px}
-.tend-row{display:flex;align-items:center;gap:10px;font-size:13px}
-.tend-label{width:80px;flex-shrink:0;color:var(--sub)}
+.tend-row{display:flex;align-items:center;gap:10px;font-size:.8rem}
+.tend-label{width:70px;flex-shrink:0;color:var(--sub)}
 .tend-bar-wrap{flex:1;height:8px;background:var(--card2);border-radius:4px;overflow:hidden}
-.tend-bar{height:100%;background:linear-gradient(90deg,#c0396d,#e8749a);border-radius:4px;transition:width 1s ease .3s}
-.tend-val{width:28px;text-align:right;font-size:12px;color:#e8749a}
-.share-section{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:12px}
-.share-title{font-size:13px;font-weight:700;color:var(--sub);text-align:center;margin-bottom:14px}
+.tend-bar{height:100%;background:linear-gradient(90deg,#d45a8a,#f090b8);border-radius:4px;transition:width 1s ease .3s;width:0}
+.tend-val{width:26px;text-align:right;font-size:.75rem;color:var(--pr2)}
+.share-section{background:var(--card);border:1px solid #5a224855;border-radius:14px;padding:18px;margin-bottom:12px}
+.share-title{font-size:.78rem;font-weight:700;color:var(--sub);text-align:center;margin-bottom:12px}
 .share-btns{display:flex;flex-direction:column;gap:10px}
-.btn-x{background:#000;color:#fff;border:1.5px solid #333;border-radius:12px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:.2s}
-.btn-x:hover{background:#1a1a1a;transform:translateY(-1px)}
-.btn-line{background:#06c755;color:#fff;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:.2s}
+.btn-x{background:#000;color:#fff;border:1.5px solid #333;border-radius:12px;padding:13px;font-size:.9rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:.2s}
+.btn-x:hover{background:#111;transform:translateY(-1px)}
+.btn-line{background:#06c755;color:#fff;border:none;border-radius:12px;padding:13px;font-size:.9rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:.2s}
 .btn-line:hover{background:#05b34c;transform:translateY(-1px)}
-.btn-retry{background:transparent;color:var(--sub);border:1.5px solid var(--border);border-radius:12px;padding:12px;font-size:14px;cursor:pointer;width:100%;transition:.2s}
-.btn-retry:hover{border-color:var(--pr2);color:var(--pr2)}
-.line-cta{background:linear-gradient(135deg,#0a2a1a,#0d3b24);border:1px solid #1a5c35;border-radius:var(--radius);padding:24px 20px;text-align:center;margin-bottom:12px}
-.line-cta-icon{font-size:36px;margin-bottom:8px}
-.line-cta-title{font-size:17px;font-weight:800;color:#06c755;margin-bottom:8px}
-.line-cta-text{font-size:13px;color:#7fbf93;line-height:1.6;margin-bottom:16px}
-.btn-line-cta{background:#06c755;color:#fff;border:none;border-radius:12px;padding:16px 24px;font-size:15px;font-weight:700;cursor:pointer;width:100%;display:flex;align-items:center;justify-content:center;gap:8px;transition:.2s;text-decoration:none}
-.btn-line-cta:hover{background:#05b34c;transform:translateY(-2px)}
-.result-footer{text-align:center;font-size:11px;color:var(--sub);padding-top:8px}
-
-.type-chip{cursor:pointer}
-.type-chip:hover{border-color:var(--pr2);background:rgba(192,57,109,.18);transform:translateY(-2px);transition:.2s}
-.btn-back{display:none;align-items:center;justify-content:center;gap:6px;margin-top:16px;
-  background:transparent;color:var(--sub);border:1.5px solid var(--border);border-radius:12px;
-  padding:10px 16px;font-size:14px;cursor:pointer;width:100%;transition:.2s}
-.btn-back:hover{border-color:var(--pr2);color:var(--pr2)}
-#breed-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:200;
-  overflow-y:auto;padding:20px;-webkit-overflow-scrolling:touch}
-.breed-modal-inner{max-width:440px;margin:20px auto;background:var(--card);border:1px solid var(--border);
-  border-radius:var(--radius);padding:32px 24px;animation:fadeUp .35s ease both}
-.bm-close{float:right;background:transparent;border:none;font-size:24px;cursor:pointer;color:var(--sub);line-height:1;padding:0}
-.bm-emoji{font-size:64px;display:block;text-align:center;margin-bottom:12px;filter:drop-shadow(0 0 16px rgba(107,58,31,.5))}
-.bm-name{font-size:24px;font-weight:900;text-align:center;letter-spacing:.06em;margin-bottom:6px;
-  background:linear-gradient(135deg,#f5cfa0,#fdf3e7);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.bm-catch{font-size:13px;color:var(--sub);text-align:center;margin-bottom:16px;line-height:1.5}
-.bm-keywords{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:16px}
-.bm-kw{background:linear-gradient(135deg,rgba(192,57,109,.35),rgba(232,116,154,.25));
-  border:1px solid rgba(232,116,154,.4);border-radius:20px;padding:5px 14px;font-size:13px;font-weight:600}
-.bm-desc{font-size:14px;color:var(--sub);line-height:1.6;margin-bottom:20px;text-align:center}
-.bm-startbtn{width:100%;padding:14px;background:background:linear-gradient(135deg,#6b3a1f,#c47d45);
-  color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;transition:.2s}
+.btn-retry{background:transparent;color:var(--sub);border:1.5px solid #5a224888;border-radius:12px;padding:11px;font-size:.85rem;cursor:pointer;width:100%;transition:.2s}
+.btn-retry:hover{border-color:var(--pr);color:var(--pr)}
+.line-cta{background:linear-gradient(135deg,#0a2a1a,#0d3b24);border:1px solid #1a5c35;border-radius:14px;padding:22px 18px;text-align:center;margin-bottom:12px}
+.line-cta-icon{font-size:2rem;margin-bottom:6px}
+.line-cta-title{font-size:1.05rem;font-weight:800;color:#06c755;margin-bottom:6px}
+.line-cta-text{font-size:.8rem;color:#7fbf93;line-height:1.6;margin-bottom:14px}
+.btn-line-cta{background:#06c755;color:#fff;border:none;border-radius:12px;padding:14px 20px;font-size:.9rem;font-weight:700;cursor:pointer;width:100%;display:flex;align-items:center;justify-content:center;gap:8px;transition:.2s;text-decoration:none}
+.btn-line-cta:hover{background:#05b34c;transform:translateY(-1px)}
+.result-footer{text-align:center;font-size:.7rem;color:var(--sub);padding-top:8px}
+/* LIBRARY */
+.lib-hero{text-align:center;padding:20px 0 10px}
+.lib-hero h2{font-size:1.2rem;font-weight:800;margin-bottom:4px}
+.lgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+/* MODAL */
+#type-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:200;overflow-y:auto;padding:20px}
+.type-modal-inner{max-width:440px;margin:20px auto;background:var(--card);border:1px solid #5a224888;border-radius:20px;padding:28px 20px 36px;animation:fadeUp .32s ease both}
+.bm-close{float:right;background:transparent;border:none;font-size:1.4rem;cursor:pointer;color:var(--sub);line-height:1;padding:0}
+.bm-emoji{font-size:60px;display:block;text-align:center;margin-bottom:10px}
+.bm-name{font-size:1.4rem;font-weight:900;text-align:center;letter-spacing:.04em;margin-bottom:4px;background:linear-gradient(135deg,#f090b8,#ffd6ea);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.bm-catch{font-size:.82rem;color:var(--sub);text-align:center;margin-bottom:14px;line-height:1.5}
+.bm-keywords{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:14px}
+.bm-kw{background:linear-gradient(135deg,#d45a8a35,#f090b825);border:1px solid #d45a8a55;border-radius:20px;padding:5px 12px;font-size:.8rem;font-weight:600}
+.bm-desc{font-size:.85rem;color:var(--sub);line-height:1.6;margin-bottom:18px;text-align:center}
+.bm-startbtn{width:100%;padding:13px;background:linear-gradient(135deg,#8a2050,#d45a8a);color:#fff;border:none;border-radius:12px;font-size:.9rem;font-weight:700;cursor:pointer;transition:.2s}
 .bm-startbtn:hover{transform:translateY(-2px)}
+footer{text-align:center;padding:20px 16px;color:var(--sub);font-size:.7rem;border-top:1px solid #5a224844;margin-top:20px}
 </style>
 </head>
 <body>
-<div id="app">
-<div id="top" class="screen active">
-  <div class="top-icon">🐱</div>
-  <div>
-    <div class="top-title">猫種パーソナリティ診断</div>
-    <div style="font-size:13px;color:#e8749a;margin-top:4px;margin-bottom:12px;font-weight:600;letter-spacing:.05em">あなたはどんな猫タイプ？</div>
-    <div class="top-sub">10の質問で、あなたの性格に最も近い猫種がわかります。8種類の個性豊かな猫から、あなたのタイプを診断します。</div>
+<nav class="app-nav" id="app-nav">
+  <button class="nav-btn active" id="nav-home" onclick="showScreen('home')">ホーム</button>
+  <button class="nav-btn" id="nav-quiz" onclick="startQuiz()">診断</button>
+  <button class="nav-btn" id="nav-library" onclick="showScreen('library')">一覧</button>
+</nav>
+
+<main>
+<div id="home" class="screen active">
+  <div class="hero">
+    <h1>猫種パーソナリティ診断 🐱</h1>
+    <p>あなたの性格に似た猫種はどれ？<br>10問の質問で診断します</p>
+    <div class="hero-badges">
+      <span class="badge">⏱ 約3分</span>
+      <span class="badge">❓ 全10問</span>
+      <span class="badge">🐱 全8タイプ</span>
+    </div>
   </div>
-  <div class="top-meta">
-    <span class="badge">⏱ 約2分</span>
-    <span class="badge">❓ 全10問</span>
-    <span class="badge">🐱 全8タイプ</span>
+  <div class="sec-label">▼ タイプ一覧 — タップで詳細</div>
+  <div class="tgrid">
+<div class="tc" onclick="showTypeInfo('ameshort')">
+<div class="tc-emoji"><div style="width:54px;height:54px;border-radius:50%;overflow:hidden;border:3px solid #7ab840;margin:0 auto;display:block"><svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block">
+<circle cx="80" cy="80" r="80" fill="#c8cfd4"/>
+<ellipse cx="80" cy="84" rx="48" ry="44" fill="#a8b4ba"/>
+<path d="M52 62 Q62 46 80 44 Q98 46 108 62" stroke="#7a8a90" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+<path d="M60 52 Q70 46 80 44" stroke="#7a8a90" stroke-width="2.5" fill="none"/>
+<ellipse cx="80" cy="104" rx="27" ry="19" fill="#e8eaec"/>
+<polygon points="30,62 20,12 52,44" fill="#9aa6ac"/><polygon points="130,62 140,12 108,44" fill="#9aa6ac"/>
+<polygon points="32,60 24,16 50,43" fill="#f0b8c8" opacity="0.9"/><polygon points="128,60 136,16 110,43" fill="#f0b8c8" opacity="0.9"/>
+<circle cx="60" cy="74" r="10.5" fill="#0d1800"/><circle cx="100" cy="74" r="10.5" fill="#0d1800"/>
+<circle cx="60" cy="74" r="7" fill="#3a7020"/><circle cx="100" cy="74" r="7" fill="#3a7020"/>
+<circle cx="60" cy="74" r="4" fill="#1d4210"/><circle cx="100" cy="74" r="4" fill="#1d4210"/>
+<circle cx="57" cy="71" r="2.5" fill="white"/><circle cx="97" cy="71" r="2.5" fill="white"/>
+<path d="M74 98 L80 94 L86 98 L80 102Z" fill="#d87088"/>
+<line x1="30" y1="100" x2="64" y2="101" stroke="white" stroke-width="1.1" opacity="0.75"/>
+<line x1="30" y1="106" x2="64" y2="105" stroke="white" stroke-width="1.1" opacity="0.75"/>
+<line x1="96" y1="101" x2="130" y2="100" stroke="white" stroke-width="1.1" opacity="0.75"/>
+<line x1="96" y1="105" x2="130" y2="106" stroke="white" stroke-width="1.1" opacity="0.75"/>
+</svg></div></div>
+<div class="tc-name">アメショ</div>
+<span class="tc-tag" style="background:#7ab84022;color:#7ab840">社交派</span>
+</div>
+<div class="tc" onclick="showTypeInfo('persia')">
+<div class="tc-emoji"><div style="width:54px;height:54px;border-radius:50%;overflow:hidden;border:3px solid #8ab0e0;margin:0 auto;display:block"><svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block">
+<circle cx="80" cy="80" r="80" fill="#f5f0e8"/>
+<ellipse cx="80" cy="82" rx="54" ry="50" fill="#f0ebe0"/>
+<ellipse cx="80" cy="88" rx="58" ry="30" fill="#e8e2d4" opacity="0.6"/>
+<ellipse cx="80" cy="104" rx="22" ry="12" fill="#e8e2d4"/>
+<polygon points="24,64 16,14 50,44" fill="#e0d8c8"/><polygon points="136,64 144,14 110,44" fill="#e0d8c8"/>
+<polygon points="26,62 20,18 48,43" fill="#f0c8d8" opacity="0.8"/><polygon points="134,62 140,18 112,43" fill="#f0c8d8" opacity="0.8"/>
+<circle cx="62" cy="78" r="11" fill="#0a0c14"/><circle cx="98" cy="78" r="11" fill="#0a0c14"/>
+<circle cx="62" cy="78" r="8" fill="#2a4a9a"/><circle cx="98" cy="78" r="8" fill="#2a4a9a"/>
+<circle cx="62" cy="78" r="4.5" fill="#1a2e70"/><circle cx="98" cy="78" r="4.5" fill="#1a2e70"/>
+<circle cx="59" cy="75" r="2.5" fill="white"/><circle cx="95" cy="75" r="2.5" fill="white"/>
+<ellipse cx="80" cy="99" rx="6" ry="4" fill="#e09aaa"/>
+<line x1="32" y1="102" x2="66" y2="102" stroke="white" stroke-width="1" opacity="0.7"/>
+<line x1="32" y1="108" x2="66" y2="107" stroke="white" stroke-width="1" opacity="0.7"/>
+<line x1="94" y1="102" x2="128" y2="102" stroke="white" stroke-width="1" opacity="0.7"/>
+<line x1="94" y1="107" x2="128" y2="108" stroke="white" stroke-width="1" opacity="0.7"/>
+</svg></div></div>
+<div class="tc-name">ペルシャ</div>
+<span class="tc-tag" style="background:#8ab0e022;color:#8ab0e0">マイペース</span>
+</div>
+<div class="tc" onclick="showTypeInfo('munchkin')">
+<div class="tc-emoji"><div style="width:54px;height:54px;border-radius:50%;overflow:hidden;border:3px solid #f07820;margin:0 auto;display:block"><svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block">
+<circle cx="80" cy="80" r="80" fill="#ffe0c0"/>
+<ellipse cx="80" cy="84" rx="48" ry="44" fill="#e8840a"/>
+<path d="M46 72 Q52 54 62 48 Q70 44 80 43" stroke="#c45a00" stroke-width="3" fill="none"/>
+<path d="M80 43 Q90 44 98 48 Q108 54 114 72" stroke="#c45a00" stroke-width="3" fill="none"/>
+<ellipse cx="80" cy="104" rx="27" ry="20" fill="#fff5e0"/>
+<polygon points="28,64 18,12 50,44" fill="#d47008"/><polygon points="132,64 142,12 110,44" fill="#d47008"/>
+<polygon points="30,62 22,16 48,43" fill="#f0c0c0" opacity="0.9"/><polygon points="130,62 138,16 112,43" fill="#f0c0c0" opacity="0.9"/>
+<circle cx="60" cy="74" r="12" fill="#0d1200"/><circle cx="100" cy="74" r="12" fill="#0d1200"/>
+<circle cx="60" cy="74" r="9" fill="#e06000"/><circle cx="100" cy="74" r="9" fill="#e06000"/>
+<circle cx="60" cy="74" r="5" fill="#8a3000"/><circle cx="100" cy="74" r="5" fill="#8a3000"/>
+<circle cx="56.5" cy="70" r="3" fill="white"/><circle cx="96.5" cy="70" r="3" fill="white"/>
+<path d="M74 98 L80 94 L86 98 L80 102Z" fill="#e08090"/>
+<line x1="30" y1="101" x2="64" y2="102" stroke="white" stroke-width="1.1" opacity="0.7"/>
+<line x1="30" y1="107" x2="64" y2="106" stroke="white" stroke-width="1.1" opacity="0.7"/>
+<line x1="96" y1="102" x2="130" y2="101" stroke="white" stroke-width="1.1" opacity="0.7"/>
+<line x1="96" y1="106" x2="130" y2="107" stroke="white" stroke-width="1.1" opacity="0.7"/>
+</svg></div></div>
+<div class="tc-name">マンチカン</div>
+<span class="tc-tag" style="background:#f0782022;color:#f07820">愛され系</span>
+</div>
+<div class="tc" onclick="showTypeInfo('scottish')">
+<div class="tc-emoji"><div style="width:54px;height:54px;border-radius:50%;overflow:hidden;border:3px solid #9090d0;margin:0 auto;display:block"><svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block">
+<circle cx="80" cy="80" r="80" fill="#c0c8d0"/>
+<ellipse cx="80" cy="84" rx="52" ry="48" fill="#909ea8"/>
+<ellipse cx="80" cy="104" rx="28" ry="20" fill="#d0d8e0"/>
+<path d="M28 56 Q32 36 46 34 Q52 42 48 56Z" fill="#7a8890"/>
+<path d="M132 56 Q128 36 114 34 Q108 42 112 56Z" fill="#7a8890"/>
+<path d="M30 54 Q34 38 44 37 Q49 44 46 54Z" fill="#f0c0d0" opacity="0.7"/>
+<path d="M130 54 Q126 38 116 37 Q111 44 114 54Z" fill="#f0c0d0" opacity="0.7"/>
+<circle cx="60" cy="76" r="11" fill="#100c00"/><circle cx="100" cy="76" r="11" fill="#100c00"/>
+<circle cx="60" cy="76" r="8" fill="#d06010"/><circle cx="100" cy="76" r="8" fill="#d06010"/>
+<circle cx="60" cy="76" r="4.5" fill="#803000"/><circle cx="100" cy="76" r="4.5" fill="#803000"/>
+<circle cx="57" cy="73" r="2.5" fill="white"/><circle cx="97" cy="73" r="2.5" fill="white"/>
+<path d="M74 100 L80 96 L86 100 L80 104Z" fill="#d87088"/>
+<line x1="30" y1="103" x2="64" y2="103" stroke="white" stroke-width="1.1" opacity="0.7"/>
+<line x1="30" y1="109" x2="64" y2="108" stroke="white" stroke-width="1.1" opacity="0.7"/>
+<line x1="96" y1="103" x2="130" y2="103" stroke="white" stroke-width="1.1" opacity="0.7"/>
+<line x1="96" y1="108" x2="130" y2="109" stroke="white" stroke-width="1.1" opacity="0.7"/>
+</svg></div></div>
+<div class="tc-name">スコティッシュ</div>
+<span class="tc-tag" style="background:#9090d022;color:#9090d0">ツンデレ</span>
+</div>
+<div class="tc" onclick="showTypeInfo('siamese')">
+<div class="tc-emoji"><div style="width:54px;height:54px;border-radius:50%;overflow:hidden;border:3px solid #60a0c0;margin:0 auto;display:block"><svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block">
+<circle cx="80" cy="80" r="80" fill="#f5ece0"/>
+<ellipse cx="80" cy="84" rx="46" ry="42" fill="#f0e4d0"/>
+<ellipse cx="48" cy="78" rx="18" ry="22" fill="#5a3818" opacity="0.7"/>
+<ellipse cx="112" cy="78" rx="18" ry="22" fill="#5a3818" opacity="0.7"/>
+<ellipse cx="80" cy="104" rx="25" ry="18" fill="#f5ece0"/>
+<polygon points="30,58 22,12 52,42" fill="#c8b090"/><polygon points="130,58 138,12 108,42" fill="#c8b090"/>
+<polygon points="32,56 25,16 50,41" fill="#5a3818" opacity="0.7"/><polygon points="128,56 135,16 110,41" fill="#5a3818" opacity="0.7"/>
+<ellipse cx="60" cy="74" rx="10" ry="9" fill="#0a0c14"/><ellipse cx="100" cy="74" rx="10" ry="9" fill="#0a0c14"/>
+<ellipse cx="60" cy="74" rx="7.5" ry="7" fill="#1a3a8a"/><ellipse cx="100" cy="74" rx="7.5" ry="7" fill="#1a3a8a"/>
+<ellipse cx="60" cy="74" rx="4" ry="5" fill="#0d2060"/><ellipse cx="100" cy="74" rx="4" ry="5" fill="#0d2060"/>
+<circle cx="57" cy="71" r="2.5" fill="white"/><circle cx="97" cy="71" r="2.5" fill="white"/>
+<path d="M74 99 L80 95 L86 99 L80 103Z" fill="#d48888"/>
+<line x1="30" y1="101" x2="64" y2="102" stroke="white" stroke-width="1.1" opacity="0.7"/>
+<line x1="30" y1="107" x2="64" y2="106" stroke="white" stroke-width="1.1" opacity="0.7"/>
+<line x1="96" y1="102" x2="130" y2="101" stroke="white" stroke-width="1.1" opacity="0.7"/>
+<line x1="96" y1="106" x2="130" y2="107" stroke="white" stroke-width="1.1" opacity="0.7"/>
+</svg></div></div>
+<div class="tc-name">シャム</div>
+<span class="tc-tag" style="background:#60a0c022;color:#60a0c0">知性派</span>
+</div>
+<div class="tc" onclick="showTypeInfo('norwegian')">
+<div class="tc-emoji"><div style="width:54px;height:54px;border-radius:50%;overflow:hidden;border:3px solid #a0a0a0;margin:0 auto;display:block"><svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block">
+<circle cx="80" cy="80" r="80" fill="#1a1a1a"/>
+<ellipse cx="80" cy="84" rx="50" ry="46" fill="#1e1e1e"/>
+<ellipse cx="80" cy="84" rx="26" ry="34" fill="#f0f0f0"/>
+<ellipse cx="80" cy="106" rx="22" ry="14" fill="#f0f0f0"/>
+<polygon points="26,62 16,12 50,42" fill="#181818"/><polygon points="134,62 144,12 110,42" fill="#181818"/>
+<polygon points="28,60 20,16 48,41" fill="#f0c0c8" opacity="0.6"/><polygon points="132,60 140,16 112,41" fill="#f0c0c8" opacity="0.6"/>
+<ellipse cx="70" cy="60" rx="24" ry="8" fill="#f0f0f0" opacity="0.8"/>
+<ellipse cx="110" cy="58" rx="16" ry="6" fill="#f0f0f0" opacity="0.5"/>
+<circle cx="60" cy="74" r="11" fill="#0a0a08"/><circle cx="100" cy="74" r="11" fill="#0a0a08"/>
+<circle cx="60" cy="74" r="8" fill="#b06800"/><circle cx="100" cy="74" r="8" fill="#b06800"/>
+<circle cx="60" cy="74" r="4.5" fill="#703800"/><circle cx="100" cy="74" r="4.5" fill="#703800"/>
+<circle cx="57" cy="71" r="2.5" fill="white"/><circle cx="97" cy="71" r="2.5" fill="white"/>
+<path d="M74 100 L80 96 L86 100 L80 104Z" fill="#d48080"/>
+<line x1="32" y1="102" x2="64" y2="103" stroke="#e8e8e8" stroke-width="1.1" opacity="0.8"/>
+<line x1="32" y1="108" x2="64" y2="107" stroke="#e8e8e8" stroke-width="1.1" opacity="0.8"/>
+<line x1="96" y1="103" x2="128" y2="102" stroke="#e8e8e8" stroke-width="1.1" opacity="0.8"/>
+<line x1="96" y1="107" x2="128" y2="108" stroke="#e8e8e8" stroke-width="1.1" opacity="0.8"/>
+</svg></div></div>
+<div class="tc-name">ノルウェジアン</div>
+<span class="tc-tag" style="background:#a0a0a022;color:#a0a0a0">独立系</span>
+</div>
+<div class="tc" onclick="showTypeInfo('ragdoll')">
+<div class="tc-emoji"><div style="width:54px;height:54px;border-radius:50%;overflow:hidden;border:3px solid #8090d8;margin:0 auto;display:block"><svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block">
+<circle cx="80" cy="80" r="80" fill="#dce8f5"/>
+<ellipse cx="80" cy="84" rx="50" ry="46" fill="#b8d0e8"/>
+<ellipse cx="80" cy="86" rx="36" ry="36" fill="#ecf4fc"/>
+<ellipse cx="80" cy="108" rx="24" ry="16" fill="#ecf4fc"/>
+<polygon points="28,62 18,12 50,42" fill="#a0c0d8"/><polygon points="132,62 142,12 110,42" fill="#a0c0d8"/>
+<polygon points="30,60 22,16 48,41" fill="#f0c8d8" opacity="0.8"/><polygon points="130,60 138,16 112,41" fill="#f0c8d8" opacity="0.8"/>
+<circle cx="60" cy="74" r="11" fill="#08101a"/><circle cx="100" cy="74" r="11" fill="#08101a"/>
+<circle cx="60" cy="74" r="8" fill="#3060b0"/><circle cx="100" cy="74" r="8" fill="#3060b0"/>
+<circle cx="60" cy="74" r="4.5" fill="#184880"/><circle cx="100" cy="74" r="4.5" fill="#184880"/>
+<circle cx="57" cy="71" r="2.5" fill="white"/><circle cx="97" cy="71" r="2.5" fill="white"/>
+<path d="M74 101 L80 97 L86 101 L80 105Z" fill="#d890a8"/>
+<line x1="30" y1="103" x2="64" y2="104" stroke="white" stroke-width="1.1" opacity="0.75"/>
+<line x1="30" y1="109" x2="64" y2="108" stroke="white" stroke-width="1.1" opacity="0.75"/>
+<line x1="96" y1="104" x2="130" y2="103" stroke="white" stroke-width="1.1" opacity="0.75"/>
+<line x1="96" y1="108" x2="130" y2="109" stroke="white" stroke-width="1.1" opacity="0.75"/>
+</svg></div></div>
+<div class="tc-name">ラグドール</div>
+<span class="tc-tag" style="background:#8090d822;color:#8090d8">癒し系</span>
+</div>
+<div class="tc" onclick="showTypeInfo('bengal')">
+<div class="tc-emoji"><div style="width:54px;height:54px;border-radius:50%;overflow:hidden;border:3px solid #c88020;margin:0 auto;display:block"><svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block">
+<circle cx="80" cy="80" r="80" fill="#d4a840"/>
+<ellipse cx="80" cy="84" rx="48" ry="44" fill="#c89030"/>
+<ellipse cx="50" cy="68" rx="14" ry="10" fill="#7a4800" opacity="0.5"/>
+<ellipse cx="110" cy="68" rx="14" ry="10" fill="#7a4800" opacity="0.5"/>
+<ellipse cx="68" cy="90" rx="8" ry="6" fill="#7a4800" opacity="0.4"/>
+<ellipse cx="92" cy="90" rx="8" ry="6" fill="#7a4800" opacity="0.4"/>
+<ellipse cx="80" cy="106" rx="26" ry="18" fill="#f0e0b0"/>
+<polygon points="28,62 18,12 50,44" fill="#b07820"/><polygon points="132,62 142,12 110,44" fill="#b07820"/>
+<polygon points="30,60 22,16 48,43" fill="#f0c888" opacity="0.7"/><polygon points="130,60 138,16 112,43" fill="#f0c888" opacity="0.7"/>
+<circle cx="60" cy="74" r="11" fill="#0a1000"/><circle cx="100" cy="74" r="11" fill="#0a1000"/>
+<circle cx="60" cy="74" r="8" fill="#6a9800"/><circle cx="100" cy="74" r="8" fill="#6a9800"/>
+<circle cx="60" cy="74" r="5" fill="#2a4800" rx="3" ry="7"/><circle cx="100" cy="74" r="5" fill="#2a4800"/>
+<circle cx="57" cy="70" r="2.5" fill="white"/><circle cx="97" cy="70" r="2.5" fill="white"/>
+<path d="M74 99 L80 95 L86 99 L80 103Z" fill="#c07050"/>
+<line x1="28" y1="100" x2="62" y2="102" stroke="white" stroke-width="1.2" opacity="0.8"/>
+<line x1="28" y1="107" x2="62" y2="106" stroke="white" stroke-width="1.2" opacity="0.8"/>
+<line x1="98" y1="102" x2="132" y2="100" stroke="white" stroke-width="1.2" opacity="0.8"/>
+<line x1="98" y1="106" x2="132" y2="107" stroke="white" stroke-width="1.2" opacity="0.8"/>
+</svg></div></div>
+<div class="tc-name">ベンガル</div>
+<span class="tc-tag" style="background:#c8802022;color:#c88020">野生的</span>
+</div>
   </div>
-  <div class="types-preview">
-    <div class="type-chip" onclick="showBreedSummary('ameshort')"><span class="emoji">😸</span>アメショ</div>
-    <div class="type-chip" onclick="showBreedSummary('persia')"><span class="emoji">😻</span>ペルシャ</div>
-    <div class="type-chip" onclick="showBreedSummary('munchkin')"><span class="emoji">😺</span>マンチカン</div>
-    <div class="type-chip" onclick="showBreedSummary('scottish')"><span class="emoji">🐱</span>スコティッシュ</div>
-    <div class="type-chip" onclick="showBreedSummary('siamese')"><span class="emoji">😼</span>シャム</div>
-    <div class="type-chip" onclick="showBreedSummary('norwegian')"><span class="emoji">🐈</span>ノルウェジアン</div>
-    <div class="type-chip" onclick="showBreedSummary('ragdoll')"><span class="emoji">😽</span>ラグドール</div>
-    <div class="type-chip" onclick="showBreedSummary('bengal')"><span class="emoji">🙀</span>ベンガル</div>
-  </div>
-  <button class="btn-start" onclick="startQuiz()">診断スタート 🐾</button>
+  <button class="btn" onclick="startQuiz()">🐾 無料で診断する（10問）</button>
 </div>
 
 <div id="quiz" class="screen">
-  <div class="progress-wrap">
-    <div class="progress-label"><span id="q-counter">Q 1 / 10</span><span id="q-pct">10%</span></div>
-    <div class="progress-bar"><div class="progress-fill" id="prog-fill" style="width:10%"></div></div>
+  <div class="prog-wrap">
+    <div class="prog-label"><span id="q-counter">Q 1 / 10</span><span id="q-pct">0%</span></div>
+    <div class="prog-bar"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
   </div>
   <div class="q-card">
     <div class="q-num" id="q-num-label">QUESTION 01</div>
     <div class="q-text" id="q-text"></div>
   </div>
-  <div class="options" id="options-wrap"></div>
+  <div class="opts" id="options-wrap"></div>
   <button class="btn-back" id="btn-back" onclick="goBack()">← 前の質問に戻る</button>
 </div>
 
 <div id="result" class="screen"></div>
+
+<div id="library" class="screen">
+  <div class="lib-hero"><h2>🐱 タイプ図鑑</h2><p style="font-size:.8rem;color:var(--sub)">全8タイプをチェックしよう</p></div>
+  <div class="lgrid">
+<div class="tc" onclick="showTypeInfo('ameshort')">
+<div class="tc-emoji"><div style="width:54px;height:54px;border-radius:50%;overflow:hidden;border:3px solid #7ab840;margin:0 auto;display:block"><svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block">
+<circle cx="80" cy="80" r="80" fill="#c8cfd4"/>
+<ellipse cx="80" cy="84" rx="48" ry="44" fill="#a8b4ba"/>
+<path d="M52 62 Q62 46 80 44 Q98 46 108 62" stroke="#7a8a90" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+<path d="M60 52 Q70 46 80 44" stroke="#7a8a90" stroke-width="2.5" fill="none"/>
+<ellipse cx="80" cy="104" rx="27" ry="19" fill="#e8eaec"/>
+<polygon points="30,62 20,12 52,44" fill="#9aa6ac"/><polygon points="130,62 140,12 108,44" fill="#9aa6ac"/>
+<polygon points="32,60 24,16 50,43" fill="#f0b8c8" opacity="0.9"/><polygon points="128,60 136,16 110,43" fill="#f0b8c8" opacity="0.9"/>
+<circle cx="60" cy="74" r="10.5" fill="#0d1800"/><circle cx="100" cy="74" r="10.5" fill="#0d1800"/>
+<circle cx="60" cy="74" r="7" fill="#3a7020"/><circle cx="100" cy="74" r="7" fill="#3a7020"/>
+<circle cx="60" cy="74" r="4" fill="#1d4210"/><circle cx="100" cy="74" r="4" fill="#1d4210"/>
+<circle cx="57" cy="71" r="2.5" fill="white"/><circle cx="97" cy="71" r="2.5" fill="white"/>
+<path d="M74 98 L80 94 L86 98 L80 102Z" fill="#d87088"/>
+<line x1="30" y1="100" x2="64" y2="101" stroke="white" stroke-width="1.1" opacity="0.75"/>
+<line x1="30" y1="106" x2="64" y2="105" stroke="white" stroke-width="1.1" opacity="0.75"/>
+<line x1="96" y1="101" x2="130" y2="100" stroke="white" stroke-width="1.1" opacity="0.75"/>
+<line x1="96" y1="105" x2="130" y2="106" stroke="white" stroke-width="1.1" opacity="0.75"/>
+</svg></div></div>
+<div class="tc-name">アメショ</div>
+<span class="tc-tag" style="background:#7ab84022;color:#7ab840">社交派</span>
+</div>
+<div class="tc" onclick="showTypeInfo('persia')">
+<div class="tc-emoji"><div style="width:54px;height:54px;border-radius:50%;overflow:hidden;border:3px solid #8ab0e0;margin:0 auto;display:block"><svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block">
+<circle cx="80" cy="80" r="80" fill="#f5f0e8"/>
+<ellipse cx="80" cy="82" rx="54" ry="50" fill="#f0ebe0"/>
+<ellipse cx="80" cy="88" rx="58" ry="30" fill="#e8e2d4" opacity="0.6"/>
+<ellipse cx="80" cy="104" rx="22" ry="12" fill="#e8e2d4"/>
+<polygon points="24,64 16,14 50,44" fill="#e0d8c8"/><polygon points="136,64 144,14 110,44" fill="#e0d8c8"/>
+<polygon points="26,62 20,18 48,43" fill="#f0c8d8" opacity="0.8"/><polygon points="134,62 140,18 112,43" fill="#f0c8d8" opacity="0.8"/>
+<circle cx="62" cy="78" r="11" fill="#0a0c14"/><circle cx="98" cy="78" r="11" fill="#0a0c14"/>
+<circle cx="62" cy="78" r="8" fill="#2a4a9a"/><circle cx="98" cy="78" r="8" fill="#2a4a9a"/>
+<circle cx="62" cy="78" r="4.5" fill="#1a2e70"/><circle cx="98" cy="78" r="4.5" fill="#1a2e70"/>
+<circle cx="59" cy="75" r="2.5" fill="white"/><circle cx="95" cy="75" r="2.5" fill="white"/>
+<ellipse cx="80" cy="99" rx="6" ry="4" fill="#e09aaa"/>
+<line x1="32" y1="102" x2="66" y2="102" stroke="white" stroke-width="1" opacity="0.7"/>
+<line x1="32" y1="108" x2="66" y2="107" stroke="white" stroke-width="1" opacity="0.7"/>
+<line x1="94" y1="102" x2="128" y2="102" stroke="white" stroke-width="1" opacity="0.7"/>
+<line x1="94" y1="107" x2="128" y2="108" stroke="white" stroke-width="1" opacity="0.7"/>
+</svg></div></div>
+<div class="tc-name">ペルシャ</div>
+<span class="tc-tag" style="background:#8ab0e022;color:#8ab0e0">マイペース</span>
+</div>
+<div class="tc" onclick="showTypeInfo('munchkin')">
+<div class="tc-emoji"><div style="width:54px;height:54px;border-radius:50%;overflow:hidden;border:3px solid #f07820;margin:0 auto;display:block"><svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block">
+<circle cx="80" cy="80" r="80" fill="#ffe0c0"/>
+<ellipse cx="80" cy="84" rx="48" ry="44" fill="#e8840a"/>
+<path d="M46 72 Q52 54 62 48 Q70 44 80 43" stroke="#c45a00" stroke-width="3" fill="none"/>
+<path d="M80 43 Q90 44 98 48 Q108 54 114 72" stroke="#c45a00" stroke-width="3" fill="none"/>
+<ellipse cx="80" cy="104" rx="27" ry="20" fill="#fff5e0"/>
+<polygon points="28,64 18,12 50,44" fill="#d47008"/><polygon points="132,64 142,12 110,44" fill="#d47008"/>
+<polygon points="30,62 22,16 48,43" fill="#f0c0c0" opacity="0.9"/><polygon points="130,62 138,16 112,43" fill="#f0c0c0" opacity="0.9"/>
+<circle cx="60" cy="74" r="12" fill="#0d1200"/><circle cx="100" cy="74" r="12" fill="#0d1200"/>
+<circle cx="60" cy="74" r="9" fill="#e06000"/><circle cx="100" cy="74" r="9" fill="#e06000"/>
+<circle cx="60" cy="74" r="5" fill="#8a3000"/><circle cx="100" cy="74" r="5" fill="#8a3000"/>
+<circle cx="56.5" cy="70" r="3" fill="white"/><circle cx="96.5" cy="70" r="3" fill="white"/>
+<path d="M74 98 L80 94 L86 98 L80 102Z" fill="#e08090"/>
+<line x1="30" y1="101" x2="64" y2="102" stroke="white" stroke-width="1.1" opacity="0.7"/>
+<line x1="30" y1="107" x2="64" y2="106" stroke="white" stroke-width="1.1" opacity="0.7"/>
+<line x1="96" y1="102" x2="130" y2="101" stroke="white" stroke-width="1.1" opacity="0.7"/>
+<line x1="96" y1="106" x2="130" y2="107" stroke="white" stroke-width="1.1" opacity="0.7"/>
+</svg></div></div>
+<div class="tc-name">マンチカン</div>
+<span class="tc-tag" style="background:#f0782022;color:#f07820">愛され系</span>
+</div>
+<div class="tc" onclick="showTypeInfo('scottish')">
+<div class="tc-emoji"><div style="width:54px;height:54px;border-radius:50%;overflow:hidden;border:3px solid #9090d0;margin:0 auto;display:block"><svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block">
+<circle cx="80" cy="80" r="80" fill="#c0c8d0"/>
+<ellipse cx="80" cy="84" rx="52" ry="48" fill="#909ea8"/>
+<ellipse cx="80" cy="104" rx="28" ry="20" fill="#d0d8e0"/>
+<path d="M28 56 Q32 36 46 34 Q52 42 48 56Z" fill="#7a8890"/>
+<path d="M132 56 Q128 36 114 34 Q108 42 112 56Z" fill="#7a8890"/>
+<path d="M30 54 Q34 38 44 37 Q49 44 46 54Z" fill="#f0c0d0" opacity="0.7"/>
+<path d="M130 54 Q126 38 116 37 Q111 44 114 54Z" fill="#f0c0d0" opacity="0.7"/>
+<circle cx="60" cy="76" r="11" fill="#100c00"/><circle cx="100" cy="76" r="11" fill="#100c00"/>
+<circle cx="60" cy="76" r="8" fill="#d06010"/><circle cx="100" cy="76" r="8" fill="#d06010"/>
+<circle cx="60" cy="76" r="4.5" fill="#803000"/><circle cx="100" cy="76" r="4.5" fill="#803000"/>
+<circle cx="57" cy="73" r="2.5" fill="white"/><circle cx="97" cy="73" r="2.5" fill="white"/>
+<path d="M74 100 L80 96 L86 100 L80 104Z" fill="#d87088"/>
+<line x1="30" y1="103" x2="64" y2="103" stroke="white" stroke-width="1.1" opacity="0.7"/>
+<line x1="30" y1="109" x2="64" y2="108" stroke="white" stroke-width="1.1" opacity="0.7"/>
+<line x1="96" y1="103" x2="130" y2="103" stroke="white" stroke-width="1.1" opacity="0.7"/>
+<line x1="96" y1="108" x2="130" y2="109" stroke="white" stroke-width="1.1" opacity="0.7"/>
+</svg></div></div>
+<div class="tc-name">スコティッシュ</div>
+<span class="tc-tag" style="background:#9090d022;color:#9090d0">ツンデレ</span>
+</div>
+<div class="tc" onclick="showTypeInfo('siamese')">
+<div class="tc-emoji"><div style="width:54px;height:54px;border-radius:50%;overflow:hidden;border:3px solid #60a0c0;margin:0 auto;display:block"><svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block">
+<circle cx="80" cy="80" r="80" fill="#f5ece0"/>
+<ellipse cx="80" cy="84" rx="46" ry="42" fill="#f0e4d0"/>
+<ellipse cx="48" cy="78" rx="18" ry="22" fill="#5a3818" opacity="0.7"/>
+<ellipse cx="112" cy="78" rx="18" ry="22" fill="#5a3818" opacity="0.7"/>
+<ellipse cx="80" cy="104" rx="25" ry="18" fill="#f5ece0"/>
+<polygon points="30,58 22,12 52,42" fill="#c8b090"/><polygon points="130,58 138,12 108,42" fill="#c8b090"/>
+<polygon points="32,56 25,16 50,41" fill="#5a3818" opacity="0.7"/><polygon points="128,56 135,16 110,41" fill="#5a3818" opacity="0.7"/>
+<ellipse cx="60" cy="74" rx="10" ry="9" fill="#0a0c14"/><ellipse cx="100" cy="74" rx="10" ry="9" fill="#0a0c14"/>
+<ellipse cx="60" cy="74" rx="7.5" ry="7" fill="#1a3a8a"/><ellipse cx="100" cy="74" rx="7.5" ry="7" fill="#1a3a8a"/>
+<ellipse cx="60" cy="74" rx="4" ry="5" fill="#0d2060"/><ellipse cx="100" cy="74" rx="4" ry="5" fill="#0d2060"/>
+<circle cx="57" cy="71" r="2.5" fill="white"/><circle cx="97" cy="71" r="2.5" fill="white"/>
+<path d="M74 99 L80 95 L86 99 L80 103Z" fill="#d48888"/>
+<line x1="30" y1="101" x2="64" y2="102" stroke="white" stroke-width="1.1" opacity="0.7"/>
+<line x1="30" y1="107" x2="64" y2="106" stroke="white" stroke-width="1.1" opacity="0.7"/>
+<line x1="96" y1="102" x2="130" y2="101" stroke="white" stroke-width="1.1" opacity="0.7"/>
+<line x1="96" y1="106" x2="130" y2="107" stroke="white" stroke-width="1.1" opacity="0.7"/>
+</svg></div></div>
+<div class="tc-name">シャム</div>
+<span class="tc-tag" style="background:#60a0c022;color:#60a0c0">知性派</span>
+</div>
+<div class="tc" onclick="showTypeInfo('norwegian')">
+<div class="tc-emoji"><div style="width:54px;height:54px;border-radius:50%;overflow:hidden;border:3px solid #a0a0a0;margin:0 auto;display:block"><svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block">
+<circle cx="80" cy="80" r="80" fill="#1a1a1a"/>
+<ellipse cx="80" cy="84" rx="50" ry="46" fill="#1e1e1e"/>
+<ellipse cx="80" cy="84" rx="26" ry="34" fill="#f0f0f0"/>
+<ellipse cx="80" cy="106" rx="22" ry="14" fill="#f0f0f0"/>
+<polygon points="26,62 16,12 50,42" fill="#181818"/><polygon points="134,62 144,12 110,42" fill="#181818"/>
+<polygon points="28,60 20,16 48,41" fill="#f0c0c8" opacity="0.6"/><polygon points="132,60 140,16 112,41" fill="#f0c0c8" opacity="0.6"/>
+<ellipse cx="70" cy="60" rx="24" ry="8" fill="#f0f0f0" opacity="0.8"/>
+<ellipse cx="110" cy="58" rx="16" ry="6" fill="#f0f0f0" opacity="0.5"/>
+<circle cx="60" cy="74" r="11" fill="#0a0a08"/><circle cx="100" cy="74" r="11" fill="#0a0a08"/>
+<circle cx="60" cy="74" r="8" fill="#b06800"/><circle cx="100" cy="74" r="8" fill="#b06800"/>
+<circle cx="60" cy="74" r="4.5" fill="#703800"/><circle cx="100" cy="74" r="4.5" fill="#703800"/>
+<circle cx="57" cy="71" r="2.5" fill="white"/><circle cx="97" cy="71" r="2.5" fill="white"/>
+<path d="M74 100 L80 96 L86 100 L80 104Z" fill="#d48080"/>
+<line x1="32" y1="102" x2="64" y2="103" stroke="#e8e8e8" stroke-width="1.1" opacity="0.8"/>
+<line x1="32" y1="108" x2="64" y2="107" stroke="#e8e8e8" stroke-width="1.1" opacity="0.8"/>
+<line x1="96" y1="103" x2="128" y2="102" stroke="#e8e8e8" stroke-width="1.1" opacity="0.8"/>
+<line x1="96" y1="107" x2="128" y2="108" stroke="#e8e8e8" stroke-width="1.1" opacity="0.8"/>
+</svg></div></div>
+<div class="tc-name">ノルウェジアン</div>
+<span class="tc-tag" style="background:#a0a0a022;color:#a0a0a0">独立系</span>
+</div>
+<div class="tc" onclick="showTypeInfo('ragdoll')">
+<div class="tc-emoji"><div style="width:54px;height:54px;border-radius:50%;overflow:hidden;border:3px solid #8090d8;margin:0 auto;display:block"><svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block">
+<circle cx="80" cy="80" r="80" fill="#dce8f5"/>
+<ellipse cx="80" cy="84" rx="50" ry="46" fill="#b8d0e8"/>
+<ellipse cx="80" cy="86" rx="36" ry="36" fill="#ecf4fc"/>
+<ellipse cx="80" cy="108" rx="24" ry="16" fill="#ecf4fc"/>
+<polygon points="28,62 18,12 50,42" fill="#a0c0d8"/><polygon points="132,62 142,12 110,42" fill="#a0c0d8"/>
+<polygon points="30,60 22,16 48,41" fill="#f0c8d8" opacity="0.8"/><polygon points="130,60 138,16 112,41" fill="#f0c8d8" opacity="0.8"/>
+<circle cx="60" cy="74" r="11" fill="#08101a"/><circle cx="100" cy="74" r="11" fill="#08101a"/>
+<circle cx="60" cy="74" r="8" fill="#3060b0"/><circle cx="100" cy="74" r="8" fill="#3060b0"/>
+<circle cx="60" cy="74" r="4.5" fill="#184880"/><circle cx="100" cy="74" r="4.5" fill="#184880"/>
+<circle cx="57" cy="71" r="2.5" fill="white"/><circle cx="97" cy="71" r="2.5" fill="white"/>
+<path d="M74 101 L80 97 L86 101 L80 105Z" fill="#d890a8"/>
+<line x1="30" y1="103" x2="64" y2="104" stroke="white" stroke-width="1.1" opacity="0.75"/>
+<line x1="30" y1="109" x2="64" y2="108" stroke="white" stroke-width="1.1" opacity="0.75"/>
+<line x1="96" y1="104" x2="130" y2="103" stroke="white" stroke-width="1.1" opacity="0.75"/>
+<line x1="96" y1="108" x2="130" y2="109" stroke="white" stroke-width="1.1" opacity="0.75"/>
+</svg></div></div>
+<div class="tc-name">ラグドール</div>
+<span class="tc-tag" style="background:#8090d822;color:#8090d8">癒し系</span>
+</div>
+<div class="tc" onclick="showTypeInfo('bengal')">
+<div class="tc-emoji"><div style="width:54px;height:54px;border-radius:50%;overflow:hidden;border:3px solid #c88020;margin:0 auto;display:block"><svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block">
+<circle cx="80" cy="80" r="80" fill="#d4a840"/>
+<ellipse cx="80" cy="84" rx="48" ry="44" fill="#c89030"/>
+<ellipse cx="50" cy="68" rx="14" ry="10" fill="#7a4800" opacity="0.5"/>
+<ellipse cx="110" cy="68" rx="14" ry="10" fill="#7a4800" opacity="0.5"/>
+<ellipse cx="68" cy="90" rx="8" ry="6" fill="#7a4800" opacity="0.4"/>
+<ellipse cx="92" cy="90" rx="8" ry="6" fill="#7a4800" opacity="0.4"/>
+<ellipse cx="80" cy="106" rx="26" ry="18" fill="#f0e0b0"/>
+<polygon points="28,62 18,12 50,44" fill="#b07820"/><polygon points="132,62 142,12 110,44" fill="#b07820"/>
+<polygon points="30,60 22,16 48,43" fill="#f0c888" opacity="0.7"/><polygon points="130,60 138,16 112,43" fill="#f0c888" opacity="0.7"/>
+<circle cx="60" cy="74" r="11" fill="#0a1000"/><circle cx="100" cy="74" r="11" fill="#0a1000"/>
+<circle cx="60" cy="74" r="8" fill="#6a9800"/><circle cx="100" cy="74" r="8" fill="#6a9800"/>
+<circle cx="60" cy="74" r="5" fill="#2a4800" rx="3" ry="7"/><circle cx="100" cy="74" r="5" fill="#2a4800"/>
+<circle cx="57" cy="70" r="2.5" fill="white"/><circle cx="97" cy="70" r="2.5" fill="white"/>
+<path d="M74 99 L80 95 L86 99 L80 103Z" fill="#c07050"/>
+<line x1="28" y1="100" x2="62" y2="102" stroke="white" stroke-width="1.2" opacity="0.8"/>
+<line x1="28" y1="107" x2="62" y2="106" stroke="white" stroke-width="1.2" opacity="0.8"/>
+<line x1="98" y1="102" x2="132" y2="100" stroke="white" stroke-width="1.2" opacity="0.8"/>
+<line x1="98" y1="106" x2="132" y2="107" stroke="white" stroke-width="1.2" opacity="0.8"/>
+</svg></div></div>
+<div class="tc-name">ベンガル</div>
+<span class="tc-tag" style="background:#c8802022;color:#c88020">野生的</span>
+</div>
+  </div>
+</div>
+</main>
+
+<div id="type-modal" onclick="if(event.target===this)closeTypeModal()">
+  <div class="type-modal-inner" id="type-modal-content"></div>
 </div>
 
-<div id="breed-modal" onclick="if(event.target===this)closeBreedModal()">
-  <div class="breed-modal-inner" id="breed-modal-content"></div>
-</div>
+<footer>
+  <div style="margin-bottom:8px">
+    <a href="https://twitter.com/hoshiyorudou" style="margin:0 10px">𝕏 / Twitter</a>
+    <a href="https://lin.ee/hoshiyorudou" style="margin:0 10px">LINE公式</a>
+    <a href="https://hoshiyorudou.jp" style="margin:0 10px">星夜堂</a>
+  </div>
+  <div>© 星夜堂 — 猫種パーソナリティ診断 🐱</div>
+</footer>
+
 <script>
-
-const breedInfo={
-  ameshort:{emoji:'😸',name:'アメリカンショートヘア',keywords:['社交的','適応力抜群','愛されキャラ'],
-    summary:'誰とでも上手くやれるバランス感覚の持ち主。フレンドリーで明るく、どんな環境にもすぐ馴染む。'},
-  persia:{emoji:'😻',name:'ペルシャ',keywords:['マイペース','上品','我が道を行く'],
-    summary:'ゆったりとした独自の世界観を持つ上品タイプ。自分のペースを何より大切にする。'},
-  munchkin:{emoji:'😺',name:'マンチカン',keywords:['甘え上手','愛嬌たっぷり','ムードメーカー'],
-    summary:'溢れる愛嬌と明るさで誰からも愛されるキャラ。ポジティブなエネルギーで場を和ませる。'},
-  scottish:{emoji:'🐱',name:'スコティッシュフォールド',keywords:['慎重派','深い思考','信頼できる'],
-    summary:'じっくり観察してから行動する思慮深いタイプ。一度信頼した相手には深く誠実に向き合う。'},
-  siamese:{emoji:'😼',name:'シャム',keywords:['強い個性','存在感抜群','知性派'],
-    summary:'強烈な個性と存在感で自然と注目を集める。自分の考えをはっきり表現できる知性と勇気を持つ。'},
-  norwegian:{emoji:'🐈',name:'ノルウェジアンフォレストキャット',keywords:['孤高','独立心','静かな強さ'],
-    summary:'高い独立心を持つ孤高タイプ。一人でいても充実感を感じられる強い精神の持ち主。'},
-  ragdoll:{emoji:'😽',name:'ラグドール',keywords:['癒し系','平和主義','包容力'],
-    summary:'おっとりとした温かさで周囲を癒す平和主義タイプ。その柔らかい存在感が場の雰囲気を和ませる。'},
-  bengal:{emoji:'🙀',name:'ベンガル',keywords:['好奇心旺盛','行動派','エネルギッシュ'],
-    summary:'旺盛な好奇心と尽きないエネルギーで人生を全力で楽しむ行動派。新しい刺激をいつも求めている。'},
-};
-
-function showBreedSummary(key){
-  const b=breedInfo[key];if(!b)return;
-  const modal=document.getElementById('breed-modal');
-  document.getElementById('breed-modal-content').innerHTML=
-    '<button class="bm-close" onclick="closeBreedModal()">✕</button>'+
-    '<span class="bm-emoji">'+b.emoji+'</span>'+
-    '<div class="bm-name">'+b.name+'</div>'+
-    '<div class="bm-catch">'+b.keywords.join(' · ')+'</div>'+
-    '<div class="bm-keywords">'+b.keywords.map(k=>'<span class="bm-kw">'+k+'</span>').join('')+'</div>'+
-    '<div class="bm-desc">'+b.summary+'</div>'+
-    '<button class="bm-startbtn" onclick="closeBreedModal();startQuiz()">🐱 診断してみる</button>';
-  modal.style.display='block';
-  document.body.style.overflow='hidden';
-}
-function closeBreedModal(){
-  document.getElementById('breed-modal').style.display='none';
-  document.body.style.overflow='';
-}
 const SHARE_URL='https://hoshiyorudou.jp/neko';
 const LINE_OA='https://lin.ee/hoshiyorudou';
 
 const questions=[
-  {text:'週末の過ごし方、どれが一番近い？',opts:[
-    {text:'📋 事前に計画を立てて過ごす',scores:{ameshort:2,persia:1,scottish:2}},
-    {text:'☀️ その日の気分で自由に行動する',scores:{bengal:3,siamese:2}},
-    {text:'🛋️ おうちでのんびりリラックス',scores:{ragdoll:3,persia:2,munchkin:1}},
+  {text:'自分のエネルギーはどこから来る？',opts:[
+    {text:'👥 人との交流・賑やかな場所',scores:{ameshort:3,munchkin:2}},
+    {text:'🏠 一人の静かな時間',scores:{persia:3,norwegian:2}},
+    {text:'🌿 自然や開放的な環境',scores:{bengal:3,ragdoll:1}},
   ]},
-  {text:'初対面の人と会ったとき？',opts:[
-    {text:'😄 積極的に話しかけて打ち解ける',scores:{ameshort:3,munchkin:2}},
-    {text:'👁️ まず相手を観察してから距離を縮める',scores:{scottish:3,siamese:2,norwegian:1}},
-    {text:'😽 向こうから来てくれるのを待つ',scores:{ragdoll:3,persia:2}},
+  {text:'新しい人に会ったとき？',opts:[
+    {text:'😄 すぐ打ち解けて話しかける',scores:{ameshort:3,munchkin:2}},
+    {text:'🔍 まず観察してから近づく',scores:{siamese:3,scottish:2}},
+    {text:'😎 自分のペースで、気が向いたら',scores:{persia:3,bengal:1}},
   ]},
-  {text:'グループで作業するとき、あなたは？',opts:[
-    {text:'💡 リードして全体を引っ張る',scores:{siamese:3,ameshort:2}},
-    {text:'🤝 全員が動きやすいよう調整する',scores:{ameshort:2,munchkin:3,ragdoll:1}},
-    {text:'🎯 自分の担当を黙々とこなす',scores:{norwegian:3,scottish:2,persia:1}},
+  {text:'理想の休日は？',opts:[
+    {text:'🎉 友人とわいわい過ごす',scores:{ameshort:3,munchkin:2}},
+    {text:'📚 好きなことに没頭する',scores:{siamese:3,norwegian:2}},
+    {text:'🛋 ゆったりのんびり過ごす',scores:{persia:2,ragdoll:3}},
   ]},
-  {text:'好きな空間・環境は？',opts:[
-    {text:'🌆 賑やかで刺激的な場所',scores:{bengal:3,siamese:2}},
-    {text:'🏡 居心地がよくて落ち着く場所',scores:{ragdoll:3,persia:2,munchkin:1}},
-    {text:'🐈 静かで広々した自然の中',scores:{norwegian:3,scottish:2}},
+  {text:'困ったことが起きたとき？',opts:[
+    {text:'🗣 すぐ誰かに相談する',scores:{ameshort:2,ragdoll:3}},
+    {text:'🧠 自分で考えて解決する',scores:{siamese:3,norwegian:2}},
+    {text:'🌊 なんとかなると流す',scores:{persia:2,munchkin:2}},
   ]},
-  {text:'ストレスを感じたときの対処法は？',opts:[
-    {text:'🏃 体を動かしたり外に出る',scores:{bengal:3,ameshort:2}},
-    {text:'😴 好きなことをして自分をいたわる',scores:{persia:3,ragdoll:2}},
-    {text:'👥 誰かと話して気持ちを切り替える',scores:{munchkin:3,ameshort:1,siamese:1}},
+  {text:'人間関係で大切にすることは？',opts:[
+    {text:'💞 広く浅く誰とでも仲良く',scores:{ameshort:3,munchkin:2}},
+    {text:'🔒 少数の深い関係を大切に',scores:{scottish:3,ragdoll:2}},
+    {text:'🆓 適度な距離感と自由',scores:{norwegian:3,bengal:2}},
   ]},
-  {text:'自分の個性・魅力って何だと思う？',opts:[
-    {text:'🙀 独自の感性と表現力',scores:{siamese:3,bengal:2}},
-    {text:'💞 誰にでも優しく愛嬌がある',scores:{munchkin:3,ameshort:2}},
-    {text:'🐱 飄々としたミステリアスな雰囲気',scores:{norwegian:3,scottish:2,persia:1}},
+  {text:'自分の感情表現は？',opts:[
+    {text:'😊 すぐ顔や言葉に出る',scores:{ameshort:2,munchkin:3}},
+    {text:'🎭 わかりやすいときとそうでないとき',scores:{scottish:3,siamese:2}},
+    {text:'😶 あまり表に出さない',scores:{persia:3,norwegian:2}},
   ]},
-  {text:'失敗したとき、どうする？',opts:[
-    {text:'🔍 原因を分析してすぐに改善に動く',scores:{ameshort:3,scottish:2}},
-    {text:'😌 気にしない、次を向いて進む',scores:{ragdoll:2,munchkin:2,bengal:1}},
-    {text:'🧘 一人でじっくり考えて整理する',scores:{persia:3,norwegian:2,scottish:1}},
+  {text:'目標に向かうとき？',opts:[
+    {text:'🚀 勢いよく突き進む',scores:{bengal:3,ameshort:2}},
+    {text:'📋 計画を立ててコツコツ',scores:{siamese:3,scottish:2}},
+    {text:'🌸 自然な流れに従う',scores:{ragdoll:3,persia:2}},
   ]},
-  {text:'友達との関係で大切にすることは？',opts:[
-    {text:'🎉 楽しい時間を一緒に作ること',scores:{munchkin:3,ameshort:2}},
-    {text:'💬 深い話ができる信頼関係',scores:{siamese:2,scottish:3,norwegian:1}},
-    {text:'😽 お互いのペースを尊重すること',scores:{ragdoll:3,persia:2}},
+  {text:'褒められたとき？',opts:[
+    {text:'😆 素直に喜ぶ',scores:{ameshort:3,munchkin:2}},
+    {text:'😳 照れつつも嬉しい',scores:{ragdoll:2,scottish:3}},
+    {text:'😌 当然という感じで受け取る',scores:{persia:3,siamese:1}},
   ]},
-  {text:'好奇心の向かう先は？',opts:[
-    {text:'🌍 新しい場所や体験を探求したい',scores:{bengal:3,ameshort:2}},
-    {text:'📚 深く一つのことを探求したい',scores:{siamese:3,scottish:2,persia:1}},
-    {text:'🛌 安らぎとくつろぎを求めたい',scores:{ragdoll:3,munchkin:2,persia:1}},
+  {text:'自分の強みは？',opts:[
+    {text:'🤝 コミュニケーション力',scores:{ameshort:3,munchkin:2}},
+    {text:'🧩 分析力と洞察力',scores:{siamese:3,bengal:2}},
+    {text:'💆 包容力と癒し力',scores:{ragdoll:3,persia:2}},
   ]},
-  {text:'理想の一日の終わり方は？',opts:[
-    {text:'😼 満足のいくことを達成した充実感',scores:{ameshort:3,bengal:2}},
-    {text:'☕ 好きな音楽や本と穏やかに過ごす',scores:{persia:3,norwegian:2,ragdoll:1}},
-    {text:'😺 大切な人と過ごして温かい気持ち',scores:{munchkin:3,ragdoll:2}},
+  {text:'理想の自分のイメージは？',opts:[
+    {text:'🌟 みんなに愛されるキャラ',scores:{ameshort:3,munchkin:2}},
+    {text:'🦉 賢く頼られる存在',scores:{siamese:3,norwegian:2}},
+    {text:'🌸 穏やかに自分らしく生きる',scores:{ragdoll:2,persia:3}},
   ]},
 ];
-
 const results={
   ameshort:{emoji:'😸',name:'アメリカンショートヘア',catch:'バランス抜群の社交派・愛されキャラ',
-    traits:['誰とでも上手くやれる適応力','明るく安定したメンタル','何でも器用にこなす器用さ'],
-    weaknesses:['深みより広さを優先しすぎることも','八方美人に見られることがある'],
-    desc:'アメショのあなたは、フレンドリーで社交的な愛されキャラ。誰とでも適度な距離感で上手くやれる優れた適応力を持ちます。物事に柔軟に対応できるバランス感覚が魅力で、どんな環境でもその場に溶け込む力があります。',
-    compat:{emoji:'😺',name:'マンチカンタイプ',why:'明るいエネルギーが互いを引き立て合う'},
-    tend:{社交力:85,マイペース度:55,独自性:60,包容力:75,行動力:70}},
-  persia:{emoji:'😻',name:'ペルシャ',catch:'上品でゆったり、我が道を行くマイペース王',
-    traits:['品のある落ち着いた存在感','自分のペースを大切にする意志','上品な美意識と感性'],
-    weaknesses:['頑固に見られることがある','新しい環境への適応に時間がかかることも'],
-    desc:'ペルシャのあなたは、上品でゆったりとした独自の世界観を持ちます。周囲のペースに合わせる必要はなく、自分らしい心地よいスタイルを確立しています。その品格と落ち着きが、自然と周囲の尊敬を集めます。',
-    compat:{emoji:'😽',name:'ラグドールタイプ',why:'お互いのペースを尊重し合える穏やかな関係'},
-    tend:{社交力:45,マイペース度:95,独自性:75,包容力:70,行動力:40}},
-  munchkin:{emoji:'😺',name:'マンチカン',catch:'甘え上手で明るい！愛嬌たっぷりの愛されキャラ',
-    traits:['溢れる愛嬌と明るさ','誰からも愛される甘え上手','ポジティブなムードメーカー'],
-    weaknesses:['依存しすぎてしまうことがある','寂しがり屋で落ち込みやすいことも'],
-    desc:'マンチカンのあなたは、その愛くるしい明るさで誰からも愛されるキャラクター。甘え上手で、周囲の人を自然と笑顔にする力を持ちます。ポジティブなエネルギーと素直な感情表現が、人の心を和ませます。',
-    compat:{emoji:'😸',name:'アメショタイプ',why:'お互いの明るさが最高の組み合わせ'},
-    tend:{社交力:90,マイペース度:50,独自性:55,包容力:85,行動力:65}},
-  scottish:{emoji:'🐱',name:'スコティッシュフォールド',catch:'じっくり観察する慎重な思考派',
-    traits:['じっくり観察してから行動する慎重さ','深く考える思考力','信頼した人への深い忠誠心'],
-    weaknesses:['決断が遅いと感じさせることも','警戒心が強く見られることがある'],
-    desc:'スコティッシュのあなたは、慎重に観察してから行動する思慮深いタイプ。新しい環境や人に対してすぐには打ち解けませんが、一度信頼した相手には深く誠実に向き合います。その丁寧な関わり方が長期的な信頼を生みます。',
-    compat:{emoji:'😽',name:'ラグドールタイプ',why:'慎重さと穏やかさが心地よく共鳴する'},
-    tend:{社交力:50,マイペース度:80,独自性:70,包容力:65,行動力:50}},
-  siamese:{emoji:'😼',name:'シャム',catch:'強い個性と自己表現で場を支配する存在感タイプ',
-    traits:['強烈な個性と存在感','自分の意見をはっきり伝える力','知性的で観察眼が鋭い'],
-    weaknesses:['我が強いと思われることも','自己主張が強く衝突することがある'],
-    desc:'シャムのあなたは、その強烈な個性と存在感で自然と周囲の注目を集めます。自分の考えをはっきり表現できる知性と勇気を持ち、妥協を嫌います。独自の視点と深い洞察力で、周囲に刺激と新しい視点を与えます。',
-    compat:{emoji:'🐈',name:'ノルウェジアンタイプ',why:'強い個性同士がお互いを高め合える'},
-    tend:{社交力:65,マイペース度:75,独自性:95,包容力:50,行動力:75}},
-  norwegian:{emoji:'🐈',name:'ノルウェジアンフォレストキャット',catch:'孤高の独立心と圧倒的な存在感',
-    traits:['高い独立心と自己完結能力','一人でいても充実できる精神力','深く静かな観察眼'],
-    weaknesses:['冷たく見られることがある','距離を置きすぎて孤立することも'],
-    desc:'ノルウェジアンのあなたは、圧倒的な独立心を持つ孤高タイプ。一人でいても充実感を感じられる強い精神と、深い観察眼で本質を見抜きます。多くは語らないが、その存在感と知性が自然と周囲の尊敬を集めます。',
-    compat:{emoji:'😼',name:'シャムタイプ',why:'孤高の魂同士が深いところで繋がれる'},
-    tend:{社交力:35,マイペース度:95,独自性:85,包容力:55,行動力:60}},
-  ragdoll:{emoji:'😽',name:'ラグドール',catch:'おっとりのんびり、場を和ませる癒し系',
-    traits:['温かみのある穏やかな包容力','争いを好まない平和主義','人を安心させる柔らかさ'],
-    weaknesses:['優柔不断になることがある','意見を言えず流されてしまうことも'],
-    desc:'ラグドールのあなたは、おっとりとした温かさで周囲を癒す平和主義タイプ。争いを好まず、誰に対しても穏やかに接します。その柔らかい存在感が場の雰囲気を和ませ、ホッとする安心感を与えます。',
-    compat:{emoji:'😻',name:'ペルシャタイプ',why:'穏やかで上品な二人が最高の癒し空間を作る'},
-    tend:{社交力:65,マイペース度:80,独自性:50,包容力:95,行動力:40}},
-  bengal:{emoji:'🙀',name:'ベンガル',catch:'好奇心旺盛でエネルギッシュな行動派',
-    traits:['止まらない好奇心と探求欲','高いエネルギーと行動力','新しいことへの抵抗がない柔軟性'],
-    weaknesses:['じっとしていられないことも','衝動的に動いて後悔することがある'],
-    desc:'ベンガルのあなたは、旺盛な好奇心と尽きないエネルギーで人生を全力で楽しむ行動派。新しい刺激や体験を常に求め、自分の可能性を広げ続けます。そのエネルギッシュな姿勢が周囲に活力を与え、一緒にいると楽しくなる存在です。',
-    compat:{emoji:'😸',name:'アメショタイプ',why:'行動力と適応力が最高のコンビネーション'},
-    tend:{社交力:80,マイペース度:55,独自性:80,包容力:55,行動力:95}},
+    traits:['誰とでも仲良くなれる親しみやすさ','場の空気を読む高い適応力','明るくポジティブなエネルギー'],
+    weaknesses:['深い関係より広い関係を好むことも','一人の時間が苦手なことがある'],
+    desc:'アメリカンショートヘアタイプのあなたは、誰とでも自然に打ち解けられるコミュニケーションの天才。バランス感覚に優れ、どんな場にも適応できる柔軟さを持っています。その明るさと親しみやすさで、周囲から自然と愛されます。',
+    compat:{emoji:'😺',name:'マンチカンタイプ',why:'互いの明るさが共鳴して最高の空気を作る'},
+    tend:{社交力:90,マイペース度:40,知性:65,包容力:70,行動力:75}},
+  persia:{emoji:'😻',name:'ペルシャ',catch:'マイペースに輝く上品な王道タイプ',
+    traits:['自分のペースを大切にする上品さ','独自の美意識と深い内面世界','静かな落ち着きと品格'],
+    weaknesses:['流れについていくのが苦手なことも','マイペースすぎると言われることがある'],
+    desc:'ペルシャタイプのあなたは、周囲に流されることなく自分のペースを大切にする上品な存在。独自の世界観と審美眼を持ち、静かな空間で深く物事を考えます。その落ち着きと品格が、自然と人を惹きつけます。',
+    compat:{emoji:'😽',name:'ラグドールタイプ',why:'お互いの穏やかさが心地よい空間を作る'},
+    tend:{社交力:35,マイペース度:95,知性:70,包容力:75,行動力:30}},
+  munchkin:{emoji:'😺',name:'マンチカン',catch:'溢れる愛嬌で場を明るくする元気の源',
+    traits:['天性の愛嬌と親しみやすさ','ポジティブなムードメーカー','甘え上手で可愛らしい'],
+    weaknesses:['深刻に考えすぎないことも','飽きっぽい面がある'],
+    desc:'マンチカンタイプのあなたは、その場にいるだけで周囲を明るくする天性の愛嬌の持ち主。好奇心旺盛でいつも新しいことに興味を持ち、甘え上手でみんなから可愛がられます。そのポジティブなエネルギーは周囲の宝物です。',
+    compat:{emoji:'😸',name:'アメショタイプ',why:'お互いの明るさで最強の元気コンビに'},
+    tend:{社交力:85,マイペース度:50,知性:55,包容力:70,行動力:80}},
+  scottish:{emoji:'🐱',name:'スコティッシュフォールド',catch:'クールに見えて実は深い愛情を持つツンデレ',
+    traits:['独特のクールさと内に秘めた情熱','深い思慮と慎重な判断力','信頼した人への強い愛情'],
+    weaknesses:['最初の壁が高いと思われることも','感情表現が少なすぎることがある'],
+    desc:'スコティッシュタイプのあなたは、クールな外見の裏に深い感情を持つ魅力的な存在。軽々しく動かず、じっくり観察してから信頼関係を築きます。一度心を開いた相手には深い愛情を注ぐツンデレな一面が魅力です。',
+    compat:{emoji:'😸',name:'アメショタイプ',why:'真逆な個性が互いを補い合う絶妙なコンビ'},
+    tend:{社交力:45,マイペース度:80,知性:75,包容力:65,行動力:55}},
+  siamese:{emoji:'😼',name:'シャム',catch:'鋭い知性と強い意志を持つ知性派',
+    traits:['鋭い洞察力と分析力','はっきりとした意志表示','深いコミュニケーションを求める誠実さ'],
+    weaknesses:['率直すぎて傷つけてしまうことも','こだわりが強いと言われることがある'],
+    desc:'シャムタイプのあなたは、鋭い知性と観察眼で物事の本質を見抜く力を持ちます。自分の考えをはっきり表現し、深い知的交流を好みます。その率直さと誠実さは、信頼できる仲間から高く評価されます。',
+    compat:{emoji:'😽',name:'ラグドールタイプ',why:'知性と癒しが響き合い深い絆が生まれる'},
+    tend:{社交力:55,マイペース度:60,知性:95,包容力:50,行動力:65}},
+  norwegian:{emoji:'🐈',name:'ノルウェジアンフォレストキャット',catch:'自立した自由人・独自の道を歩むタイプ',
+    traits:['強い独立心と自己完結力','自然体で飾らない本物の強さ','自分のスタイルへの確固たるこだわり'],
+    weaknesses:['孤独になりすぎることがある','協調性が低いと見られることも'],
+    desc:'ノルウェジアンタイプのあなたは、他者に依存せず自分の力で道を切り拓く強い独立心を持ちます。流行や周囲の目を気にせず、自分が信じるスタイルを貫きます。その自立した姿が、かえって人を惹きつける魅力になっています。',
+    compat:{emoji:'🐱',name:'スコティッシュタイプ',why:'独立した同士が互いの存在を尊重し合える'},
+    tend:{社交力:30,マイペース度:90,知性:80,包容力:50,行動力:60}},
+  ragdoll:{emoji:'😽',name:'ラグドール',catch:'深い愛情と包容力を持つ癒しの存在',
+    traits:['大きな包容力と温かい愛情','穏やかで安心感を与える存在感','人を受け入れる深い寛容さ'],
+    weaknesses:['優柔不断に見られることがある','自分の意見を主張しにくいことも'],
+    desc:'ラグドールタイプのあなたは、その穏やかな存在感だけで周囲に安心感を与える癒しの存在。誰に対しても寛容で、相手をそのまま受け入れる包容力を持ちます。その深い愛情と温かさが、多くの人の心の拠り所になります。',
+    compat:{emoji:'😻',name:'ペルシャタイプ',why:'穏やかな同士がお互いの安らぎになれる'},
+    tend:{社交力:65,マイペース度:60,知性:55,包容力:95,行動力:40}},
+  bengal:{emoji:'🙀',name:'ベンガル',catch:'野性的な本能と鋭い感覚を持つ挑戦者',
+    traits:['強い好奇心と冒険心','素早い判断力と行動力','ワイルドな魅力と存在感'],
+    weaknesses:['衝動的に動きすぎることがある','飽きやすく継続が苦手なことも'],
+    desc:'ベンガルタイプのあなたは、強い好奇心と冒険心で常に新しい刺激を求める行動派。誰よりも素早く状況を判断し、果敢に行動します。その野性的なエネルギーと独自の存在感が、周囲に強烈な印象を残します。',
+    compat:{emoji:'😸',name:'アメショタイプ',why:'行動力と社交力が組み合わさって最強コンビ'},
+    tend:{社交力:60,マイペース度:70,知性:70,包容力:45,行動力:95}},
+};
+const typeInfo={
+  ameshort:{emoji:'😸',name:'アメリカンショートヘア',catch:'バランス抜群の社交派・愛されキャラ',keywords:['社交力','適応力','ポジティブ'],summary:'誰とでも上手くやれるバランス感覚の持ち主。フレンドリーで明るく、どんな環境にもすぐ馴染む。'},
+  persia:{emoji:'😻',name:'ペルシャ',catch:'マイペースに輝く上品な王道タイプ',keywords:['マイペース','上品','我が道を行く'],summary:'ゆったりとした独自の世界観を持つ上品タイプ。自分のペースを何より大切にする。'},
+  munchkin:{emoji:'😺',name:'マンチカン',catch:'溢れる愛嬌で場を明るくする元気の源',keywords:['愛嬌','明るさ','甘え上手'],summary:'溢れる愛嬌と明るさで誰からも愛されるキャラ。ポジティブなエネルギーで場を和ませる。'},
+  scottish:{emoji:'🐱',name:'スコティッシュフォールド',catch:'クールに見えて実は深い愛情を持つツンデレ',keywords:['ツンデレ','深い感情','慎重さ'],summary:'クールな外見の裏に深い感情を秘める。信頼した相手には深い愛情を注ぐツンデレタイプ。'},
+  siamese:{emoji:'😼',name:'シャム',catch:'鋭い知性と強い意志を持つ知性派',keywords:['知性','率直さ','洞察力'],summary:'鋭い洞察力と率直な意見で知られる知性派。深いコミュニケーションを求める誠実な存在。'},
+  norwegian:{emoji:'🐈',name:'ノルウェジアンフォレストキャット',catch:'自立した自由人・独自の道を歩むタイプ',keywords:['独立心','自由','自己完結'],summary:'強い独立心と自己完結力を持つ自由人。自分のスタイルを貫く姿が魅力となる。'},
+  ragdoll:{emoji:'😽',name:'ラグドール',catch:'深い愛情と包容力を持つ癒しの存在',keywords:['包容力','癒し','寛容さ'],summary:'深い包容力と温かい愛情で周囲を包む癒し系。その穏やかな存在感が心の拠り所になる。'},
+  bengal:{emoji:'🙀',name:'ベンガル',catch:'野性的な本能と鋭い感覚を持つ挑戦者',keywords:['冒険心','行動力','存在感'],summary:'強い好奇心と冒険心で常に新しい挑戦を求める。ワイルドなエネルギーで周囲を圧倒する。'},
 };
 
+let answerHistory=[], scores={}, currentQ=0, _shareText='';
 
-let answerHistory=[];
-let scores={},currentQ=0,_shareText='';
-function resetScores(){scores={};answerHistory=[];Object.keys(results).forEach(k=>scores[k]=0);}
+function setActiveNav(id){
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  const el=document.getElementById('nav-'+id);
+  if(el)el.classList.add('active');
+}
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  setActiveNav(id);
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function showTypeInfo(key){
+  const b=typeInfo[key];if(!b)return;
+  document.getElementById('type-modal-content').innerHTML=
+    '<button class="bm-close" onclick="closeTypeModal()">✕</button>'+
+    '<span class="bm-emoji">'+b.emoji+'</span>'+
+    '<div class="bm-name">'+b.name+'</div>'+
+    '<div class="bm-catch">'+b.catch+'</div>'+
+    '<div class="bm-keywords">'+b.keywords.map(k=>'<span class="bm-kw">'+k+'</span>').join('')+'</div>'+
+    '<div class="bm-desc">'+b.summary+'</div>'+
+    '<button class="bm-startbtn" onclick="closeTypeModal();startQuiz()">🐾 無料で診断する（10問）</button>';
+  document.getElementById('type-modal').style.display='block';
+  document.body.style.overflow='hidden';
+}
+function closeTypeModal(){
+  document.getElementById('type-modal').style.display='none';
+  document.body.style.overflow='';
+}
+function resetScores(){
+  scores={};answerHistory=[];
+  Object.keys(results).forEach(k=>scores[k]=0);
+}
+function startQuiz(){
+  resetScores();currentQ=0;
+  showScreen('quiz');renderQuestion();
+}
 function goBack(){
   if(currentQ<=0)return;
   const last=answerHistory.pop();
   Object.entries(last).forEach(([k,v])=>{scores[k]=(scores[k]||0)-v;});
-  currentQ--;
-  renderQuestion();
+  currentQ--;renderQuestion();
   const c=document.querySelector('.q-card');c.style.animation='none';c.offsetHeight;c.style.animation='fadeUp .35s ease both';
 }
-function startQuiz(){resetScores();currentQ=0;showScreen('quiz');renderQuestion();}
-function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo({top:0,behavior:'smooth'});}
 function renderQuestion(){
-  const q=questions[currentQ];const n=currentQ+1;const pct=Math.round(n/questions.length*100);
-  document.getElementById('q-counter').textContent=`Q ${n} / ${questions.length}`;
+  const q=questions[currentQ],n=currentQ+1,pct=Math.round(n/questions.length*100);
+  document.getElementById('q-counter').textContent='Q '+n+' / '+questions.length;
   document.getElementById('q-pct').textContent=pct+'%';
   document.getElementById('prog-fill').style.width=pct+'%';
   document.getElementById('q-num-label').textContent='QUESTION '+String(n).padStart(2,'0');
   document.getElementById('q-text').textContent=q.text;
-  const back=document.getElementById('btn-back');if(back)back.style.display=currentQ>0?'flex':'none';
+  const back=document.getElementById('btn-back');
+  if(back)back.style.display=currentQ>0?'flex':'none';
   const wrap=document.getElementById('options-wrap');wrap.innerHTML='';
-  q.opts.forEach(opt=>{const btn=document.createElement('button');btn.className='opt';btn.textContent=opt.text;btn.onclick=()=>selectAnswer(opt.scores,btn);wrap.appendChild(btn);});
+  q.opts.forEach(opt=>{
+    const btn=document.createElement('button');btn.className='opt';
+    const m=opt.text.match(/^(\S+)\s(.+)$/);
+    if(m){
+      btn.innerHTML='<span class="opt-icon">'+m[1]+'</span>'+m[2];
+    } else {
+      btn.textContent=opt.text;
+    }
+    btn.onclick=()=>selectAnswer(opt.scores,btn);
+    wrap.appendChild(btn);
+  });
 }
 function selectAnswer(scoreMap,btn){
   document.querySelectorAll('.opt').forEach(b=>b.style.pointerEvents='none');
   btn.classList.add('selected');
   answerHistory.push(Object.assign({},scoreMap));
   Object.entries(scoreMap).forEach(([k,v])=>{scores[k]=(scores[k]||0)+v;});
-  setTimeout(()=>{currentQ++;if(currentQ<questions.length){renderQuestion();}else showResult();},420);
+  setTimeout(()=>{
+    currentQ++;
+    if(currentQ<questions.length){
+      renderQuestion();
+      const c=document.querySelector('.q-card');c.style.animation='none';c.offsetHeight;c.style.animation='fadeUp .35s ease both';
+    } else showResult();
+  },420);
 }
 function showResult(){
   const key=Object.entries(scores).sort((a,b)=>b[1]-a[1])[0][0];
-  const r=results[key];const el=document.getElementById('result');
-  _shareText='私は「'+r.name+'」タイプでした！\nあなたはどの猫？\n';
+  const r=results[key];
+  _shareText='私の猫タイプは「'+r.name+'」でした！\nあなたのタイプは？\n';
   const tendHTML=Object.entries(r.tend).map(([label,val])=>
-    `<div class="tend-row"><div class="tend-label">${label}</div><div class="tend-bar-wrap"><div class="tend-bar" style="width:0" data-w="${val}%"></div></div><div class="tend-val">${val}</div></div>`
+    '<div class="tend-row"><div class="tend-label">'+label+'</div><div class="tend-bar-wrap"><div class="tend-bar" style="width:0" data-w="'+val+'%"></div></div><div class="tend-val">'+val+'</div></div>'
   ).join('');
-  el.innerHTML=`
-    <div class="result-hero"><div class="result-icon">${r.emoji}</div><div class="result-label">あなたの猫タイプ</div><div class="result-name">${r.name}</div><div class="result-catch">${r.catch}</div></div>
-    <div class="result-section"><div class="section-title">😼 長所・強み</div><div class="traits">${r.traits.map(t=>`<span class="trait">${t}</span>`).join('')}</div></div>
+  document.getElementById('result').innerHTML=`
+    <div class="result-hero">
+      <div class="result-icon">${r.emoji}</div>
+      <div class="result-label">あなたの猫タイプ</div>
+      <div class="result-name">${r.name}</div>
+      <div class="result-catch">${r.catch}</div>
+    </div>
+    <div class="result-section"><div class="section-title">✨ 長所・強み</div><div class="traits">${r.traits.map(t=>'<span class="trait">'+t+'</span>').join('')}</div></div>
     <div class="result-section"><div class="section-title">💬 詳細解説</div><div class="desc">${r.desc}</div></div>
-    <div class="result-section"><div class="section-title">△ 気をつけたいこと</div><div class="weaknesses">${r.weaknesses.map(w=>`<div class="weakness">${w}</div>`).join('')}</div></div>
+    <div class="result-section"><div class="section-title">△ 気をつけたいこと</div><div class="weaknesses">${r.weaknesses.map(w=>'<div class="weakness">'+w+'</div>').join('')}</div></div>
     <div class="result-section"><div class="section-title">💕 相性の良いタイプ</div><div class="compat"><div class="compat-icon">${r.compat.emoji}</div><div><div class="compat-name">${r.compat.name}</div><div class="compat-why">${r.compat.why}</div></div></div></div>
     <div class="result-section"><div class="section-title">📊 あなたの傾向</div><div class="tendency-bars">${tendHTML}</div></div>
-    <div class="share-section"><div class="share-title">📣 結果をシェアしよう</div><div class="share-btns">
-      <button class="btn-x" onclick="shareX()"><svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.742l7.742-8.852L1.512 2.25h6.961l4.263 5.623 5.508-5.623zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>Xでシェア</button>
-      <button class="btn-line" onclick="shareLINE()"><svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>LINEでシェア</button>
-      <button class="btn-retry" onclick="startQuiz()">🔄 もう一度診断する</button>
-    </div></div>
-    <div class="line-cta"><div class="line-cta-icon">🔮</div><div class="line-cta-title">本格占いは星夜堂へ</div><div class="line-cta-text">猫タイプだけでなく、あなたの生年月日から<br>今日の運勢・今月の流れを毎日お届けします</div><a class="btn-line-cta" href="${LINE_OA}" target="_blank"><svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>星夜堂でもっと詳しく占う</a></div>
-    <div class="result-footer">© 星夜堂 — 猫種パーソナリティ診断</div>
+    <div class="share-section">
+      <div class="share-title">📣 結果をシェアしよう</div>
+      <div class="share-btns">
+        <button class="btn-x" onclick="shareX()"><svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.742l7.742-8.852L1.512 2.25h6.961l4.263 5.623 5.508-5.623zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg> Xでシェア</button>
+        <button class="btn-line" onclick="shareLINE()"><svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg> LINEでシェア</button>
+        <button class="btn-retry" onclick="startQuiz()">🔄 もう一度診断する</button>
+      </div>
+    </div>
+    <div class="line-cta">
+      <div class="line-cta-icon">🔮</div>
+      <div class="line-cta-title">本格占いは星夜堂へ</div>
+      <div class="line-cta-text">猫タイプだけでなく、あなたの生年月日から<br>今日の運勢・今月の流れを毎日お届けします</div>
+      <a class="btn-line-cta" href="${LINE_OA}" target="_blank"><svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg> 星夜堂でもっと詳しく占う</a>
+    </div>
+    <div class="result-footer">© 星夜堂 — 猫種パーソナリティ診断 🐱</div>
   `;
   showScreen('result');
   setTimeout(()=>{document.querySelectorAll('.tend-bar').forEach(b=>b.style.width=b.dataset.w);},400);
@@ -370,5 +757,4 @@ function showResult(){
 function shareX(){window.open('https://twitter.com/intent/tweet?text='+encodeURIComponent(_shareText+SHARE_URL),'_blank');}
 function shareLINE(){window.open('https://social-plugins.line.me/lineit/share?url='+encodeURIComponent(SHARE_URL)+'&text='+encodeURIComponent(_shareText),'_blank');}
 </script>
-</body>
-</html>
+</body></html>
