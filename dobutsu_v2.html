@@ -7,9 +7,8 @@
 <meta name="description" content="10の質問でわかるあなたの守護動物。獅子・狼・鷹・熊・狐・馬・亀 — 星夜堂の守護動物診断。">
 <style>
 :root{
-  --pr:#2d6a1f;--pr2:#5cb338;--amber:#ff8c00;--amber2:#ffc947;
-  --bg:#0a120a;--card:#121e10;--card2:#162715;--border:#1e3d1a;
-  --text:#e8f5e3;--sub:#7dab6a;
+  --pr:#c47d45;--pr2:#e8a96a;--bg:#130d08;--card:#221508;--card2:#2c1c0c;--border:#4a2e15;
+  --text:#fdf3e7;--sub:#b8956a;--fg:#fdf3e7;
   --radius:16px;--shadow:0 8px 32px rgba(0,0,0,.5);
 }
 *{box-sizing:border-box;margin:0;padding:0}
@@ -23,17 +22,17 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Yu Gothic',sa
 .screen.active{display:flex;flex-direction:column;flex:1}
 @keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
 #top{align-items:center;justify-content:center;text-align:center;gap:20px;padding:24px 0}
-.top-icon{font-size:80px;filter:drop-shadow(0 0 20px rgba(92,179,56,.5));animation:float 3s ease-in-out infinite}
+.top-icon{font-size:80px;filter:drop-shadow(0 0 20px rgba(196,125,69,.6));animation:float 3s ease-in-out infinite}
 @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
 .top-title{font-size:28px;font-weight:800;letter-spacing:.04em;
   background:linear-gradient(135deg,#a5d6a7,#ffcc80);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .top-sub{font-size:14px;color:var(--sub);line-height:1.7;max-width:320px}
 .top-meta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
 .badge{background:var(--card2);border:1px solid var(--border);border-radius:20px;padding:6px 14px;font-size:12px;color:var(--sub)}
-.btn-start{width:100%;max-width:320px;padding:18px;background:linear-gradient(135deg,#2d6a1f,#ff8c00);
+.btn-start{width:100%;max-width:320px;padding:18px;background:background:linear-gradient(135deg,#6b3a1f,#c47d45);
   color:#fff;border:none;border-radius:var(--radius);font-size:18px;font-weight:700;cursor:pointer;
   box-shadow:0 4px 20px rgba(45,106,31,.4);transition:.2s;letter-spacing:.05em}
-.btn-start:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(45,106,31,.5)}
+.btn-start:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(107,58,31,.5)}
 .types-preview{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;width:100%}
 .type-chip{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:10px 4px;text-align:center;font-size:12px}
 .type-chip .emoji{font-size:20px;display:block;margin-bottom:4px}
@@ -105,13 +104,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Yu Gothic',sa
 .type-modal-inner{max-width:440px;margin:20px auto;background:var(--card);border:1px solid var(--border);
   border-radius:20px;padding:28px 24px;position:relative}
 .bm-close{float:right;background:transparent;border:none;font-size:24px;cursor:pointer;color:var(--sub);line-height:1;padding:0}
-.bm-emoji{font-size:64px;display:block;text-align:center;margin-bottom:12px;filter:drop-shadow(0 0 16px rgba(45,106,31,.5))}
+.bm-emoji{font-size:64px;display:block;text-align:center;margin-bottom:12px;filter:drop-shadow(0 0 16px rgba(107,58,31,.5))}
 .bm-name{font-size:24px;font-weight:900;text-align:center;letter-spacing:.06em;margin-bottom:6px;
   background:linear-gradient(135deg,#2d6a1f,#5cb338);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .bm-catch{font-size:13px;color:var(--sub);text-align:center;margin-bottom:16px;line-height:1.5}
 .bm-keywords{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:16px}
 .bm-kw{background:linear-gradient(135deg,rgba(45,106,31,.35),rgba(45,106,31,.25));
-  border:1px solid rgba(45,106,31,.5);border-radius:20px;padding:6px 14px;font-size:12px;font-weight:700}
+  border:1px solid rgba(107,58,31,.5);border-radius:20px;padding:6px 14px;font-size:12px;font-weight:700}
 .bm-desc{font-size:14px;color:var(--sub);line-height:1.6;margin-bottom:20px;text-align:center}
 .bm-startbtn{width:100%;padding:14px;background:linear-gradient(135deg,#2d6a1f,#5cb338);
   border:none;border-radius:12px;color:#fff;font-size:15px;font-weight:700;cursor:pointer;transition:.2s}
