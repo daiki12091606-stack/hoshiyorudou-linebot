@@ -3,12 +3,12 @@
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>守護龍パーソナリティ診断 🐉</title>
 <style>
-:root{--pr:#9858d8;--pr2:#c890f8;--bg:#060410;--card:#100820;--card2:#181030;--border:#482070;--text:#f8f0ff;--sub:#9870c8;--fg:#f8f0ff}
+:root{--pr:#9858d8;--pr2:#c890f8;--bg:#f6f0fc;--card:#ffffff;--card2:#f0e4fc;--border:#c090e0;--text:#1a0830;--sub:#7050b0;--fg:#1a0830}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Yu Gothic',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
 a{color:inherit;text-decoration:none}
 /* NAV */
-.app-nav{display:flex;justify-content:center;background:rgba(0,0,0,.85);backdrop-filter:blur(10px);position:sticky;top:0;z-index:100;border-bottom:1px solid #48207088}
+.app-nav{display:flex;justify-content:center;background:rgba(255,255,255,.95);backdrop-filter:blur(10px);position:sticky;top:0;z-index:100;border-bottom:1px solid #c090e088;box-shadow:0 2px 8px rgba(0,0,0,.08)}
 .nav-btn{padding:14px 18px;cursor:pointer;font-size:.82rem;color:var(--sub);background:transparent;border:none;border-bottom:2px solid transparent;transition:.2s;color:var(--sub)}
 .nav-btn.active{color:var(--pr);border-bottom-color:var(--pr)}
 /* SCREENS */
@@ -21,9 +21,9 @@ main{max-width:480px;margin:0 auto;padding:16px 16px 48px}
 .hero h1{font-size:1.65rem;font-weight:800;background:linear-gradient(135deg,#c890f8,#e8d0ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:6px}
 .hero p{color:var(--sub);font-size:.92rem;margin-bottom:16px;line-height:1.6}
 .hero-badges{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:20px}
-.badge{background:var(--card2);border:1px solid #48207088;border-radius:20px;padding:5px 12px;font-size:.75rem;color:var(--sub)}
+.badge{background:var(--card2);border:1px solid #c090e088;border-radius:20px;padding:5px 12px;font-size:.75rem;color:var(--sub)}
 .tgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:16px 0}
-.tc{background:var(--card);border-radius:12px;padding:10px 6px 8px;text-align:center;transition:.2s;border:1px solid #48207066;cursor:pointer}
+.tc{background:var(--card);border-radius:12px;padding:10px 6px 8px;text-align:center;transition:.2s;border:1px solid #c090e066;cursor:pointer}
 .tc:hover{transform:translateY(-2px);border-color:#9858d888;background:var(--card2)}
 .tc:active{transform:scale(.96)}
 .tc-emoji{margin:0 auto 8px;display:block}
@@ -37,23 +37,23 @@ main{max-width:480px;margin:0 auto;padding:16px 16px 48px}
 .prog-label{display:flex;justify-content:space-between;font-size:.8rem;color:var(--sub);margin-bottom:8px}
 .prog-bar{height:6px;background:var(--card2);border-radius:3px;overflow:hidden}
 .prog-fill{height:100%;background:linear-gradient(90deg,#9858d8,#c890f8);border-radius:3px;transition:width .4s ease}
-.q-card{background:var(--card);border:1px solid #48207055;border-radius:16px;padding:22px 18px;margin-bottom:18px;box-shadow:0 6px 24px rgba(0,0,0,.4)}
+.q-card{background:var(--card);border:1px solid #c090e055;border-radius:16px;padding:22px 18px;margin-bottom:18px;box-shadow:0 4px 16px rgba(0,0,0,.08)}
 .q-num{font-size:.75rem;color:var(--pr2);font-weight:700;letter-spacing:.1em;margin-bottom:10px}
 .q-text{font-size:1.05rem;font-weight:700;line-height:1.65}
 .opts{display:flex;flex-direction:column;gap:10px}
-.opt{background:var(--card2);border:1.5px solid #48207088;border-radius:12px;padding:14px 16px;font-size:.9rem;line-height:1.5;cursor:pointer;transition:.2s;text-align:left;color:var(--text);display:flex;align-items:center;gap:10px}
+.opt{background:var(--card2);border:1.5px solid #c090e088;border-radius:12px;padding:14px 16px;font-size:.9rem;line-height:1.5;cursor:pointer;transition:.2s;text-align:left;color:var(--text);display:flex;align-items:center;gap:10px}
 .opt-icon{font-size:1.15rem;flex-shrink:0}
 .opt:hover{border-color:var(--pr2);background:#9858d818;transform:translateX(3px)}
 .opt.selected{border-color:var(--pr2);background:#9858d820;color:#c890f8}
-.btn-back{display:none;align-items:center;justify-content:center;gap:6px;margin-top:14px;background:transparent;color:var(--sub);border:1.5px solid #48207088;border-radius:12px;padding:10px 16px;font-size:.85rem;cursor:pointer;width:100%;transition:.2s}
+.btn-back{display:none;align-items:center;justify-content:center;gap:6px;margin-top:14px;background:transparent;color:var(--sub);border:1.5px solid #c090e088;border-radius:12px;padding:10px 16px;font-size:.85rem;cursor:pointer;width:100%;transition:.2s}
 .btn-back:hover{border-color:var(--pr);color:var(--pr)}
 /* RESULT */
-.result-hero{background:linear-gradient(135deg,var(--card2),var(--card));border:1px solid #48207066;border-radius:16px;padding:28px 18px 22px;text-align:center;margin-bottom:14px;box-shadow:0 6px 24px rgba(0,0,0,.5)}
+.result-hero{background:linear-gradient(135deg,var(--card2),var(--card));border:1px solid #c090e066;border-radius:16px;padding:28px 18px 22px;text-align:center;margin-bottom:14px;box-shadow:0 4px 16px rgba(0,0,0,.08)}
 .result-icon{font-size:70px;margin-bottom:10px;filter:drop-shadow(0 0 20px #9858d8aa)}
 .result-label{font-size:.75rem;color:var(--pr);font-weight:700;letter-spacing:.15em;margin-bottom:6px}
 .result-name{font-size:2rem;font-weight:900;letter-spacing:.06em;margin-bottom:8px;background:linear-gradient(135deg,#c890f8,#e8d0ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .result-catch{font-size:.9rem;color:var(--sub);line-height:1.6}
-.result-section{background:var(--card);border:1px solid #48207055;border-radius:14px;padding:18px;margin-bottom:12px}
+.result-section{background:var(--card);border:1px solid #c090e055;border-radius:14px;padding:18px;margin-bottom:12px}
 .section-title{font-size:.78rem;font-weight:700;color:var(--pr2);letter-spacing:.08em;margin-bottom:12px}
 .traits{display:flex;flex-wrap:wrap;gap:8px}
 .trait{background:linear-gradient(135deg,#9858d830,#c890f820);border:1px solid #9858d855;border-radius:20px;padding:5px 12px;font-size:.8rem;font-weight:600}
@@ -71,19 +71,19 @@ main{max-width:480px;margin:0 auto;padding:16px 16px 48px}
 .tend-bar-wrap{flex:1;height:8px;background:var(--card2);border-radius:4px;overflow:hidden}
 .tend-bar{height:100%;background:linear-gradient(90deg,#9858d8,#c890f8);border-radius:4px;transition:width 1s ease .3s;width:0}
 .tend-val{width:26px;text-align:right;font-size:.75rem;color:var(--pr2)}
-.share-section{background:var(--card);border:1px solid #48207055;border-radius:14px;padding:18px;margin-bottom:12px}
+.share-section{background:var(--card);border:1px solid #c090e055;border-radius:14px;padding:18px;margin-bottom:12px}
 .share-title{font-size:.78rem;font-weight:700;color:var(--sub);text-align:center;margin-bottom:12px}
 .share-btns{display:flex;flex-direction:column;gap:10px}
 .btn-x{background:#000;color:#fff;border:1.5px solid #333;border-radius:12px;padding:13px;font-size:.9rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:.2s}
 .btn-x:hover{background:#111;transform:translateY(-1px)}
 .btn-line{background:#06c755;color:#fff;border:none;border-radius:12px;padding:13px;font-size:.9rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:.2s}
 .btn-line:hover{background:#05b34c;transform:translateY(-1px)}
-.btn-retry{background:transparent;color:var(--sub);border:1.5px solid #48207088;border-radius:12px;padding:11px;font-size:.85rem;cursor:pointer;width:100%;transition:.2s}
+.btn-retry{background:transparent;color:var(--sub);border:1.5px solid #c090e088;border-radius:12px;padding:11px;font-size:.85rem;cursor:pointer;width:100%;transition:.2s}
 .btn-retry:hover{border-color:var(--pr);color:var(--pr)}
-.line-cta{background:linear-gradient(135deg,#0a2a1a,#0d3b24);border:1px solid #1a5c35;border-radius:14px;padding:22px 18px;text-align:center;margin-bottom:12px}
+.line-cta{background:linear-gradient(135deg,#e8f8f0,#d0f0e0);border:1px solid #90d4a8;border-radius:14px;padding:22px 18px;text-align:center;margin-bottom:12px}
 .line-cta-icon{font-size:2rem;margin-bottom:6px}
-.line-cta-title{font-size:1.05rem;font-weight:800;color:#06c755;margin-bottom:6px}
-.line-cta-text{font-size:.8rem;color:#7fbf93;line-height:1.6;margin-bottom:14px}
+.line-cta-title{font-size:1.05rem;font-weight:800;color:#059948;margin-bottom:6px}
+.line-cta-text{font-size:.8rem;color:#3a7a50;line-height:1.6;margin-bottom:14px}
 .btn-line-cta{background:#06c755;color:#fff;border:none;border-radius:12px;padding:14px 20px;font-size:.9rem;font-weight:700;cursor:pointer;width:100%;display:flex;align-items:center;justify-content:center;gap:8px;transition:.2s;text-decoration:none}
 .btn-line-cta:hover{background:#05b34c;transform:translateY(-1px)}
 .result-footer{text-align:center;font-size:.7rem;color:var(--sub);padding-top:8px}
@@ -93,7 +93,7 @@ main{max-width:480px;margin:0 auto;padding:16px 16px 48px}
 .lgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
 /* MODAL */
 #type-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:200;overflow-y:auto;padding:20px}
-.type-modal-inner{max-width:440px;margin:20px auto;background:var(--card);border:1px solid #48207088;border-radius:20px;padding:28px 20px 36px;animation:fadeUp .32s ease both}
+.type-modal-inner{max-width:440px;margin:20px auto;background:var(--card);border:1px solid #c090e088;border-radius:20px;padding:28px 20px 36px;animation:fadeUp .32s ease both}
 .bm-close{float:right;background:transparent;border:none;font-size:1.4rem;cursor:pointer;color:var(--sub);line-height:1;padding:0}
 .bm-emoji{font-size:60px;display:block;text-align:center;margin-bottom:10px}
 .bm-name{font-size:1.4rem;font-weight:900;text-align:center;letter-spacing:.04em;margin-bottom:4px;background:linear-gradient(135deg,#c890f8,#e8d0ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
@@ -103,7 +103,7 @@ main{max-width:480px;margin:0 auto;padding:16px 16px 48px}
 .bm-desc{font-size:.85rem;color:var(--sub);line-height:1.6;margin-bottom:18px;text-align:center}
 .bm-startbtn{width:100%;padding:13px;background:linear-gradient(135deg,#3a0878,#9858d8);color:#fff;border:none;border-radius:12px;font-size:.9rem;font-weight:700;cursor:pointer;transition:.2s}
 .bm-startbtn:hover{transform:translateY(-2px)}
-footer{text-align:center;padding:20px 16px;color:var(--sub);font-size:.7rem;border-top:1px solid #48207044;margin-top:20px}
+footer{text-align:center;padding:20px 16px;color:var(--sub);font-size:.7rem;border-top:1px solid #c090e044;margin-top:20px}
 </style>
 </head>
 <body>
@@ -129,21 +129,28 @@ footer{text-align:center;padding:20px 16px;color:var(--sub);font-size:.7rem;bord
 <div class="tc" onclick="showTypeInfo('kin')">
 <div class="tc-emoji"><div style="width:54px;height:54px;border-radius:50%;overflow:hidden;border:3px solid #e0a810;margin:0 auto;display:block"><svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block">
 <circle cx="80" cy="80" r="80" fill="#8a6000"/>
-<ellipse cx="80" cy="80" rx="52" ry="50" fill="#c8900a" opacity="0.8"/>
-<ellipse cx="80" cy="80" rx="42" ry="40" fill="#e8a810"/>
+<ellipse cx="80" cy="80" rx="52" ry="50" fill="#e8a810" opacity="0.8"/>
+<ellipse cx="80" cy="80" rx="42" ry="40" fill="#d09010"/>
+<circle cx="44" cy="80" r="18" fill="#e0a800" stroke="#c09000" stroke-width="2"/>
+<circle cx="44" cy="80" r="13" fill="#f0c820" opacity="0.9"/>
+<text x="44" y="85" text-anchor="middle" font-size="11" font-weight="bold" fill="#806000">円</text>
+<circle cx="116" cy="80" r="18" fill="#e0a800" stroke="#c09000" stroke-width="2"/>
+<circle cx="116" cy="80" r="13" fill="#f0c820" opacity="0.9"/>
+<text x="116" y="85" text-anchor="middle" font-size="11" font-weight="bold" fill="#806000">円</text>
+<circle cx="62" cy="46" r="11" fill="#e8b820" stroke="#c09000" stroke-width="1.5" opacity="0.85"/>
+<text x="62" y="50" text-anchor="middle" font-size="7" font-weight="bold" fill="#806000">円</text>
+<circle cx="98" cy="46" r="11" fill="#e8b820" stroke="#c09000" stroke-width="1.5" opacity="0.85"/>
+<text x="98" y="50" text-anchor="middle" font-size="7" font-weight="bold" fill="#806000">円</text>
+<ellipse cx="80" cy="82" rx="28" ry="26" fill="#e0a010"/>
 <path d="M56 28 Q64 14 80 12 Q96 14 104 28 Q92 20 80 18 Q68 20 56 28Z" fill="#f0d040" opacity="0.9"/>
-<line x1="68" y1="20" x2="60" y2="6" stroke="#f0d040" stroke-width="4" stroke-linecap="round" opacity="0.9"/>
-<line x1="92" y1="20" x2="100" y2="6" stroke="#f0d040" stroke-width="4" stroke-linecap="round" opacity="0.9"/>
-<ellipse cx="80" cy="84" rx="34" ry="32" fill="#d09010"/>
-<ellipse cx="80" cy="108" rx="24" ry="18" fill="#e8b828" opacity="0.8"/>
-<path d="M46 80 Q44 60 52 46 Q44 64 44 80Z" fill="#f0c830" opacity="0.5"/>
-<path d="M114 80 Q116 60 108 46 Q116 64 116 80Z" fill="#f0c830" opacity="0.5"/>
-<circle cx="63" cy="76" r="11.5" fill="#1a1000"/><circle cx="97" cy="76" r="11.5" fill="#1a1000"/>
-<circle cx="63" cy="76" r="8.5" fill="#e0a000"/><circle cx="97" cy="76" r="8.5" fill="#e0a000"/>
-<circle cx="63" cy="76" r="5" fill="#c07000"/><circle cx="97" cy="76" r="5" fill="#c07000"/>
+<line x1="68" y1="20" x2="60" y2="6" stroke="#f0d040" stroke-width="4" stroke-linecap="round"/>
+<line x1="92" y1="20" x2="100" y2="6" stroke="#f0d040" stroke-width="4" stroke-linecap="round"/>
+<circle cx="63" cy="76" r="10" fill="#1a1000"/><circle cx="97" cy="76" r="10" fill="#1a1000"/>
+<circle cx="63" cy="76" r="7.5" fill="#e0a000"/><circle cx="97" cy="76" r="7.5" fill="#e0a000"/>
+<circle cx="63" cy="76" r="4" fill="#c07000"/><circle cx="97" cy="76" r="4" fill="#c07000"/>
 <circle cx="60" cy="73" r="2.5" fill="white" opacity="0.9"/><circle cx="94" cy="73" r="2.5" fill="white" opacity="0.9"/>
-<ellipse cx="80" cy="102" rx="10" ry="7" fill="#a07000"/>
-<path d="M65 110 Q80 118 95 110" stroke="#a07000" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+<ellipse cx="80" cy="100" rx="10" ry="7" fill="#a07000"/>
+<path d="M65 108 Q80 116 95 108" stroke="#a07000" stroke-width="2.5" fill="none" stroke-linecap="round"/>
 </svg></div></div>
 <div class="tc-name">金龍</div>
 <span class="tc-tag" style="background:#e0a81022;color:#e0a810">繁栄と成功</span>
@@ -152,20 +159,22 @@ footer{text-align:center;padding:20px 16px;color:var(--sub);font-size:.7rem;bord
 <div class="tc-emoji"><div style="width:54px;height:54px;border-radius:50%;overflow:hidden;border:3px solid #e04010;margin:0 auto;display:block"><svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block">
 <circle cx="80" cy="80" r="80" fill="#7a1800"/>
 <ellipse cx="80" cy="80" rx="52" ry="50" fill="#d03010" opacity="0.8"/>
+<path d="M80 115 Q55 130 40 150" stroke="#f06020" stroke-width="8" stroke-linecap="round" fill="none"/>
+<path d="M80 115 Q42 138 28 158" stroke="#f0a020" stroke-width="5" stroke-linecap="round" fill="none" opacity="0.7"/>
+<path d="M80 115 Q60 128 48 148" stroke="#f8c830" stroke-width="3" stroke-linecap="round" fill="none" opacity="0.5"/>
+<ellipse cx="80" cy="84" rx="36" ry="34" fill="#b02808"/>
 <path d="M50 36 Q40 16 58 22 Q50 32 48 46Z" fill="#f06020" opacity="0.9"/>
 <path d="M110 36 Q120 16 102 22 Q110 32 112 46Z" fill="#f06020" opacity="0.9"/>
 <path d="M60 26 Q54 10 66 14 Q62 24 60 34Z" fill="#f0a020" opacity="0.8"/>
 <path d="M100 26 Q106 10 94 14 Q98 24 100 34Z" fill="#f0a020" opacity="0.8"/>
 <path d="M72 18 Q70 4 80 8 Q80 18 76 24Z" fill="#f8c830" opacity="0.9"/>
 <path d="M88 18 Q90 4 80 8 Q80 18 84 24Z" fill="#f8c830" opacity="0.9"/>
-<ellipse cx="80" cy="84" rx="36" ry="34" fill="#b02808"/>
 <ellipse cx="80" cy="108" rx="24" ry="18" fill="#e04020" opacity="0.7"/>
 <circle cx="63" cy="76" r="11" fill="#1a0400"/><circle cx="97" cy="76" r="11" fill="#1a0400"/>
 <circle cx="63" cy="76" r="8" fill="#f06800"/><circle cx="97" cy="76" r="8" fill="#f06800"/>
 <circle cx="63" cy="76" r="4.5" fill="#c03000"/><circle cx="97" cy="76" r="4.5" fill="#c03000"/>
 <circle cx="60" cy="73" r="2.5" fill="white" opacity="0.9"/><circle cx="94" cy="73" r="2.5" fill="white" opacity="0.9"/>
-<ellipse cx="80" cy="102" rx="10" ry="7" fill="#a01800"/>
-<path d="M65 110 Q80 118 95 110" stroke="#901400" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+<path d="M70 108 Q80 102 90 108 Q88 116 80 120 Q72 116 70 108Z" fill="#f08030"/>
 </svg></div></div>
 <div class="tc-name">炎龍</div>
 <span class="tc-tag" style="background:#e0401022;color:#e04010">情熱と突破</span>
@@ -173,15 +182,37 @@ footer{text-align:center;padding:20px 16px;color:var(--sub);font-size:.7rem;bord
 <div class="tc" onclick="showTypeInfo('sakura')">
 <div class="tc-emoji"><div style="width:54px;height:54px;border-radius:50%;overflow:hidden;border:3px solid #e070a0;margin:0 auto;display:block"><svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block">
 <circle cx="80" cy="80" r="80" fill="#e0a0c0"/>
-<ellipse cx="80" cy="80" rx="52" ry="50" fill="#f0b8d0" opacity="0.8"/>
-<ellipse cx="80" cy="80" rx="42" ry="40" fill="#fccce0"/>
-<path d="M76 24 Q80 12 84 24 Q84 32 80 36 Q76 32 76 24Z" fill="#f8a8c8" opacity="0.9"/>
-<path d="M62 32 Q60 20 70 26 Q68 34 64 40Z" fill="#f8a8c8" opacity="0.8"/>
-<path d="M98 32 Q100 20 90 26 Q92 34 96 40Z" fill="#f8a8c8" opacity="0.8"/>
-<circle cx="46" cy="50" r="6" fill="#f0d0e0" opacity="0.7"/>
-<circle cx="114" cy="50" r="6" fill="#f0d0e0" opacity="0.7"/>
-<circle cx="36" cy="66" r="5" fill="#f0d0e0" opacity="0.6"/>
-<circle cx="124" cy="66" r="5" fill="#f0d0e0" opacity="0.6"/>
+<ellipse cx="80" cy="80" rx="52" ry="50" fill="#fccce0" opacity="0.8"/>
+<g opacity="0.85">
+<ellipse cx="44" cy="44" rx="8" ry="5" fill="#f8a8c8" transform="rotate(-40 44 44)"/>
+<ellipse cx="44" cy="44" rx="8" ry="5" fill="#f8a8c8" transform="rotate(32 44 44)"/>
+<ellipse cx="44" cy="44" rx="8" ry="5" fill="#f8a8c8" transform="rotate(104 44 44)"/>
+<ellipse cx="44" cy="44" rx="8" ry="5" fill="#f8a8c8" transform="rotate(176 44 44)"/>
+<ellipse cx="44" cy="44" rx="8" ry="5" fill="#f8a8c8" transform="rotate(248 44 44)"/>
+<circle cx="44" cy="44" r="3" fill="#f0d0e0"/>
+</g>
+<g opacity="0.8">
+<ellipse cx="116" cy="44" rx="7" ry="4.5" fill="#f8a8c8" transform="rotate(20 116 44)"/>
+<ellipse cx="116" cy="44" rx="7" ry="4.5" fill="#f8a8c8" transform="rotate(92 116 44)"/>
+<ellipse cx="116" cy="44" rx="7" ry="4.5" fill="#f8a8c8" transform="rotate(164 116 44)"/>
+<ellipse cx="116" cy="44" rx="7" ry="4.5" fill="#f8a8c8" transform="rotate(236 116 44)"/>
+<ellipse cx="116" cy="44" rx="7" ry="4.5" fill="#f8a8c8" transform="rotate(308 116 44)"/>
+<circle cx="116" cy="44" r="2.5" fill="#f0d0e0"/>
+</g>
+<g opacity="0.7">
+<ellipse cx="30" cy="90" rx="6" ry="4" fill="#f8a8c8" transform="rotate(10 30 90)"/>
+<ellipse cx="30" cy="90" rx="6" ry="4" fill="#f8a8c8" transform="rotate(82 30 90)"/>
+<ellipse cx="30" cy="90" rx="6" ry="4" fill="#f8a8c8" transform="rotate(154 30 90)"/>
+<ellipse cx="30" cy="90" rx="6" ry="4" fill="#f8a8c8" transform="rotate(226 30 90)"/>
+<ellipse cx="30" cy="90" rx="6" ry="4" fill="#f8a8c8" transform="rotate(298 30 90)"/>
+</g>
+<g opacity="0.7">
+<ellipse cx="130" cy="90" rx="6" ry="4" fill="#f8a8c8" transform="rotate(-10 130 90)"/>
+<ellipse cx="130" cy="90" rx="6" ry="4" fill="#f8a8c8" transform="rotate(62 130 90)"/>
+<ellipse cx="130" cy="90" rx="6" ry="4" fill="#f8a8c8" transform="rotate(134 130 90)"/>
+<ellipse cx="130" cy="90" rx="6" ry="4" fill="#f8a8c8" transform="rotate(206 130 90)"/>
+<ellipse cx="130" cy="90" rx="6" ry="4" fill="#f8a8c8" transform="rotate(278 130 90)"/>
+</g>
 <ellipse cx="80" cy="84" rx="34" ry="32" fill="#e898b8"/>
 <ellipse cx="80" cy="108" rx="24" ry="18" fill="#f8b8d0" opacity="0.8"/>
 <circle cx="63" cy="76" r="11" fill="#180810"/><circle cx="97" cy="76" r="11" fill="#180810"/>
@@ -197,13 +228,12 @@ footer{text-align:center;padding:20px 16px;color:var(--sub);font-size:.7rem;bord
 <div class="tc" onclick="showTypeInfo('arashi')">
 <div class="tc-emoji"><div style="width:54px;height:54px;border-radius:50%;overflow:hidden;border:3px solid #6040d0;margin:0 auto;display:block"><svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block">
 <circle cx="80" cy="80" r="80" fill="#1a0a40"/>
-<ellipse cx="80" cy="80" rx="52" ry="50" fill="#3018a0" opacity="0.7"/>
-<ellipse cx="80" cy="80" rx="42" ry="40" fill="#1e0e60"/>
-<path d="M56 18 L52 34 L62 30 L54 48 L70 40 L64 58Z" fill="#e0e040" opacity="0.9"/>
-<path d="M104 18 L108 34 L98 30 L106 48 L90 40 L96 58Z" fill="#e0e040" opacity="0.9"/>
-<path d="M78 12 L72 28 L80 24 L74 40 L84 36 L80 50Z" fill="#f0f060" opacity="0.9"/>
-<path d="M38 60 Q32 48 42 44 Q36 56 40 66Z" fill="#6040e0" opacity="0.7"/>
-<path d="M122 60 Q128 48 118 44 Q124 56 120 66Z" fill="#6040e0" opacity="0.7"/>
+<ellipse cx="80" cy="80" rx="52" ry="50" fill="#1e0e60" opacity="0.9"/>
+<path d="M56 18 L52 34 L62 30 L54 48 L70 40 L64 58" stroke="#e0e040" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+<path d="M104 18 L108 34 L98 30 L106 48 L90 40 L96 58" stroke="#e0e040" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+<path d="M28 60 L24 72 L34 68 L28 82 L40 76 L36 88" stroke="#a080f0" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+<path d="M132 60 L136 72 L126 68 L132 82 L120 76 L124 88" stroke="#a080f0" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+<path d="M78 12 L72 28 L80 24 L74 40 L84 36 L80 50" stroke="#f0f060" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none" opacity="0.9"/>
 <ellipse cx="80" cy="84" rx="34" ry="32" fill="#200c50"/>
 <ellipse cx="80" cy="108" rx="24" ry="18" fill="#3018a0" opacity="0.7"/>
 <circle cx="63" cy="76" r="11" fill="#08040c"/><circle cx="97" cy="76" r="11" fill="#08040c"/>
@@ -219,13 +249,17 @@ footer{text-align:center;padding:20px 16px;color:var(--sub);font-size:.7rem;bord
 <div class="tc" onclick="showTypeInfo('tsuki')">
 <div class="tc-emoji"><div style="width:54px;height:54px;border-radius:50%;overflow:hidden;border:3px solid #6090d0;margin:0 auto;display:block"><svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block">
 <circle cx="80" cy="80" r="80" fill="#0a1428"/>
-<ellipse cx="80" cy="80" rx="52" ry="50" fill="#1a2c60" opacity="0.7"/>
-<circle cx="80" cy="80" r="42" fill="#0e1e48"/>
-<circle cx="80" cy="72" r="36" fill="#d0e0f8" opacity="0.15"/>
+<ellipse cx="80" cy="80" rx="52" ry="50" fill="#0e1e48" opacity="0.9"/>
+<circle cx="80" cy="54" r="30" fill="#d0e0f8" opacity="0.18"/>
+<path d="M56 24 Q80 18 96 30 Q78 28 64 38 Q58 46 60 58 Q48 44 56 24Z" fill="#d0e8ff" opacity="0.85"/>
+<circle cx="34" cy="38" r="4" fill="#d0e8ff" opacity="0.7"/>
+<circle cx="130" cy="28" r="3" fill="#d0e8ff" opacity="0.6"/>
+<circle cx="22" cy="65" r="2.5" fill="#d0e8ff" opacity="0.6"/>
+<circle cx="144" cy="60" r="2" fill="#d0e8ff" opacity="0.5"/>
+<circle cx="40" cy="110" r="2" fill="#b0c8f0" opacity="0.5"/>
+<circle cx="120" cy="22" r="2.5" fill="#b0c8f0" opacity="0.6"/>
 <path d="M50 32 Q56 16 66 14 Q58 24 58 38Z" fill="#b0c8f0" opacity="0.7"/>
 <path d="M110 32 Q104 16 94 14 Q102 24 102 38Z" fill="#b0c8f0" opacity="0.7"/>
-<path d="M68 22 Q72 8 80 10 Q76 20 74 32Z" fill="#d0e8ff" opacity="0.8"/>
-<path d="M92 22 Q88 8 80 10 Q84 20 86 32Z" fill="#d0e8ff" opacity="0.8"/>
 <ellipse cx="80" cy="84" rx="34" ry="32" fill="#0e2050"/>
 <ellipse cx="80" cy="108" rx="24" ry="18" fill="#1a3070" opacity="0.8"/>
 <circle cx="63" cy="76" r="11" fill="#04081a"/><circle cx="97" cy="76" r="11" fill="#04081a"/>
@@ -241,12 +275,17 @@ footer{text-align:center;padding:20px 16px;color:var(--sub);font-size:.7rem;bord
 <div class="tc" onclick="showTypeInfo('taichi')">
 <div class="tc-emoji"><div style="width:54px;height:54px;border-radius:50%;overflow:hidden;border:3px solid #6a5030;margin:0 auto;display:block"><svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block">
 <circle cx="80" cy="80" r="80" fill="#3a2810"/>
-<ellipse cx="80" cy="80" rx="52" ry="50" fill="#5a4020" opacity="0.8"/>
-<ellipse cx="80" cy="80" rx="42" ry="40" fill="#6a4a28"/>
-<path d="M26 80 Q26 52 42 36 Q28 58 28 80Z" fill="#4a7030" opacity="0.6"/>
-<path d="M134 80 Q134 52 118 36 Q132 58 132 80Z" fill="#4a7030" opacity="0.6"/>
-<path d="M44 40 Q54 24 68 20 Q56 30 52 44Z" fill="#4a7030" opacity="0.5"/>
-<path d="M116 40 Q106 24 92 20 Q104 30 108 44Z" fill="#4a7030" opacity="0.5"/>
+<ellipse cx="80" cy="80" rx="52" ry="50" fill="#6a4a28" opacity="0.9"/>
+<ellipse cx="30" cy="108" rx="20" ry="14" fill="#4a3018" opacity="0.9"/>
+<ellipse cx="130" cy="108" rx="20" ry="14" fill="#4a3018" opacity="0.9"/>
+<ellipse cx="50" cy="120" rx="16" ry="12" fill="#5a3820" opacity="0.8"/>
+<ellipse cx="110" cy="120" rx="16" ry="12" fill="#5a3820" opacity="0.8"/>
+<path d="M28 100 Q26 88 32 80 L36 92Z" fill="#4a7030" opacity="0.8"/>
+<path d="M34 96 Q36 84 44 78 L44 90Z" fill="#5a8838" opacity="0.7"/>
+<path d="M132 100 Q134 88 128 80 L124 92Z" fill="#4a7030" opacity="0.8"/>
+<path d="M126 96 Q124 84 116 78 L116 90Z" fill="#5a8838" opacity="0.7"/>
+<path d="M60 130 Q58 118 64 110 L68 122Z" fill="#5a8838" opacity="0.75"/>
+<path d="M100 130 Q102 118 96 110 L92 122Z" fill="#5a8838" opacity="0.75"/>
 <ellipse cx="80" cy="84" rx="36" ry="34" fill="#5a3818"/>
 <ellipse cx="80" cy="108" rx="26" ry="20" fill="#7a5830" opacity="0.8"/>
 <circle cx="63" cy="76" r="11" fill="#100800"/><circle cx="97" cy="76" r="11" fill="#100800"/>
@@ -284,21 +323,28 @@ footer{text-align:center;padding:20px 16px;color:var(--sub);font-size:.7rem;bord
 <div class="tc" onclick="showTypeInfo('kin')">
 <div class="tc-emoji"><div style="width:54px;height:54px;border-radius:50%;overflow:hidden;border:3px solid #e0a810;margin:0 auto;display:block"><svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block">
 <circle cx="80" cy="80" r="80" fill="#8a6000"/>
-<ellipse cx="80" cy="80" rx="52" ry="50" fill="#c8900a" opacity="0.8"/>
-<ellipse cx="80" cy="80" rx="42" ry="40" fill="#e8a810"/>
+<ellipse cx="80" cy="80" rx="52" ry="50" fill="#e8a810" opacity="0.8"/>
+<ellipse cx="80" cy="80" rx="42" ry="40" fill="#d09010"/>
+<circle cx="44" cy="80" r="18" fill="#e0a800" stroke="#c09000" stroke-width="2"/>
+<circle cx="44" cy="80" r="13" fill="#f0c820" opacity="0.9"/>
+<text x="44" y="85" text-anchor="middle" font-size="11" font-weight="bold" fill="#806000">円</text>
+<circle cx="116" cy="80" r="18" fill="#e0a800" stroke="#c09000" stroke-width="2"/>
+<circle cx="116" cy="80" r="13" fill="#f0c820" opacity="0.9"/>
+<text x="116" y="85" text-anchor="middle" font-size="11" font-weight="bold" fill="#806000">円</text>
+<circle cx="62" cy="46" r="11" fill="#e8b820" stroke="#c09000" stroke-width="1.5" opacity="0.85"/>
+<text x="62" y="50" text-anchor="middle" font-size="7" font-weight="bold" fill="#806000">円</text>
+<circle cx="98" cy="46" r="11" fill="#e8b820" stroke="#c09000" stroke-width="1.5" opacity="0.85"/>
+<text x="98" y="50" text-anchor="middle" font-size="7" font-weight="bold" fill="#806000">円</text>
+<ellipse cx="80" cy="82" rx="28" ry="26" fill="#e0a010"/>
 <path d="M56 28 Q64 14 80 12 Q96 14 104 28 Q92 20 80 18 Q68 20 56 28Z" fill="#f0d040" opacity="0.9"/>
-<line x1="68" y1="20" x2="60" y2="6" stroke="#f0d040" stroke-width="4" stroke-linecap="round" opacity="0.9"/>
-<line x1="92" y1="20" x2="100" y2="6" stroke="#f0d040" stroke-width="4" stroke-linecap="round" opacity="0.9"/>
-<ellipse cx="80" cy="84" rx="34" ry="32" fill="#d09010"/>
-<ellipse cx="80" cy="108" rx="24" ry="18" fill="#e8b828" opacity="0.8"/>
-<path d="M46 80 Q44 60 52 46 Q44 64 44 80Z" fill="#f0c830" opacity="0.5"/>
-<path d="M114 80 Q116 60 108 46 Q116 64 116 80Z" fill="#f0c830" opacity="0.5"/>
-<circle cx="63" cy="76" r="11.5" fill="#1a1000"/><circle cx="97" cy="76" r="11.5" fill="#1a1000"/>
-<circle cx="63" cy="76" r="8.5" fill="#e0a000"/><circle cx="97" cy="76" r="8.5" fill="#e0a000"/>
-<circle cx="63" cy="76" r="5" fill="#c07000"/><circle cx="97" cy="76" r="5" fill="#c07000"/>
+<line x1="68" y1="20" x2="60" y2="6" stroke="#f0d040" stroke-width="4" stroke-linecap="round"/>
+<line x1="92" y1="20" x2="100" y2="6" stroke="#f0d040" stroke-width="4" stroke-linecap="round"/>
+<circle cx="63" cy="76" r="10" fill="#1a1000"/><circle cx="97" cy="76" r="10" fill="#1a1000"/>
+<circle cx="63" cy="76" r="7.5" fill="#e0a000"/><circle cx="97" cy="76" r="7.5" fill="#e0a000"/>
+<circle cx="63" cy="76" r="4" fill="#c07000"/><circle cx="97" cy="76" r="4" fill="#c07000"/>
 <circle cx="60" cy="73" r="2.5" fill="white" opacity="0.9"/><circle cx="94" cy="73" r="2.5" fill="white" opacity="0.9"/>
-<ellipse cx="80" cy="102" rx="10" ry="7" fill="#a07000"/>
-<path d="M65 110 Q80 118 95 110" stroke="#a07000" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+<ellipse cx="80" cy="100" rx="10" ry="7" fill="#a07000"/>
+<path d="M65 108 Q80 116 95 108" stroke="#a07000" stroke-width="2.5" fill="none" stroke-linecap="round"/>
 </svg></div></div>
 <div class="tc-name">金龍</div>
 <span class="tc-tag" style="background:#e0a81022;color:#e0a810">繁栄と成功</span>
@@ -307,20 +353,22 @@ footer{text-align:center;padding:20px 16px;color:var(--sub);font-size:.7rem;bord
 <div class="tc-emoji"><div style="width:54px;height:54px;border-radius:50%;overflow:hidden;border:3px solid #e04010;margin:0 auto;display:block"><svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block">
 <circle cx="80" cy="80" r="80" fill="#7a1800"/>
 <ellipse cx="80" cy="80" rx="52" ry="50" fill="#d03010" opacity="0.8"/>
+<path d="M80 115 Q55 130 40 150" stroke="#f06020" stroke-width="8" stroke-linecap="round" fill="none"/>
+<path d="M80 115 Q42 138 28 158" stroke="#f0a020" stroke-width="5" stroke-linecap="round" fill="none" opacity="0.7"/>
+<path d="M80 115 Q60 128 48 148" stroke="#f8c830" stroke-width="3" stroke-linecap="round" fill="none" opacity="0.5"/>
+<ellipse cx="80" cy="84" rx="36" ry="34" fill="#b02808"/>
 <path d="M50 36 Q40 16 58 22 Q50 32 48 46Z" fill="#f06020" opacity="0.9"/>
 <path d="M110 36 Q120 16 102 22 Q110 32 112 46Z" fill="#f06020" opacity="0.9"/>
 <path d="M60 26 Q54 10 66 14 Q62 24 60 34Z" fill="#f0a020" opacity="0.8"/>
 <path d="M100 26 Q106 10 94 14 Q98 24 100 34Z" fill="#f0a020" opacity="0.8"/>
 <path d="M72 18 Q70 4 80 8 Q80 18 76 24Z" fill="#f8c830" opacity="0.9"/>
 <path d="M88 18 Q90 4 80 8 Q80 18 84 24Z" fill="#f8c830" opacity="0.9"/>
-<ellipse cx="80" cy="84" rx="36" ry="34" fill="#b02808"/>
 <ellipse cx="80" cy="108" rx="24" ry="18" fill="#e04020" opacity="0.7"/>
 <circle cx="63" cy="76" r="11" fill="#1a0400"/><circle cx="97" cy="76" r="11" fill="#1a0400"/>
 <circle cx="63" cy="76" r="8" fill="#f06800"/><circle cx="97" cy="76" r="8" fill="#f06800"/>
 <circle cx="63" cy="76" r="4.5" fill="#c03000"/><circle cx="97" cy="76" r="4.5" fill="#c03000"/>
 <circle cx="60" cy="73" r="2.5" fill="white" opacity="0.9"/><circle cx="94" cy="73" r="2.5" fill="white" opacity="0.9"/>
-<ellipse cx="80" cy="102" rx="10" ry="7" fill="#a01800"/>
-<path d="M65 110 Q80 118 95 110" stroke="#901400" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+<path d="M70 108 Q80 102 90 108 Q88 116 80 120 Q72 116 70 108Z" fill="#f08030"/>
 </svg></div></div>
 <div class="tc-name">炎龍</div>
 <span class="tc-tag" style="background:#e0401022;color:#e04010">情熱と突破</span>
@@ -328,15 +376,37 @@ footer{text-align:center;padding:20px 16px;color:var(--sub);font-size:.7rem;bord
 <div class="tc" onclick="showTypeInfo('sakura')">
 <div class="tc-emoji"><div style="width:54px;height:54px;border-radius:50%;overflow:hidden;border:3px solid #e070a0;margin:0 auto;display:block"><svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block">
 <circle cx="80" cy="80" r="80" fill="#e0a0c0"/>
-<ellipse cx="80" cy="80" rx="52" ry="50" fill="#f0b8d0" opacity="0.8"/>
-<ellipse cx="80" cy="80" rx="42" ry="40" fill="#fccce0"/>
-<path d="M76 24 Q80 12 84 24 Q84 32 80 36 Q76 32 76 24Z" fill="#f8a8c8" opacity="0.9"/>
-<path d="M62 32 Q60 20 70 26 Q68 34 64 40Z" fill="#f8a8c8" opacity="0.8"/>
-<path d="M98 32 Q100 20 90 26 Q92 34 96 40Z" fill="#f8a8c8" opacity="0.8"/>
-<circle cx="46" cy="50" r="6" fill="#f0d0e0" opacity="0.7"/>
-<circle cx="114" cy="50" r="6" fill="#f0d0e0" opacity="0.7"/>
-<circle cx="36" cy="66" r="5" fill="#f0d0e0" opacity="0.6"/>
-<circle cx="124" cy="66" r="5" fill="#f0d0e0" opacity="0.6"/>
+<ellipse cx="80" cy="80" rx="52" ry="50" fill="#fccce0" opacity="0.8"/>
+<g opacity="0.85">
+<ellipse cx="44" cy="44" rx="8" ry="5" fill="#f8a8c8" transform="rotate(-40 44 44)"/>
+<ellipse cx="44" cy="44" rx="8" ry="5" fill="#f8a8c8" transform="rotate(32 44 44)"/>
+<ellipse cx="44" cy="44" rx="8" ry="5" fill="#f8a8c8" transform="rotate(104 44 44)"/>
+<ellipse cx="44" cy="44" rx="8" ry="5" fill="#f8a8c8" transform="rotate(176 44 44)"/>
+<ellipse cx="44" cy="44" rx="8" ry="5" fill="#f8a8c8" transform="rotate(248 44 44)"/>
+<circle cx="44" cy="44" r="3" fill="#f0d0e0"/>
+</g>
+<g opacity="0.8">
+<ellipse cx="116" cy="44" rx="7" ry="4.5" fill="#f8a8c8" transform="rotate(20 116 44)"/>
+<ellipse cx="116" cy="44" rx="7" ry="4.5" fill="#f8a8c8" transform="rotate(92 116 44)"/>
+<ellipse cx="116" cy="44" rx="7" ry="4.5" fill="#f8a8c8" transform="rotate(164 116 44)"/>
+<ellipse cx="116" cy="44" rx="7" ry="4.5" fill="#f8a8c8" transform="rotate(236 116 44)"/>
+<ellipse cx="116" cy="44" rx="7" ry="4.5" fill="#f8a8c8" transform="rotate(308 116 44)"/>
+<circle cx="116" cy="44" r="2.5" fill="#f0d0e0"/>
+</g>
+<g opacity="0.7">
+<ellipse cx="30" cy="90" rx="6" ry="4" fill="#f8a8c8" transform="rotate(10 30 90)"/>
+<ellipse cx="30" cy="90" rx="6" ry="4" fill="#f8a8c8" transform="rotate(82 30 90)"/>
+<ellipse cx="30" cy="90" rx="6" ry="4" fill="#f8a8c8" transform="rotate(154 30 90)"/>
+<ellipse cx="30" cy="90" rx="6" ry="4" fill="#f8a8c8" transform="rotate(226 30 90)"/>
+<ellipse cx="30" cy="90" rx="6" ry="4" fill="#f8a8c8" transform="rotate(298 30 90)"/>
+</g>
+<g opacity="0.7">
+<ellipse cx="130" cy="90" rx="6" ry="4" fill="#f8a8c8" transform="rotate(-10 130 90)"/>
+<ellipse cx="130" cy="90" rx="6" ry="4" fill="#f8a8c8" transform="rotate(62 130 90)"/>
+<ellipse cx="130" cy="90" rx="6" ry="4" fill="#f8a8c8" transform="rotate(134 130 90)"/>
+<ellipse cx="130" cy="90" rx="6" ry="4" fill="#f8a8c8" transform="rotate(206 130 90)"/>
+<ellipse cx="130" cy="90" rx="6" ry="4" fill="#f8a8c8" transform="rotate(278 130 90)"/>
+</g>
 <ellipse cx="80" cy="84" rx="34" ry="32" fill="#e898b8"/>
 <ellipse cx="80" cy="108" rx="24" ry="18" fill="#f8b8d0" opacity="0.8"/>
 <circle cx="63" cy="76" r="11" fill="#180810"/><circle cx="97" cy="76" r="11" fill="#180810"/>
@@ -352,13 +422,12 @@ footer{text-align:center;padding:20px 16px;color:var(--sub);font-size:.7rem;bord
 <div class="tc" onclick="showTypeInfo('arashi')">
 <div class="tc-emoji"><div style="width:54px;height:54px;border-radius:50%;overflow:hidden;border:3px solid #6040d0;margin:0 auto;display:block"><svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block">
 <circle cx="80" cy="80" r="80" fill="#1a0a40"/>
-<ellipse cx="80" cy="80" rx="52" ry="50" fill="#3018a0" opacity="0.7"/>
-<ellipse cx="80" cy="80" rx="42" ry="40" fill="#1e0e60"/>
-<path d="M56 18 L52 34 L62 30 L54 48 L70 40 L64 58Z" fill="#e0e040" opacity="0.9"/>
-<path d="M104 18 L108 34 L98 30 L106 48 L90 40 L96 58Z" fill="#e0e040" opacity="0.9"/>
-<path d="M78 12 L72 28 L80 24 L74 40 L84 36 L80 50Z" fill="#f0f060" opacity="0.9"/>
-<path d="M38 60 Q32 48 42 44 Q36 56 40 66Z" fill="#6040e0" opacity="0.7"/>
-<path d="M122 60 Q128 48 118 44 Q124 56 120 66Z" fill="#6040e0" opacity="0.7"/>
+<ellipse cx="80" cy="80" rx="52" ry="50" fill="#1e0e60" opacity="0.9"/>
+<path d="M56 18 L52 34 L62 30 L54 48 L70 40 L64 58" stroke="#e0e040" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+<path d="M104 18 L108 34 L98 30 L106 48 L90 40 L96 58" stroke="#e0e040" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+<path d="M28 60 L24 72 L34 68 L28 82 L40 76 L36 88" stroke="#a080f0" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+<path d="M132 60 L136 72 L126 68 L132 82 L120 76 L124 88" stroke="#a080f0" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+<path d="M78 12 L72 28 L80 24 L74 40 L84 36 L80 50" stroke="#f0f060" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none" opacity="0.9"/>
 <ellipse cx="80" cy="84" rx="34" ry="32" fill="#200c50"/>
 <ellipse cx="80" cy="108" rx="24" ry="18" fill="#3018a0" opacity="0.7"/>
 <circle cx="63" cy="76" r="11" fill="#08040c"/><circle cx="97" cy="76" r="11" fill="#08040c"/>
@@ -374,13 +443,17 @@ footer{text-align:center;padding:20px 16px;color:var(--sub);font-size:.7rem;bord
 <div class="tc" onclick="showTypeInfo('tsuki')">
 <div class="tc-emoji"><div style="width:54px;height:54px;border-radius:50%;overflow:hidden;border:3px solid #6090d0;margin:0 auto;display:block"><svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block">
 <circle cx="80" cy="80" r="80" fill="#0a1428"/>
-<ellipse cx="80" cy="80" rx="52" ry="50" fill="#1a2c60" opacity="0.7"/>
-<circle cx="80" cy="80" r="42" fill="#0e1e48"/>
-<circle cx="80" cy="72" r="36" fill="#d0e0f8" opacity="0.15"/>
+<ellipse cx="80" cy="80" rx="52" ry="50" fill="#0e1e48" opacity="0.9"/>
+<circle cx="80" cy="54" r="30" fill="#d0e0f8" opacity="0.18"/>
+<path d="M56 24 Q80 18 96 30 Q78 28 64 38 Q58 46 60 58 Q48 44 56 24Z" fill="#d0e8ff" opacity="0.85"/>
+<circle cx="34" cy="38" r="4" fill="#d0e8ff" opacity="0.7"/>
+<circle cx="130" cy="28" r="3" fill="#d0e8ff" opacity="0.6"/>
+<circle cx="22" cy="65" r="2.5" fill="#d0e8ff" opacity="0.6"/>
+<circle cx="144" cy="60" r="2" fill="#d0e8ff" opacity="0.5"/>
+<circle cx="40" cy="110" r="2" fill="#b0c8f0" opacity="0.5"/>
+<circle cx="120" cy="22" r="2.5" fill="#b0c8f0" opacity="0.6"/>
 <path d="M50 32 Q56 16 66 14 Q58 24 58 38Z" fill="#b0c8f0" opacity="0.7"/>
 <path d="M110 32 Q104 16 94 14 Q102 24 102 38Z" fill="#b0c8f0" opacity="0.7"/>
-<path d="M68 22 Q72 8 80 10 Q76 20 74 32Z" fill="#d0e8ff" opacity="0.8"/>
-<path d="M92 22 Q88 8 80 10 Q84 20 86 32Z" fill="#d0e8ff" opacity="0.8"/>
 <ellipse cx="80" cy="84" rx="34" ry="32" fill="#0e2050"/>
 <ellipse cx="80" cy="108" rx="24" ry="18" fill="#1a3070" opacity="0.8"/>
 <circle cx="63" cy="76" r="11" fill="#04081a"/><circle cx="97" cy="76" r="11" fill="#04081a"/>
@@ -396,12 +469,17 @@ footer{text-align:center;padding:20px 16px;color:var(--sub);font-size:.7rem;bord
 <div class="tc" onclick="showTypeInfo('taichi')">
 <div class="tc-emoji"><div style="width:54px;height:54px;border-radius:50%;overflow:hidden;border:3px solid #6a5030;margin:0 auto;display:block"><svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block">
 <circle cx="80" cy="80" r="80" fill="#3a2810"/>
-<ellipse cx="80" cy="80" rx="52" ry="50" fill="#5a4020" opacity="0.8"/>
-<ellipse cx="80" cy="80" rx="42" ry="40" fill="#6a4a28"/>
-<path d="M26 80 Q26 52 42 36 Q28 58 28 80Z" fill="#4a7030" opacity="0.6"/>
-<path d="M134 80 Q134 52 118 36 Q132 58 132 80Z" fill="#4a7030" opacity="0.6"/>
-<path d="M44 40 Q54 24 68 20 Q56 30 52 44Z" fill="#4a7030" opacity="0.5"/>
-<path d="M116 40 Q106 24 92 20 Q104 30 108 44Z" fill="#4a7030" opacity="0.5"/>
+<ellipse cx="80" cy="80" rx="52" ry="50" fill="#6a4a28" opacity="0.9"/>
+<ellipse cx="30" cy="108" rx="20" ry="14" fill="#4a3018" opacity="0.9"/>
+<ellipse cx="130" cy="108" rx="20" ry="14" fill="#4a3018" opacity="0.9"/>
+<ellipse cx="50" cy="120" rx="16" ry="12" fill="#5a3820" opacity="0.8"/>
+<ellipse cx="110" cy="120" rx="16" ry="12" fill="#5a3820" opacity="0.8"/>
+<path d="M28 100 Q26 88 32 80 L36 92Z" fill="#4a7030" opacity="0.8"/>
+<path d="M34 96 Q36 84 44 78 L44 90Z" fill="#5a8838" opacity="0.7"/>
+<path d="M132 100 Q134 88 128 80 L124 92Z" fill="#4a7030" opacity="0.8"/>
+<path d="M126 96 Q124 84 116 78 L116 90Z" fill="#5a8838" opacity="0.7"/>
+<path d="M60 130 Q58 118 64 110 L68 122Z" fill="#5a8838" opacity="0.75"/>
+<path d="M100 130 Q102 118 96 110 L92 122Z" fill="#5a8838" opacity="0.75"/>
 <ellipse cx="80" cy="84" rx="36" ry="34" fill="#5a3818"/>
 <ellipse cx="80" cy="108" rx="26" ry="20" fill="#7a5830" opacity="0.8"/>
 <circle cx="63" cy="76" r="11" fill="#100800"/><circle cx="97" cy="76" r="11" fill="#100800"/>
