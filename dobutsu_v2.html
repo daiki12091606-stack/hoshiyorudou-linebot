@@ -117,10 +117,10 @@ footer{text-align:center;padding:20px 16px;color:var(--sub);font-size:.7rem;bord
 <div id="home" class="screen active">
   <div class="hero">
     <h1>動物パーソナリティ診断 🦁</h1>
-    <p>あなたの魂に宿る動物は何？<br>10問の質問で診断します</p>
+    <p>あなたの魂に宿る動物は何？<br>20問の質問で診断します</p>
     <div class="hero-badges">
-      <span class="badge">⏱ 約3分</span>
-      <span class="badge">❓ 全10問</span>
+      <span class="badge">⏱ 約6分</span>
+      <span class="badge">❓ 全20問</span>
       <span class="badge">🦁 全7タイプ</span>
     </div>
   </div>
@@ -290,12 +290,12 @@ footer{text-align:center;padding:20px 16px;color:var(--sub);font-size:.7rem;bord
 <span class="tc-tag" style="background:#4a804022;color:#4a8040">不屈の忍耐</span>
 </div>
   </div>
-  <button class="btn" onclick="startQuiz()">🦁 無料で診断する（10問）</button>
+  <button class="btn" onclick="startQuiz()">🦁 無料で診断する（20問）</button>
 </div>
 
 <div id="quiz" class="screen">
   <div class="prog-wrap">
-    <div class="prog-label"><span id="q-counter">Q 1 / 10</span><span id="q-pct">0%</span></div>
+    <div class="prog-label"><span id="q-counter">Q 1 / 20</span><span id="q-pct">0%</span></div>
     <div class="prog-bar"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
   </div>
   <div class="q-card">
@@ -546,6 +546,56 @@ const questions=[
     {text:'🌿 大切なものをずっと守り続ける',scores:{bear:3,kame:2}},
     {text:'🌏 自由に広い世界を旅する',scores:{horse:3,kitsune:2}},
   ]},
+  {text:'朝のルーティンは？',opts:[
+    {text:'🌅 早起きして今日の戦略を立てる',scores:{lion:2,wolf:3}},
+    {text:'🏃 すぐ体を動かして一日を始める',scores:{horse:3,hawk:2}},
+    {text:'🐢 ゆっくり身体を起こしてから動く',scores:{kame:3,bear:2}},
+  ]},
+  {text:'失敗したとき、あなたは？',opts:[
+    {text:'🔥 燃えてすぐリベンジに動く',scores:{lion:3,horse:2}},
+    {text:'🔍 原因を徹底的に分析して次に活かす',scores:{wolf:3,hawk:2}},
+    {text:'⏳ 時間をかけてじっくり立て直す',scores:{kame:3,bear:2}},
+  ]},
+  {text:'グループでの自分の役割は？',opts:[
+    {text:'🎤 意見をはっきり言ってまとめる',scores:{lion:3,hawk:2}},
+    {text:'🧠 裏でサポートしながら実力を発揮',scores:{wolf:3,kitsune:2}},
+    {text:'🤗 場の空気を和らげて人を繋ぐ',scores:{bear:3,kame:1}},
+  ]},
+  {text:'どんな環境で一番力を発揮できる？',opts:[
+    {text:'⚡ 緊張感とスピード感のある場面',scores:{lion:2,horse:3}},
+    {text:'🏔️ 長期間じっくり取り組める環境',scores:{kame:3,bear:2}},
+    {text:'🌐 情報を収集して戦略を練れる場面',scores:{wolf:3,hawk:2}},
+  ]},
+  {text:'大切な約束を守れなかったとき？',opts:[
+    {text:'⚔️ 責任を取って正面から謝罪する',scores:{lion:3,bear:2}},
+    {text:'🔄 即座に代替策を考えて実行する',scores:{horse:3,kitsune:2}},
+    {text:'🤔 なぜ守れなかったか深く反省する',scores:{wolf:3,kame:2}},
+  ]},
+  {text:'競争の場面では？',opts:[
+    {text:'🏆 勝ちにいく・絶対に負けたくない',scores:{lion:3,hawk:2}},
+    {text:'📊 勝算を計算してから動く',scores:{wolf:3,kitsune:2}},
+    {text:'🌿 競争より自分のペースを大切にする',scores:{kame:3,bear:2}},
+  ]},
+  {text:'他の人を助けるとき？',opts:[
+    {text:'💪 自分が矢面に立って守る',scores:{lion:3,bear:2}},
+    {text:'🎯 最も効果的な方法を考えて支援する',scores:{hawk:3,wolf:2}},
+    {text:'🌈 一緒に楽しみながら乗り越える',scores:{horse:3,kitsune:2}},
+  ]},
+  {text:'理想の仲間は？',opts:[
+    {text:'🦁 一緒に戦える信頼できる戦士',scores:{lion:3,wolf:2}},
+    {text:'🐢 どんなときも変わらず支え合える存在',scores:{kame:3,bear:2}},
+    {text:'🌈 自由を尊重し合える対等な存在',scores:{horse:3,kitsune:2}},
+  ]},
+  {text:'情報を集めるとき？',opts:[
+    {text:'🌐 広く多くの情報を素早く収集する',scores:{kitsune:3,hawk:2}},
+    {text:'📚 信頼性の高い情報をじっくり集める',scores:{wolf:3,kame:2}},
+    {text:'👥 人との会話や体験から学ぶ',scores:{bear:3,horse:2}},
+  ]},
+  {text:'人生で一番怖いことは？',opts:[
+    {text:'😔 誇りを傷つけられること',scores:{lion:3,hawk:2}},
+    {text:'💔 信じていた仲間に裏切られること',scores:{wolf:3,bear:2}},
+    {text:'🚫 自由を奪われて縛られること',scores:{horse:3,kitsune:2}},
+  ]},
 ];
 const results={
   lion:{emoji:'🦁',name:'獅子（ライオン）',catch:'王者の風格を持つ百獣の守護者',
@@ -623,7 +673,7 @@ function showTypeInfo(key){
     '<div class="bm-catch">'+b.catch+'</div>'+
     '<div class="bm-keywords">'+b.keywords.map(k=>'<span class="bm-kw">'+k+'</span>').join('')+'</div>'+
     '<div class="bm-desc">'+b.summary+'</div>'+
-    '<button class="bm-startbtn" onclick="closeTypeModal();startQuiz()">🦁 無料で診断する（10問）</button>';
+    '<button class="bm-startbtn" onclick="closeTypeModal();startQuiz()">🦁 無料で診断する（20問）</button>';
   document.getElementById('type-modal').style.display='block';
   document.body.style.overflow='hidden';
 }
