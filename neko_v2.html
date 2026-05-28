@@ -117,10 +117,10 @@ footer{text-align:center;padding:20px 16px;color:var(--sub);font-size:.7rem;bord
 <div id="home" class="screen active">
   <div class="hero">
     <h1>猫種パーソナリティ診断 🐱</h1>
-    <p>あなたの性格に似た猫種はどれ？<br>10問の質問で診断します</p>
+    <p>あなたの性格に似た猫種はどれ？<br>20問の質問で診断します</p>
     <div class="hero-badges">
-      <span class="badge">⏱ 約3分</span>
-      <span class="badge">❓ 全10問</span>
+      <span class="badge">⏱ 約6分</span>
+      <span class="badge">❓ 全20問</span>
       <span class="badge">🐱 全8タイプ</span>
     </div>
   </div>
@@ -332,12 +332,12 @@ footer{text-align:center;padding:20px 16px;color:var(--sub);font-size:.7rem;bord
 <span class="tc-tag" style="background:#c8802022;color:#c88020">野生的</span>
 </div>
   </div>
-  <button class="btn" onclick="startQuiz()">🐾 無料で診断する（10問）</button>
+  <button class="btn" onclick="startQuiz()">🐾 無料で診断する（20問）</button>
 </div>
 
 <div id="quiz" class="screen">
   <div class="prog-wrap">
-    <div class="prog-label"><span id="q-counter">Q 1 / 10</span><span id="q-pct">0%</span></div>
+    <div class="prog-label"><span id="q-counter">Q 1 / 20</span><span id="q-pct">0%</span></div>
     <div class="prog-bar"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
   </div>
   <div class="q-card">
@@ -630,6 +630,56 @@ const questions=[
     {text:'🦉 賢く頼られる存在',scores:{siamese:3,norwegian:2}},
     {text:'🌸 穏やかに自分らしく生きる',scores:{ragdoll:2,persia:3}},
   ]},
+  {text:'朝の過ごし方は？',opts:[
+    {text:'🌞 早起きして活動的にスタート',scores:{ameshort:3,bengal:2}},
+    {text:'😴 ゆっくり自分のペースで起きる',scores:{persia:3,norwegian:1}},
+    {text:'🌙 夜型でのんびり朝を過ごす',scores:{scottish:2,ragdoll:3}},
+  ]},
+  {text:'疲れたときの回復法は？',opts:[
+    {text:'🎉 友達と騒いで元気を出す',scores:{ameshort:3,munchkin:2}},
+    {text:'🏠 一人で静かにリセットする',scores:{norwegian:3,persia:2}},
+    {text:'😴 とにかくたっぷり寝る',scores:{ragdoll:3,scottish:2}},
+  ]},
+  {text:'新しい環境に入ったとき？',opts:[
+    {text:'🤝 積極的に話しかけて馴染む',scores:{ameshort:3,munchkin:2}},
+    {text:'👀 しばらく様子を見て慎重に動く',scores:{scottish:3,siamese:2}},
+    {text:'🌊 自然な流れに身を任せる',scores:{ragdoll:2,persia:3}},
+  ]},
+  {text:'仕事・勉強の集中スタイルは？',opts:[
+    {text:'📋 タスクリストを作って管理する',scores:{siamese:3,scottish:2}},
+    {text:'🎵 好きな音楽をかけてノリで進める',scores:{ameshort:2,bengal:3}},
+    {text:'☕ マイペースにゆっくり取り組む',scores:{persia:3,ragdoll:2}},
+  ]},
+  {text:'落ち込んでいる友達がいたら？',opts:[
+    {text:'💬 話をたくさん聞いて共感する',scores:{ragdoll:3,munchkin:2}},
+    {text:'🎯 原因を分析して解決策を提案する',scores:{siamese:3,norwegian:2}},
+    {text:'🎉 明るく気分転換させてあげる',scores:{ameshort:3,bengal:1}},
+  ]},
+  {text:'理想のバケーションは？',opts:[
+    {text:'🏙️ 都会でアクティブに観光・グルメ',scores:{ameshort:3,bengal:2}},
+    {text:'🏝️ 南の島でのんびりリゾート',scores:{ragdoll:3,persia:2}},
+    {text:'🏔️ 山や森を一人でじっくり堪能',scores:{norwegian:3,siamese:2}},
+  ]},
+  {text:'SNSの使い方は？',opts:[
+    {text:'📱 毎日投稿・友達と積極交流',scores:{ameshort:3,munchkin:2}},
+    {text:'👁️ 見る専門・たまにリアクション',scores:{persia:2,scottish:3}},
+    {text:'📸 好きなテーマだけ深く追う',scores:{siamese:3,norwegian:2}},
+  ]},
+  {text:'怒ったとき、あなたは？',opts:[
+    {text:'💢 すぐ顔に出てしまう',scores:{bengal:3,munchkin:2}},
+    {text:'😐 内側で感じても表に出さない',scores:{scottish:3,norwegian:2}},
+    {text:'😢 傷ついてもあまり言えない',scores:{ragdoll:3,persia:2}},
+  ]},
+  {text:'好きな映画のジャンルは？',opts:[
+    {text:'🎭 コメディ・ラブコメ',scores:{ameshort:3,munchkin:2}},
+    {text:'🔍 サスペンス・ミステリー',scores:{siamese:3,scottish:2}},
+    {text:'🌿 ヒューマンドラマ・自然ドキュメンタリー',scores:{ragdoll:2,norwegian:3}},
+  ]},
+  {text:'一番大切にしていることは？',opts:[
+    {text:'🤗 周囲との繋がりと楽しい時間',scores:{ameshort:3,munchkin:2}},
+    {text:'🧘 自分だけの静かな時間と空間',scores:{norwegian:3,persia:2}},
+    {text:'💞 特別な人との深い絆',scores:{ragdoll:3,siamese:2}},
+  ]},
 ];
 const results={
   ameshort:{emoji:'😸',name:'アメリカンショートヘア',catch:'バランス抜群の社交派・愛されキャラ',
@@ -714,7 +764,7 @@ function showTypeInfo(key){
     '<div class="bm-catch">'+b.catch+'</div>'+
     '<div class="bm-keywords">'+b.keywords.map(k=>'<span class="bm-kw">'+k+'</span>').join('')+'</div>'+
     '<div class="bm-desc">'+b.summary+'</div>'+
-    '<button class="bm-startbtn" onclick="closeTypeModal();startQuiz()">🐾 無料で診断する（10問）</button>';
+    '<button class="bm-startbtn" onclick="closeTypeModal();startQuiz()">🐾 無料で診断する（20問）</button>';
   document.getElementById('type-modal').style.display='block';
   document.body.style.overflow='hidden';
 }
