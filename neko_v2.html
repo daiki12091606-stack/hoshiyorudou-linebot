@@ -2,6 +2,17 @@
 <html lang="ja"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>猫種パーソナリティ診断 🐱</title>
+<meta name="description" content="あなたの性格に似た猫種は何？アメショ・ペルシャ・マンチカンなど全8タイプを20問で診断。無料パーソナリティ診断。">
+<meta name="keywords" content="猫種診断,猫タイプ,パーソナリティ診断,性格診断,無料診断,アメショ,マンチカン,ペルシャ">
+<meta property="og:title" content="猫種パーソナリティ診断 🐱">
+<meta property="og:description" content="あなたの性格に似た猫種は何？アメショ・ペルシャ・マンチカンなど全8タイプを20問で診断。無料パーソナリティ診断。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://hoshiyorudou.jp/neko">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="猫種パーソナリティ診断 🐱">
+<meta name="twitter:description" content="あなたの性格に似た猫種は何？アメショ・ペルシャ・マンチカンなど全8タイプを20問で診断。無料パーソナリティ診断。">
+<!-- Google AdSense (有効化時はca-pub-XXXXXXXXXXXXXXXXをご自身のIDに変更) -->
+<!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script> -->
 <style>
 :root{--pr:#d45a8a;--pr2:#f090b8;--bg:#fdf0f5;--card:#ffffff;--card2:#fff0f7;--border:#f0a8c8;--text:#2a0518;--sub:#906878;--fg:#2a0518}
 *{box-sizing:border-box;margin:0;padding:0}
@@ -104,6 +115,15 @@ main{max-width:480px;margin:0 auto;padding:16px 16px 48px}
 .bm-startbtn{width:100%;padding:13px;background:linear-gradient(135deg,#8a2050,#d45a8a);color:#fff;border:none;border-radius:12px;font-size:.9rem;font-weight:700;cursor:pointer;transition:.2s}
 .bm-startbtn:hover{transform:translateY(-2px)}
 footer{text-align:center;padding:20px 16px;color:var(--sub);font-size:.7rem;border-top:1px solid #f0a8c844;margin-top:20px}
+footer a{color:var(--pr);margin:0 6px;text-decoration:none}
+footer a:hover{text-decoration:underline}
+/* Cookie Consent Banner */
+#cookie-banner{position:fixed;bottom:0;left:0;right:0;background:rgba(20,10,40,.96);color:#e0d0f8;padding:14px 20px;z-index:9999;display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:.78rem;line-height:1.5;box-shadow:0 -2px 12px rgba(0,0,0,.3);backdrop-filter:blur(8px)}
+#cookie-banner a{color:#d45a8a;text-decoration:underline}
+.cookie-btns{display:flex;gap:8px;flex-shrink:0}
+.cookie-accept{background:#d45a8a;color:#fff;border:none;border-radius:20px;padding:7px 16px;font-size:.78rem;font-weight:700;cursor:pointer;white-space:nowrap}
+.cookie-decline{background:transparent;color:#a090c0;border:1px solid #605080;border-radius:20px;padding:7px 14px;font-size:.78rem;cursor:pointer;white-space:nowrap}
+@media(max-width:480px){#cookie-banner{flex-direction:column;text-align:center}.cookie-btns{justify-content:center}}
 </style>
 </head>
 <body>
@@ -568,12 +588,26 @@ footer{text-align:center;padding:20px 16px;color:var(--sub);font-size:.7rem;bord
 
 <footer>
   <div style="margin-bottom:8px">
-    <a href="https://twitter.com/hoshiyorudou" style="margin:0 10px">𝕏 / Twitter</a>
-    <a href="https://lin.ee/hoshiyorudou" style="margin:0 10px">LINE公式</a>
-    <a href="https://hoshiyorudou.jp" style="margin:0 10px">星夜堂</a>
+    <a href="https://twitter.com/hoshiyorudou">𝕏 / Twitter</a>
+    <a href="https://lin.ee/hoshiyorudou">LINE公式</a>
+    <a href="./index.html">星夜堂トップ</a>
   </div>
-  <div>© 星夜堂 — 猫種パーソナリティ診断 🐱</div>
+  <div style="margin-bottom:8px">
+    <a href="./privacy.html">プライバシーポリシー</a>
+    <a href="./about.html">運営者情報</a>
+    <a href="./contact.html">お問い合わせ</a>
+  </div>
+  <div>© 2026 星夜堂 | コンテンツは娯楽目的です</div>
 </footer>
+
+<!-- Cookie Consent Banner -->
+<div id="cookie-banner" style="display:none">
+  <span>当サイトはCookieを使用して広告配信・アクセス解析を行っています。詳細は<a href="./privacy.html">プライバシーポリシー</a>をご覧ください。</span>
+  <div class="cookie-btns">
+    <button class="cookie-accept" onclick="acceptCookies()">同意する</button>
+    <button class="cookie-decline" onclick="declineCookies()">閉じる</button>
+  </div>
+</div>
 
 <script>
 const SHARE_URL='https://hoshiyorudou.jp/neko';
@@ -862,5 +896,9 @@ function showResult(){
 }
 function shareX(){window.open('https://twitter.com/intent/tweet?text='+encodeURIComponent(_shareText+SHARE_URL),'_blank');}
 function shareLINE(){window.open('https://social-plugins.line.me/lineit/share?url='+encodeURIComponent(SHARE_URL)+'&text='+encodeURIComponent(_shareText),'_blank');}
+// Cookie Consent
+function acceptCookies(){localStorage.setItem('cookie_consent','accepted');document.getElementById('cookie-banner').style.display='none';}
+function declineCookies(){localStorage.setItem('cookie_consent','declined');document.getElementById('cookie-banner').style.display='none';}
+(function(){if(!localStorage.getItem('cookie_consent')){setTimeout(()=>{document.getElementById('cookie-banner').style.display='flex';},1200);}})();
 </script>
 </body></html>
