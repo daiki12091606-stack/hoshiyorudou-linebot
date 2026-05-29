@@ -117,6 +117,19 @@ a{text-decoration:none;color:inherit}
 .footer a:hover{color:#fff}
 .footer-logo{font-size:1.2rem;font-weight:800;background:linear-gradient(135deg,#f0a0d0,#c890f8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:12px}
 
+/* ===== CONCEPT SECTION ===== */
+.concept-sec-idx{max-width:600px;margin:0 auto;padding:0 20px 48px}
+.concept-idx-inner{background:linear-gradient(135deg,rgba(200,144,248,.07),rgba(144,200,248,.05));border:1px solid rgba(200,144,248,.22);border-radius:24px;padding:28px 24px}
+.concept-idx-title{font-size:1rem;font-weight:800;color:#e8d0ff;margin-bottom:18px;text-align:center}
+.concept-idx-points{display:flex;flex-direction:column;gap:16px}
+.concept-idx-point{display:flex;align-items:flex-start;gap:12px}
+.concept-idx-icon{font-size:1.4rem;flex-shrink:0;line-height:1.4}
+.concept-idx-head{font-size:.85rem;font-weight:700;color:#d0b8f8;margin-bottom:3px}
+.concept-idx-desc{font-size:.8rem;color:var(--sub);line-height:1.75}
+.concept-idx-desc strong{color:#e0d0ff}
+.concept-idx-link{display:block;text-align:center;margin-top:18px;padding-top:16px;border-top:1px solid rgba(200,144,248,.18);font-size:.78rem;color:#c890f8;font-weight:600}
+.concept-idx-link:hover{color:#fff}
+
 @media(max-width:400px){
   .stats{gap:0}
   .stat{padding:8px 12px;font-size:.9rem}
@@ -144,7 +157,7 @@ a{text-decoration:none;color:inherit}
 
   <div class="hero-eyebrow">🌙 性格診断 × 複数占術 × LINE毎日配信</div>
   <h1>あなただけの運勢を、<br>毎日LINEでお届け。</h1>
-  <p class="hero-sub">性格診断で「あなたの特性」を把握し、6つの占術データと統合。<br>他にはない、あなただけにパーソナライズされた運勢が毎日届きます。</p>
+  <p class="hero-sub">東洋×西洋6つの占術が、あなたの性格診断データと統合。<br>過去12年周期との照合から導かれる、あなただけの運勢が毎日LINEに届きます。</p>
   <a href="https://lin.ee/hoshiyorudou" target="_blank" rel="noopener" class="hero-cta" style="background:linear-gradient(135deg,#06c755,#059948);box-shadow:0 4px 24px rgba(6,199,85,.4)">
     <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
     LINE公式を友だち追加（無料）
@@ -197,6 +210,37 @@ a{text-decoration:none;color:inherit}
     </div>
   </div>
 </section>
+
+<!-- CONCEPT SECTION -->
+<div class="concept-sec-idx">
+  <div class="concept-idx-inner">
+    <div class="concept-idx-title">🌙 なぜ星夜堂の運勢は精度が高いのか</div>
+    <div class="concept-idx-points">
+      <div class="concept-idx-point">
+        <div class="concept-idx-icon">🌍</div>
+        <div>
+          <div class="concept-idx-head">東洋×西洋、全方位をカバーする占術選択</div>
+          <div class="concept-idx-desc">東洋系（四柱推命・算命学・紫微斗数・九星気学）と西洋系（西洋占星術・数秘術）を組み合わせ。<strong>一つの世界観に偏らない多角的な分析</strong>が可能です。</div>
+        </div>
+      </div>
+      <div class="concept-idx-point">
+        <div class="concept-idx-icon">📅</div>
+        <div>
+          <div class="concept-idx-head">過去12年周期との照合でパーソナライズ</div>
+          <div class="concept-idx-desc">LINEに生年月日を登録すると、<strong>過去12年分の運気サイクルを算出</strong>。どの占術があなたの傾向と一致するかを照合し、あなた専用の運勢を導きます。</div>
+        </div>
+      </div>
+      <div class="concept-idx-point">
+        <div class="concept-idx-icon">🔬</div>
+        <div>
+          <div class="concept-idx-head">異なる古代文明の知恵が収束するとき</div>
+          <div class="concept-idx-desc">6つの占術は中国・メソポタミア・ギリシャが<strong>独立して発展</strong>させたもの。複数の視点が同じ方向を示すとき、その精度は格段に高まります。</div>
+        </div>
+      </div>
+    </div>
+    <a href="./uranai.html" class="concept-idx-link">各占術の詳細を見る →</a>
+  </div>
+</div>
 
 <!-- QUIZ GRID -->
 <section class="section" id="quizzes" style="padding-top:20px">
@@ -307,10 +351,11 @@ a{text-decoration:none;color:inherit}
   <div class="line-sec">
     <div class="line-badge">🌙 LINE公式アカウント ← メインサービス</div>
     <h2>診断後はLINEへ。<br>これが星夜堂の本命です。</h2>
-    <p>性格診断を受けて生年月日を登録するだけ。<br>6つの占術（四柱推命・算命学・西洋占星術・数秘術・紫微斗数・九星気学）があなたを分析し、<br>パーソナライズされた運勢を毎日LINEでお届けします。</p>
+    <p>性格診断を受けて生年月日を登録するだけ。東洋×西洋6つの占術が統合分析し、<br>過去12年の周期データも加味した、あなただけの運勢を毎日お届けします。</p>
     <div class="line-features">
       <span class="line-feature">📅 毎日配信</span>
       <span class="line-feature">🔮 6占術統合</span>
+      <span class="line-feature">🗓 12年周期照合</span>
       <span class="line-feature">🐾 性格タイプ連動</span>
       <span class="line-feature">🆓 無料</span>
     </div>
