@@ -1563,23 +1563,9 @@ def handle_message(event):
             args=(user_id, user, fortune_map[text]),
             daemon=True,
         ).start()
+    # 指定コマンド以外は返信しない（API消費を防ぐ）
     else:
-        try:
-            resp = claude_client.messages.create(
-                model="claude-haiku-4-5-20251001",
-                max_tokens=300,
-                system="""あなたは「星夜堂（せいやどう）」の占い師AIです。
-四柱推命・算命学・占星術・数秘術・紫微斗数を専門とする神秘的な占いブランドです。
-・丁寧で神秘的な口調（「〜でございます」「〜かと存じます」）
-・星・月・夜をイメージした言葉を自然に使う
-・相手の気持ちに寄り添い前向きなメッセージを伝える
-返答は200文字以内で。""",
-                messages=[{"role": "user", "content": text}],
-            )
-            reply_text = resp.content[0].text
-        except Exception:
-            reply_text = "申し訳ございません。只今、星の導きが乱れてえります。しばらくお待ちくださいませ。🌙"
-        reply_msg(event.reply_token, reply_text, with_menu=True)
+        return
 
 @app.route("/callback", methods=["POST"])
 def callback():
