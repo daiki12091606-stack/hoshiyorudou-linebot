@@ -4,81 +4,106 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>プライバシーポリシー | 星夜堂</title>
-<meta name="description" content="星夜堂のプライバシーポリシーです。個人情報の取り扱い、Cookieの使用、広告配信について説明します。">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Yu Gothic',sans-serif;background:#fafafa;color:#1a1a2e;line-height:1.8;font-size:15px}
-a{color:#7050b0;text-decoration:none}
-a:hover{text-decoration:underline}
-.nav{background:#fff;border-bottom:1px solid #e0d8f0;padding:14px 20px;position:sticky;top:0;z-index:100}
-.nav a{color:#7050b0;font-weight:600;font-size:.9rem}
-.wrap{max-width:720px;margin:0 auto;padding:32px 20px 60px}
-h1{font-size:1.5rem;font-weight:800;color:#1a0830;margin-bottom:8px;padding-bottom:12px;border-bottom:2px solid #c090e0}
-.updated{font-size:.8rem;color:#888;margin-bottom:32px}
-h2{font-size:1.05rem;font-weight:700;color:#4a2880;margin:28px 0 10px;padding-left:10px;border-left:3px solid #9858d8}
-p{margin-bottom:12px;color:#2a1840}
-ul{margin:8px 0 12px 20px}
-li{margin-bottom:6px;color:#2a1840}
-.footer{text-align:center;padding:24px;color:#888;font-size:.78rem;border-top:1px solid #e0d8f0;margin-top:40px}
-.footer a{color:#7050b0;margin:0 8px}
+:root{--bg:#080618;--bg2:#0f0c2a;--text:#f0eaff;--sub:#a090c8;--card:rgba(255,255,255,.07);--border:rgba(255,255,255,.12)}
+body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Yu Gothic',sans-serif;background:var(--bg);color:var(--text);line-height:1.8;min-height:100vh}
+a{text-decoration:none;color:inherit}
+.nav{position:sticky;top:0;z-index:200;background:rgba(8,6,24,.85);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:12px 20px;display:flex;align-items:center;justify-content:space-between}
+.nav-logo{font-size:1.1rem;font-weight:800;background:linear-gradient(135deg,#f0a0d0,#c890f8,#90c8f8);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.nav-links{display:flex;gap:16px;font-size:.8rem;color:var(--sub)}
+.nav-links a:hover{color:#fff}
+.container{max-width:760px;margin:0 auto;padding:48px 24px 80px}
+.page-title{font-size:1.6rem;font-weight:800;margin-bottom:8px;background:linear-gradient(135deg,#e8d0ff,#b8d8ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.page-sub{color:var(--sub);font-size:.85rem;margin-bottom:40px;padding-bottom:24px;border-bottom:1px solid var(--border)}
+h2{font-size:1.05rem;font-weight:700;color:#c890f8;margin:36px 0 12px;padding-left:12px;border-left:3px solid #c890f8}
+p{font-size:.92rem;color:var(--text);margin-bottom:12px;line-height:1.8}
+ul{margin:8px 0 16px 20px}
+li{font-size:.92rem;color:var(--text);margin-bottom:6px;line-height:1.7}
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 20px;margin-bottom:16px}
+.footer{text-align:center;padding:32px 20px;color:var(--sub);font-size:.75rem;border-top:1px solid var(--border)}
+.footer a{color:#a090c8;margin:0 8px}
+.footer a:hover{color:#fff}
+.footer-logo{font-size:1.2rem;font-weight:800;background:linear-gradient(135deg,#f0a0d0,#c890f8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:12px}
 </style>
 </head>
 <body>
 <nav class="nav">
-  <a href="./index.html">← 星夜堂トップ</a>
+  <a href="./index.html" class="nav-logo">🌙 星夜堂</a>
+  <div class="nav-links">
+    <a href="./uranai.html">占術</a>
+    <a href="./index.html#quizzes">診断</a>
+    <a href="./index.html#line" style="color:#80e8a8">LINE登録</a>
+  </div>
 </nav>
-<div class="wrap">
-  <h1>プライバシーポリシー</h1>
-  <p class="updated">最終更新日：2026年5月28日</p>
-
-  <p>星夜堂（以下「当サイト」）は、ユーザーのプライバシーを尊重し、個人情報の保護に努めます。本ポリシーは、当サイトにおける情報の収集・利用・管理方針を定めるものです。</p>
-
-  <h2>1. 運営者情報</h2>
-  <p>サイト名：星夜堂<br>
-  運営者：星夜堂 運営チーム<br>
-  お問い合わせ：<a href="./about.html#contact">お問い合わせフォーム</a></p>
-
-  <h2>2. 収集する情報</h2>
-  <p>当サイトでは、以下の情報を収集する場合があります。</p>
+<div class="container">
+  <h1 class="page-title">プライバシーポリシー</h1>
+  <p class="page-sub">最終更新：2026年5月30日</p>
+  <p>星夜堂（以下「当サービス」）は、ユーザーの個人情報の保護を重要事項と考え、個人情報の保護に関する法律（個人情報保護法）を遵守し、以下のとおりプライバシーポリシーを定めます。</p>
+  <h2>1. 取得する情報</h2>
+  <p>当サービスは、以下の情報を取得します。</p>
   <ul>
-    <li>アクセスログ（IPアドレス、ブラウザ情報、アクセス日時等）</li>
-    <li>Cookieおよびこれに類する技術による情報</li>
-    <li>診断結果に関わる回答（個人を特定しない形式）</li>
+    <li>お名前（ニックネーム可）</li>
+    <li>生年月日</li>
+    <li>出生地（占術計算に使用）</li>
+    <li>LINE ユーザーID（LINEプラットフォームから自動取得）</li>
+    <li>無料診断の結果・診断タグ</li>
+    <li>サービスの利用履歴・操作ログ</li>
+    <li>決済情報（クレジットカード情報はStripe社が管理し、当サービスは保持しません）</li>
   </ul>
-
-  <h2>3. Cookieの使用について</h2>
-  <p>当サイトでは、利便性の向上および広告配信のためにCookieを使用しています。CookieはWebブラウザに保存される小さなテキストファイルであり、個人を特定するものではありません。</p>
-  <p>ブラウザの設定からCookieを無効にすることができますが、一部の機能が使用できなくなる場合があります。</p>
-
-  <h2>4. Google AdSenseについて</h2>
-  <p>当サイトでは、Google LLC（以下「Google」）が提供する広告配信サービス「Google AdSense」を利用しています。Google AdSenseはCookieを使用して、ユーザーの興味・関心に基づいた広告（インタレストベース広告）を表示します。</p>
-  <p>Googleによる広告Cookieの使用については、<a href="https://policies.google.com/technologies/ads" target="_blank" rel="noopener">Googleの広告に関するポリシー</a>をご覧ください。</p>
-  <p>インタレストベース広告を無効にするには、<a href="https://www.google.com/settings/ads" target="_blank" rel="noopener">Google広告設定</a>にてオプトアウトできます。</p>
-
-  <h2>5. Google Analyticsについて</h2>
-  <p>当サイトでは、Google LLCが提供するアクセス解析ツール「Google Analytics」を利用しています。Google AnalyticsはCookieを使用してアクセスデータを収集します。収集されたデータはGoogleのプライバシーポリシーに基づいて管理されます。</p>
-  <p>詳細は<a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Googleプライバシーポリシー</a>をご確認ください。</p>
-
-  <h2>6. 第三者へのデータ提供</h2>
-  <p>当サイトは、法令に基づく場合を除き、ユーザーの個人情報を第三者に提供することはありません。</p>
-
-  <h2>7. 免責事項</h2>
-  <p>当サイトのコンテンツ（診断結果を含む）は、娯楽・参考目的のものであり、医学的・心理学的な診断を行うものではありません。診断結果の正確性・完全性について、当サイトは一切の保証を行いません。</p>
-  <p>当サイトのリンク先の外部サイトについて、当サイトは責任を負いません。</p>
-
-  <h2>8. プライバシーポリシーの変更</h2>
-  <p>当サイトは、必要に応じて本プライバシーポリシーを変更することがあります。変更後のポリシーは本ページに掲載した時点から効力を生じるものとします。</p>
-
-  <h2>9. お問い合わせ</h2>
-  <p>本ポリシーに関するお問い合わせは、<a href="./about.html#contact">お問い合わせページ</a>よりご連絡ください。</p>
+  <h2>2. 利用目的</h2>
+  <p>取得した情報は、以下の目的に限り利用します。</p>
+  <ul>
+    <li>パーソナライズされた運勢コンテンツの生成・配信</li>
+    <li>サービスの提供・運営・改善</li>
+    <li>お問い合わせへの対応</li>
+    <li>利用規約に違反する行為への対応</li>
+    <li>サービスに関する重要なお知らせの送信</li>
+    <li>課金・決済処理の管理</li>
+  </ul>
+  <h2>3. 第三者への提供</h2>
+  <p>当サービスは、以下の場合を除き、取得した個人情報を第三者に提供しません。</p>
+  <ul>
+    <li>ユーザー本人の同意がある場合</li>
+    <li>法令に基づく開示が求められた場合</li>
+    <li>人の生命・身体・財産の保護のために必要な場合</li>
+  </ul>
+  <h2>4. 業務委託先への提供</h2>
+  <p>サービス運営のため、以下の事業者に個人情報の一部を提供することがあります。各事業者は、適切な個人情報保護体制を有しています。</p>
+  <div class="card">
+    <ul style="margin:0 0 0 16px">
+      <li><strong>LINE株式会社</strong>：メッセージ配信（LINEプラットフォーム）</li>
+      <li><strong>Stripe, Inc.</strong>：決済処理</li>
+      <li><strong>Railway Corp</strong>：サーバーホスティング・データ保管</li>
+      <li><strong>Anthropic, PBC</strong>：AIによる運勢テキスト生成</li>
+    </ul>
+  </div>
+  <h2>5. 個人情報の管理・保護</h2>
+  <p>当サービスは、個人情報の紛失・破壊・改ざん・漏洩を防ぐため、適切なセキュリティ対策を実施します。不要になった個人情報は、適切な方法で削除します。</p>
+  <h2>6. 開示・訂正・削除のご請求</h2>
+  <p>ご自身の個人情報の開示・訂正・利用停止・削除をご希望の場合は、下記お問い合わせ先までご連絡ください。本人確認の上、合理的な範囲で対応いたします。</p>
+  <h2>7. Cookie・解析ツール</h2>
+  <p>当サービスのウェブサイト（hoshiyorudou.com）では、Cookieおよびアクセス解析ツールを使用する場合があります。これらはサービス改善のために利用するものであり、個人を特定する情報は含みません。</p>
+  <h2>8. 未成年者のご利用</h2>
+  <p>18歳未満の方が有料サービスをご利用になる場合は、保護者の同意を得た上でご利用ください。</p>
+  <h2>9. プライバシーポリシーの変更</h2>
+  <p>当サービスは、法令改正やサービス変更に応じて、本ポリシーを予告なく変更することがあります。変更後のポリシーは、本ページへの掲載をもって効力を生じるものとします。</p>
+  <h2>10. お問い合わせ</h2>
+  <p>個人情報の取り扱いに関するお問い合わせは、以下までご連絡ください。</p>
+  <div class="card">
+    <p style="margin:0">星夜堂 個人情報取り扱い窓口<br>
+    メールアドレス：<a href="mailto:hoshiyorudou@gmail.com" style="color:#c890f8">hoshiyorudou@gmail.com</a></p>
+  </div>
 </div>
 <footer class="footer">
-  <div style="margin-bottom:8px">
-    <a href="./index.html">トップ</a>
+  <div class="footer-logo">🌙 星夜堂</div>
+  <div style="margin-bottom:10px">
+    <a href="./terms.html">利用規約</a>
     <a href="./privacy.html">プライバシーポリシー</a>
-    <a href="./about.html">運営者情報・お問い合わせ</a>
+    <a href="./tokushoho.html">特定商取引法に基づく表記</a>
+    <a href="./uranai.html">占術について</a>
   </div>
-  <div>© 2026 星夜堂</div>
+  <div>© 2026 星夜堂 | 診断コンテンツは娯楽目的です</div>
 </footer>
 </body>
 </html>
