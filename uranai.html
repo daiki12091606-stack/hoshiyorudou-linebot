@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>占術について | 星夜堂が使う5つの占術</title>
-<meta name="description" content="星夜堂が採用する5つの占術（四柱推命・算命学・西洋占星術・数秘術・紫微斗数）をそれぞれ詳しく解説。なぜ複数の占術を組み合わせるのかも分かります。">
-<meta property="og:title" content="占術について | 星夜堂が使う5つの占術">
+<title>占術について | 星夜堂が使う6つの占術</title>
+<meta name="description" content="星夜堂が採用する6つの占術（四柱推命・算命学・西洋占星術・数秘術・紫微斗数・守護龍占術）をそれぞれ詳しく解説。性格診断×複数占術で精度の高い運勢をお届けする理由も分かります。">
+<meta property="og:title" content="占術について | 星夜堂が使う6つの占術">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://hoshiyorudou.com/uranai.html">
 <style>
@@ -25,6 +25,16 @@ a{text-decoration:none;color:inherit}
 .eyebrow{display:inline-block;background:rgba(200,144,248,.12);border:1px solid rgba(200,144,248,.35);border-radius:20px;padding:5px 16px;font-size:.75rem;color:#c890f8;letter-spacing:.08em;margin-bottom:20px}
 .hero h1{font-size:clamp(1.6rem,5vw,2.6rem);font-weight:900;line-height:1.25;margin-bottom:14px;background:linear-gradient(135deg,#fff 0%,#e8d0ff 50%,#b8d8ff 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .hero-lead{font-size:.95rem;color:var(--sub);max-width:500px;margin:0 auto 28px}
+
+/* CONCEPT SECTION */
+.concept-sec{max-width:720px;margin:0 auto 40px;padding:0 20px}
+.concept-inner{background:linear-gradient(135deg,rgba(200,144,248,.08),rgba(144,200,248,.06));border:1px solid rgba(200,144,248,.25);border-radius:24px;padding:28px 24px}
+.concept-title{font-size:1.05rem;font-weight:800;color:#e8d0ff;margin-bottom:10px}
+.concept-body{font-size:.88rem;color:var(--sub);line-height:1.9;margin-bottom:22px}
+.concept-body strong{color:#e0d0ff}
+.concept-flow{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:10px}
+.concept-step{background:rgba(255,255,255,.07);border:1px solid var(--border);border-radius:14px;padding:10px 16px;font-size:.82rem;color:#e0d0ff;font-weight:600;text-align:center}
+.concept-arrow{color:#c890f8;font-size:1rem;font-weight:700}
 
 /* TOC */
 .toc{max-width:560px;margin:0 auto 40px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:20px;padding:20px 24px}
@@ -54,17 +64,6 @@ a{text-decoration:none;color:inherit}
 .u-hoshi-track{background:rgba(255,255,255,.08);border-radius:6px;height:8px;overflow:hidden}
 .u-hoshi-fill{height:100%;border-radius:6px;background:var(--accent,linear-gradient(90deg,#7c3aed,#2563eb))}
 
-/* WHY SECTION */
-.why-sec{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:24px;padding:32px 24px;margin-bottom:40px}
-.why-sec h2{font-size:1.2rem;font-weight:800;margin-bottom:6px;color:#e8d8ff}
-.why-sec .lead{font-size:.88rem;color:var(--sub);margin-bottom:20px}
-.why-table{width:100%;border-collapse:collapse}
-.why-table th,.why-table td{padding:10px 12px;border:1px solid rgba(255,255,255,.1);font-size:.8rem}
-.why-table th{background:rgba(200,144,248,.1);color:#c890f8;font-weight:600;text-align:left}
-.why-table td{color:var(--sub)}
-.why-table td:first-child{color:#e0d0ff;font-weight:600}
-.why-table tr:hover td{background:rgba(255,255,255,.03)}
-
 /* LINE CTA */
 .line-cta{background:linear-gradient(135deg,rgba(6,199,85,.14),rgba(0,80,40,.1));border:1px solid rgba(6,199,85,.3);border-radius:24px;padding:36px 24px;text-align:center}
 .line-cta-badge{display:inline-block;background:rgba(6,199,85,.2);border:1px solid rgba(6,199,85,.4);border-radius:12px;padding:4px 14px;font-size:.72rem;color:#80e8a8;margin-bottom:12px}
@@ -73,12 +72,11 @@ a{text-decoration:none;color:inherit}
 .line-btn{display:inline-flex;align-items:center;gap:10px;background:#06c755;color:#fff;padding:13px 28px;border-radius:28px;font-weight:700;font-size:.95rem;box-shadow:0 4px 20px rgba(6,199,85,.3);transition:.2s}
 .line-btn:hover{opacity:.9;transform:translateY(-2px)}
 
-.divider{border:none;border-top:1px solid var(--border);margin:0 20px 0}
 .footer{text-align:center;padding:28px 20px;color:var(--sub);font-size:.75rem;border-top:1px solid var(--border);margin-top:40px}
 .footer a{color:#a090c8;margin:0 8px}
 .footer a:hover{color:#fff}
 
-@media(max-width:440px){.u-detail-grid{grid-template-columns:1fr}}
+@media(max-width:440px){.u-detail-grid{grid-template-columns:1fr}.concept-flow{flex-direction:column}}
 </style>
 </head>
 <body>
@@ -86,16 +84,34 @@ a{text-decoration:none;color:inherit}
 <nav class="nav">
   <a href="./index.html" class="nav-logo">🌙 星夜堂</a>
   <div class="nav-links">
-    <a href="./concept.html">コンセプト</a>
     <a href="./index.html#quizzes">診断一覧</a>
+    <a href="./index.html#line" style="color:#80e8a8">LINE登録</a>
   </div>
 </nav>
 
 <section class="hero">
   <div class="eyebrow">🔮 FORTUNE METHODS</div>
-  <h1>星夜堂が使う<br>5つの占術</h1>
+  <h1>星夜堂が使う<br>6つの占術</h1>
   <p class="hero-lead">それぞれの占術には、数百〜数千年の歴史と独自の強みがあります。星夜堂はそれらを組み合わせることで、より精度の高い運勢をお届けします。</p>
 </section>
+
+<!-- CONCEPT SECTION -->
+<div class="concept-sec">
+  <div class="concept-inner">
+    <div class="concept-title">🌙 星夜堂のアプローチ — 性格診断 × 複数占術</div>
+    <p class="concept-body">
+      占いは「当たる・当たらない」だけではありません。どんなに優れた占術でも、<strong>その人の性格・特性・思考パターン</strong>を踏まえずに結果を伝えても、響くアドバイスにはなりません。<br><br>
+      星夜堂では、まず性格診断でその人の特性を把握し、そこに<strong>6つの占術から得られたデータを統合</strong>することで、あなただけにフィットした運勢をお届けします。一つの占術では見えない側面も、複数の視点を組み合わせることで立体的に浮かび上がります。
+    </p>
+    <div class="concept-flow">
+      <div class="concept-step">🐱 性格診断を受ける</div>
+      <span class="concept-arrow">→</span>
+      <div class="concept-step">🔮 6つの占術が分析</div>
+      <span class="concept-arrow">→</span>
+      <div class="concept-step">📱 LINEで毎日お届け</div>
+    </div>
+  </div>
+</div>
 
 <div class="toc">
   <div class="toc-title">📖 このページの占術一覧</div>
@@ -105,6 +121,7 @@ a{text-decoration:none;color:inherit}
     <a href="#seiyou" class="toc-item">③ 西洋占星術</a>
     <a href="#suuhi" class="toc-item">④ 数秘術</a>
     <a href="#shibi" class="toc-item">⑤ 紫微斗数</a>
+    <a href="#ryujin" class="toc-item">⑥ 守護龍占術</a>
   </div>
 </div>
 
@@ -117,12 +134,12 @@ a{text-decoration:none;color:inherit}
       <div class="u-meta">
         <div class="u-name">四柱推命</div>
         <div class="u-reading">しちゅうすいめい / Four Pillars of Destiny</div>
-        <span class="u-strong-badge" style="--badge-bg:rgba(245,158,11,.15);--badge-border:rgba(245,158,11,.4);--badge-color:#fcd34d">💰 金運・総合運の主軸</span>
+        <span class="u-strong-badge" style="--badge-bg:rgba(245,158,11,.15);--badge-border:rgba(245,158,11,.4);--badge-color:#fcd34d">💰 金運・財運・総合運</span>
       </div>
     </div>
     <p class="u-desc">
       <strong>生まれた年・月・日・時の「四柱」を八つの干支（八字）に変換</strong>して運命を読む占術。中国で約2000年の歴史を持ち、東洋占星術の中でも最も体系化された手法のひとつです。<br><br>
-      五行（木・火・土・金・水）のバランスから「その人が持つ気のエネルギー」を分析し、人生のサイクルや転機を読み解きます。特に<strong>金運・財運・人生の大きな流れ</strong>を読むことに長けており、星夜堂では金運スコアの主軸として75%の重みで採用しています。
+      五行（木・火・土・金・水）のバランスから「その人が持つ気のエネルギー」を分析し、人生のサイクルや転機を読み解きます。特に<strong>金運・財運・人生の大きな流れ</strong>を読むことに長けており、星夜堂の運勢分析において重要な役割を担っています。
     </p>
     <div class="u-detail-grid">
       <div class="u-detail">
@@ -138,12 +155,12 @@ a{text-decoration:none;color:inherit}
         <div class="u-detail-val">生年月日・出生時刻</div>
       </div>
       <div class="u-detail">
-        <div class="u-detail-label">星夜堂での役割</div>
-        <div class="u-detail-val">金運スコアの主軸（75%）</div>
+        <div class="u-detail-label">得意分野</div>
+        <div class="u-detail-val">金運・財運・人生の流れ</div>
       </div>
     </div>
     <div class="u-hoshi-bar">
-      <div class="u-hoshi-label">金運への精度</div>
+      <div class="u-hoshi-label">金運・財運への洞察力</div>
       <div class="u-hoshi-track"><div class="u-hoshi-fill" style="width:92%;background:linear-gradient(90deg,#f59e0b,#ef4444)"></div></div>
     </div>
   </div>
@@ -155,12 +172,12 @@ a{text-decoration:none;color:inherit}
       <div class="u-meta">
         <div class="u-name">算命学</div>
         <div class="u-reading">さんめいがく / Sanmei-Gaku</div>
-        <span class="u-strong-badge" style="--badge-bg:rgba(139,92,246,.15);--badge-border:rgba(139,92,246,.4);--badge-color:#c4b5fd">💼 仕事運・社会運の主軸</span>
+        <span class="u-strong-badge" style="--badge-bg:rgba(139,92,246,.15);--badge-border:rgba(139,92,246,.4);--badge-color:#c4b5fd">💼 仕事運・社会運・天中殺</span>
       </div>
     </div>
     <p class="u-desc">
       中国古代の命理学をベースに、<strong>日本で独自に発展した占術</strong>。四柱推命と同じく干支を用いますが、特に「天中殺（てんちゅうさつ）」という概念が特徴的で、行動すべき時期・控えるべき時期を詳細に示します。<br><br>
-      人生を「自然の理」に沿って読み解くアプローチで、<strong>職業適性・社会的な立ち位置・仕事上の人間関係</strong>を分析する精度が高い占術です。星夜堂では仕事運スコアの主軸として75%の重みで採用しています。
+      人生を「自然の理」に沿って読み解くアプローチで、<strong>職業適性・社会的な立ち位置・仕事上の人間関係</strong>を分析する精度が高い占術です。星夜堂では仕事運の分析に活用しています。
     </p>
     <div class="u-detail-grid">
       <div class="u-detail">
@@ -176,12 +193,12 @@ a{text-decoration:none;color:inherit}
         <div class="u-detail-val">生年月日</div>
       </div>
       <div class="u-detail">
-        <div class="u-detail-label">星夜堂での役割</div>
-        <div class="u-detail-val">仕事運スコアの主軸（75%）</div>
+        <div class="u-detail-label">得意分野</div>
+        <div class="u-detail-val">仕事運・天中殺・社会的役割</div>
       </div>
     </div>
     <div class="u-hoshi-bar">
-      <div class="u-hoshi-label">仕事運への精度</div>
+      <div class="u-hoshi-label">仕事運・社会運への洞察力</div>
       <div class="u-hoshi-track"><div class="u-hoshi-fill" style="width:89%;background:linear-gradient(90deg,#8b5cf6,#6d28d9)"></div></div>
     </div>
   </div>
@@ -193,12 +210,12 @@ a{text-decoration:none;color:inherit}
       <div class="u-meta">
         <div class="u-name">西洋占星術</div>
         <div class="u-reading">せいようせんせいじゅつ / Western Astrology</div>
-        <span class="u-strong-badge" style="--badge-bg:rgba(236,72,153,.15);--badge-border:rgba(236,72,153,.4);--badge-color:#f9a8d4">💕 恋愛運・対人運の主軸</span>
+        <span class="u-strong-badge" style="--badge-bg:rgba(236,72,153,.15);--badge-border:rgba(236,72,153,.4);--badge-color:#f9a8d4">💕 恋愛運・対人関係・感情</span>
       </div>
     </div>
     <p class="u-desc">
       太陽・月・惑星の位置を出生時の黄道十二宮（ホロスコープ）に基づいて読み解く占術。古代メソポタミアを起源とし、<strong>世界で最も広く知られている占術</strong>のひとつです。<br><br>
-      12星座だけでなく、月星座・上昇星座・各惑星の配置を詳細に分析することで、感情パターン・対人スタイル・愛情表現を深く読み解きます。<strong>恋愛・結婚・人間関係</strong>における洞察に特に優れており、星夜堂では恋愛運・対人運スコアの主軸として75%の重みで採用しています。
+      12星座だけでなく、月星座・上昇星座・各惑星の配置を詳細に分析することで、感情パターン・対人スタイル・愛情表現を深く読み解きます。<strong>恋愛・結婚・人間関係</strong>における洞察に特に優れた占術です。
     </p>
     <div class="u-detail-grid">
       <div class="u-detail">
@@ -214,12 +231,12 @@ a{text-decoration:none;color:inherit}
         <div class="u-detail-val">生年月日・出生時刻・出生地</div>
       </div>
       <div class="u-detail">
-        <div class="u-detail-label">星夜堂での役割</div>
-        <div class="u-detail-val">恋愛・対人運の主軸（75%）</div>
+        <div class="u-detail-label">得意分野</div>
+        <div class="u-detail-val">恋愛運・対人運・感情パターン</div>
       </div>
     </div>
     <div class="u-hoshi-bar">
-      <div class="u-hoshi-label">恋愛・対人運への精度</div>
+      <div class="u-hoshi-label">恋愛・対人運への洞察力</div>
       <div class="u-hoshi-track"><div class="u-hoshi-fill" style="width:91%;background:linear-gradient(90deg,#ec4899,#f43f5e)"></div></div>
     </div>
   </div>
@@ -231,12 +248,12 @@ a{text-decoration:none;color:inherit}
       <div class="u-meta">
         <div class="u-name">数秘術</div>
         <div class="u-reading">すうひじゅつ / Numerology</div>
-        <span class="u-strong-badge" style="--badge-bg:rgba(6,182,212,.15);--badge-border:rgba(6,182,212,.4);--badge-color:#67e8f9">🔢 全体運の補完</span>
+        <span class="u-strong-badge" style="--badge-bg:rgba(6,182,212,.15);--badge-border:rgba(6,182,212,.4);--badge-color:#67e8f9">🔢 使命・才能・全体運</span>
       </div>
     </div>
     <p class="u-desc">
       生年月日の数字を一桁になるまで足し合わせて「ライフパスナンバー」を算出する占術。古代ギリシャの哲学者ピタゴラスが体系化したとされ、<strong>「すべての物事の背後に数がある」という思想</strong>に基づきます。<br><br>
-      シンプルながら、その人が生まれ持った使命・才能・課題を明確に示します。他の占術を補完する役割として、<strong>全体運の補助スコア</strong>として星夜堂に組み込まれています。複数占術の「つなぎ役」として精度向上に貢献します。
+      シンプルながら、その人が生まれ持った<strong>使命・才能・人生の課題</strong>を明確に示します。他の占術との親和性も高く、複数占術を統合する星夜堂において欠かせない一角を担っています。
     </p>
     <div class="u-detail-grid">
       <div class="u-detail">
@@ -252,12 +269,12 @@ a{text-decoration:none;color:inherit}
         <div class="u-detail-val">生年月日（数字の合計）</div>
       </div>
       <div class="u-detail">
-        <div class="u-detail-label">星夜堂での役割</div>
-        <div class="u-detail-val">全体運の補完スコア</div>
+        <div class="u-detail-label">得意分野</div>
+        <div class="u-detail-val">使命・才能・全体的な傾向</div>
       </div>
     </div>
     <div class="u-hoshi-bar">
-      <div class="u-hoshi-label">全体運補完への寄与</div>
+      <div class="u-hoshi-label">使命・才能への洞察力</div>
       <div class="u-hoshi-track"><div class="u-hoshi-fill" style="width:78%;background:linear-gradient(90deg,#06b6d4,#0284c7)"></div></div>
     </div>
   </div>
@@ -269,12 +286,12 @@ a{text-decoration:none;color:inherit}
       <div class="u-meta">
         <div class="u-name">紫微斗数</div>
         <div class="u-reading">しびとすう / Purple Star Astrology</div>
-        <span class="u-strong-badge" style="--badge-bg:rgba(16,185,129,.15);--badge-border:rgba(16,185,129,.4);--badge-color:#6ee7b7">🌿 健康運の主軸</span>
+        <span class="u-strong-badge" style="--badge-bg:rgba(16,185,129,.15);--badge-border:rgba(16,185,129,.4);--badge-color:#6ee7b7">🌿 健康運・バイオリズム</span>
       </div>
     </div>
     <p class="u-desc">
       中国・宋代に成立した命理学。<strong>紫微星をはじめとする14の主要星と多数の補助星を命盤（12宮）に配置</strong>して運命を読み解く、東洋占術の中でも特に精緻な体系を持つ占術です。<br><br>
-      身体と運命のつながりを丁寧に分析する特性から、<strong>健康運・体のバイオリズム・エネルギーの消長</strong>を読む精度が高いとされています。星夜堂では健康運スコアの主軸として75%の重みで採用しています。
+      身体と運命のつながりを丁寧に分析する特性から、<strong>健康運・体のバイオリズム・エネルギーの消長</strong>を読む精度が高いとされています。星夜堂では健康運の分析に活用しています。
     </p>
     <div class="u-detail-grid">
       <div class="u-detail">
@@ -290,43 +307,59 @@ a{text-decoration:none;color:inherit}
         <div class="u-detail-val">生年月日・出生時刻</div>
       </div>
       <div class="u-detail">
-        <div class="u-detail-label">星夜堂での役割</div>
-        <div class="u-detail-val">健康運スコアの主軸（75%）</div>
+        <div class="u-detail-label">得意分野</div>
+        <div class="u-detail-val">健康運・バイオリズム・体の周期</div>
       </div>
     </div>
     <div class="u-hoshi-bar">
-      <div class="u-hoshi-label">健康運への精度</div>
+      <div class="u-hoshi-label">健康運への洞察力</div>
       <div class="u-hoshi-track"><div class="u-hoshi-fill" style="width:87%;background:linear-gradient(90deg,#10b981,#059669)"></div></div>
     </div>
   </div>
 
-  <!-- WHY COMBINE -->
-  <div class="why-sec">
-    <h2>🧩 なぜ5つを組み合わせるのか</h2>
-    <p class="lead">それぞれの占術が最も得意とする分野で主軸を担うことで、どの運勢カテゴリでも高精度な分析が可能になります。</p>
-    <table class="why-table">
-      <thead>
-        <tr>
-          <th>運勢カテゴリ</th>
-          <th>主軸占術（75%）</th>
-          <th>補完占術（各25%/4）</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr><td>💰 金運</td><td>四柱推命</td><td>その他4占術</td></tr>
-        <tr><td>💼 仕事運</td><td>算命学</td><td>その他4占術</td></tr>
-        <tr><td>💕 恋愛・対人運</td><td>西洋占星術</td><td>その他4占術</td></tr>
-        <tr><td>🌿 健康運</td><td>紫微斗数</td><td>その他4占術</td></tr>
-        <tr><td>🌟 全体運</td><td>全占術均等（各20%）</td><td>—</td></tr>
-      </tbody>
-    </table>
+  <!-- 守護龍占術 -->
+  <div class="u-card" id="ryujin" style="--accent:linear-gradient(90deg,#eab308,#d97706)">
+    <div class="u-head">
+      <div class="u-icon">🐉</div>
+      <div class="u-meta">
+        <div class="u-name">守護龍占術</div>
+        <div class="u-reading">しゅごりゅううらない / Guardian Dragon Astrology</div>
+        <span class="u-strong-badge" style="--badge-bg:rgba(234,179,8,.15);--badge-border:rgba(234,179,8,.4);--badge-color:#fde047">🐉 宿命・性格・守護タイプ</span>
+      </div>
+    </div>
+    <p class="u-desc">
+      占い師・Love Me Doが創始した現代の占術。生年月日から「宿命数」を算出し、<strong>10種類の「守護龍」</strong>という守護神のような存在を導き出します。守護龍はその人の宿命・才能・性格的強みを象徴するもので、さらに<strong>6種類のオーラ</strong>との組み合わせによって、より詳細な個性と運命の傾向が明らかになります。<br><br>
+      東洋の龍神信仰をベースに、生年月日という客観的なデータと組み合わせた独自の体系です。<strong>性格のコア・人生のテーマ・守護されている方向性</strong>を知るのに優れており、星夜堂の性格診断との連動性も高い占術です。
+    </p>
+    <div class="u-detail-grid">
+      <div class="u-detail">
+        <div class="u-detail-label">発祥</div>
+        <div class="u-detail-val">日本（Love Me Do創始）</div>
+      </div>
+      <div class="u-detail">
+        <div class="u-detail-label">歴史</div>
+        <div class="u-detail-val">現代（近年確立）</div>
+      </div>
+      <div class="u-detail">
+        <div class="u-detail-label">算出に使うもの</div>
+        <div class="u-detail-val">生年月日（宿命数）</div>
+      </div>
+      <div class="u-detail">
+        <div class="u-detail-label">得意分野</div>
+        <div class="u-detail-val">宿命・性格の核心・人生テーマ</div>
+      </div>
+    </div>
+    <div class="u-hoshi-bar">
+      <div class="u-hoshi-label">性格・宿命への洞察力</div>
+      <div class="u-hoshi-track"><div class="u-hoshi-fill" style="width:85%;background:linear-gradient(90deg,#eab308,#d97706)"></div></div>
+    </div>
   </div>
 
   <!-- LINE CTA -->
   <div class="line-cta">
     <div class="line-cta-badge">🌙 LINE公式アカウント</div>
-    <h2>5つの占術があなたを分析する<br>毎日の運勢をLINEで受け取る</h2>
-    <p>生年月日を登録するだけで、あなた専用の運勢が5つの占術から算出され毎日届きます。性格診断を受けると、さらにパーソナライズ度が上がります。</p>
+    <h2>6つの占術があなたを分析する<br>毎日の運勢をLINEで受け取る</h2>
+    <p>生年月日を登録するだけで、あなた専用の運勢が6つの占術から算出され毎日届きます。性格診断を受けると、さらにパーソナライズ度が上がります。</p>
     <a href="https://lin.ee/hoshiyorudou" target="_blank" rel="noopener" class="line-btn">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
       友だち追加（無料）
@@ -339,7 +372,6 @@ a{text-decoration:none;color:inherit}
   <div style="margin-bottom:10px;font-size:1.1rem;font-weight:800;background:linear-gradient(135deg,#f0a0d0,#c890f8);-webkit-background-clip:text;-webkit-text-fill-color:transparent">🌙 星夜堂</div>
   <div style="margin-bottom:8px">
     <a href="./index.html">トップ</a>
-    <a href="./concept.html">コンセプト</a>
     <a href="./privacy.html">プライバシーポリシー</a>
     <a href="./about.html">運営者情報・お問い合わせ</a>
   </div>
