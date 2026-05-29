@@ -1563,9 +1563,11 @@ def handle_message(event):
             args=(user_id, user, fortune_map[text]),
             daemon=True,
         ).start()
-    # 指定コマンド以外は返信しない（API消費を防ぐ）
+    # 指定コマンド以外はメニューを再表示（AI API不使用）
     else:
-        return
+        reply_msg(event.reply_token,
+                  "🌙 申し訳ございません。星夜堂では、下のメニューからのみご案内しております。どうぞお気軽にお選びください✨",
+                  with_menu=True)
 
 @app.route("/callback", methods=["POST"])
 def callback():
