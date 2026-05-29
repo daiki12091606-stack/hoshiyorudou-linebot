@@ -4,90 +4,366 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>星夜堂 | 無料パーソナリティ診断</title>
-<meta name="description" content="星夜堂の無料パーソナリティ診断。猫種・動物・神獣・守護龍から、あなたにぴったりなタイプを診断します。">
-<meta name="keywords" content="パーソナリティ診断,性格診断,猫種診断,動物診断,神獣診断,守護龍,無料診断">
+<meta name="description" content="星夜堂の無料パーソナリティ診断。猫種・犬種・動物・神獣・守護龍から、あなたにぴったりなタイプを20問で診断。全5種類。">
+<meta name="keywords" content="パーソナリティ診断,性格診断,猫種診断,動物診断,神獣診断,守護龍,犬種診断,無料診断">
 <meta property="og:title" content="星夜堂 | 無料パーソナリティ診断">
-<meta property="og:description" content="猫種・動物・神獣・守護龍から、あなたにぴったりなタイプを20問で診断します。">
+<meta property="og:description" content="猫種・犬種・動物・神獣・守護龍から、あなたにぴったりなタイプを20問で診断します。全5種類無料。">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://hoshiyorudou.jp">
+<meta property="og:url" content="https://hoshiyorudou.com">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Yu Gothic',sans-serif;background:linear-gradient(160deg,#0f0820 0%,#1a1040 50%,#0c1830 100%);min-height:100vh;color:#fff}
+:root{
+  --bg:#080618;
+  --bg2:#0f0c2a;
+  --text:#f0eaff;
+  --sub:#a090c8;
+  --card:rgba(255,255,255,.07);
+  --border:rgba(255,255,255,.12);
+}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Yu Gothic',sans-serif;background:var(--bg);color:var(--text);line-height:1.7;overflow-x:hidden}
 a{text-decoration:none;color:inherit}
-.hero{text-align:center;padding:48px 20px 32px}
-.hero h1{font-size:2rem;font-weight:900;background:linear-gradient(135deg,#f0a0d0,#c890f8,#90c8f8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
-.hero p{color:#c0a8e0;font-size:.95rem;line-height:1.7}
-.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;max-width:480px;margin:0 auto;padding:16px 20px 40px}
-.card{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:20px;padding:20px 16px;text-align:center;transition:.2s;cursor:pointer;display:block}
-.card:hover{background:rgba(255,255,255,.14);transform:translateY(-3px)}
-.card-emoji{font-size:2.4rem;margin-bottom:10px}
-.card-title{font-size:.95rem;font-weight:700;margin-bottom:4px}
-.card-sub{font-size:.7rem;color:#c0a8e0;margin-bottom:10px}
-.card-badge{display:inline-block;background:rgba(255,255,255,.15);border-radius:12px;padding:3px 10px;font-size:.65rem;color:#e0c8ff}
-.line-sec{background:rgba(6,199,85,.1);border:1px solid rgba(6,199,85,.3);border-radius:20px;margin:0 20px 40px;padding:24px;text-align:center;max-width:480px;margin-left:auto;margin-right:auto}
-.line-sec h2{font-size:1rem;font-weight:700;color:#80e8a8;margin-bottom:8px}
-.line-sec p{font-size:.82rem;color:#b0e0c0;margin-bottom:14px}
-.line-btn{display:inline-flex;align-items:center;gap:8px;background:#06c755;color:#fff;padding:11px 22px;border-radius:22px;font-weight:700;font-size:.88rem}
-.line-btn:hover{opacity:.85}
-.footer{text-align:center;padding:24px 20px;color:#8080a0;font-size:.72rem;border-top:1px solid rgba(255,255,255,.1)}
+
+/* ===== NAV ===== */
+.nav{position:sticky;top:0;z-index:200;background:rgba(8,6,24,.85);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:12px 20px;display:flex;align-items:center;justify-content:space-between}
+.nav-logo{font-size:1.1rem;font-weight:800;background:linear-gradient(135deg,#f0a0d0,#c890f8,#90c8f8);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.nav-links{display:flex;gap:16px;font-size:.8rem;color:var(--sub)}
+.nav-links a:hover{color:#fff}
+
+/* ===== HERO ===== */
+.hero{position:relative;min-height:90vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:60px 24px 48px;overflow:hidden}
+.stars{position:absolute;inset:0;pointer-events:none}
+.star{position:absolute;border-radius:50%;background:#fff;animation:twinkle var(--d,3s) ease-in-out infinite var(--delay,0s)}
+@keyframes twinkle{0%,100%{opacity:.2;transform:scale(1)}50%{opacity:1;transform:scale(1.4)}}
+.hero-eyebrow{display:inline-block;background:linear-gradient(135deg,rgba(200,144,248,.2),rgba(144,200,248,.2));border:1px solid rgba(200,144,248,.4);border-radius:20px;padding:5px 16px;font-size:.78rem;color:#c890f8;margin-bottom:20px;letter-spacing:.05em}
+.hero h1{font-size:clamp(1.8rem,6vw,3.2rem);font-weight:900;line-height:1.2;margin-bottom:16px;background:linear-gradient(135deg,#fff 0%,#e8d0ff 40%,#b8d8ff 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero-sub{font-size:clamp(.9rem,2.5vw,1.1rem);color:var(--sub);max-width:480px;margin:0 auto 32px;line-height:1.7}
+.hero-cta{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#7c3aed,#2563eb);color:#fff;padding:14px 32px;border-radius:32px;font-weight:700;font-size:1rem;box-shadow:0 4px 24px rgba(124,58,237,.4);transition:.2s}
+.hero-cta:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(124,58,237,.5)}
+.hero-cta-arrow{font-size:1.2rem}
+.hero-note{margin-top:16px;font-size:.78rem;color:var(--sub)}
+
+/* ===== STATS BAR ===== */
+.stats{display:flex;justify-content:center;flex-wrap:wrap;gap:0;background:rgba(255,255,255,.04);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:16px 20px}
+.stat{text-align:center;padding:8px 20px;border-right:1px solid var(--border)}
+.stat:last-child{border-right:none}
+.stat-num{font-size:1.4rem;font-weight:800;background:linear-gradient(135deg,#f0a0d0,#c890f8);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.stat-label{font-size:.7rem;color:var(--sub);margin-top:2px}
+
+/* ===== SECTION ===== */
+.section{padding:60px 20px}
+.section-title{text-align:center;margin-bottom:40px}
+.section-title h2{font-size:1.5rem;font-weight:800;margin-bottom:8px}
+.section-title p{font-size:.9rem;color:var(--sub)}
+.section-eyebrow{display:inline-block;font-size:.72rem;color:#c890f8;letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;background:rgba(200,144,248,.1);border:1px solid rgba(200,144,248,.3);border-radius:12px;padding:3px 12px}
+
+/* ===== QUIZ CARDS ===== */
+.quiz-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;max-width:520px;margin:0 auto}
+.quiz-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:20px 16px;display:flex;flex-direction:column;transition:.2s;position:relative;overflow:hidden}
+.quiz-card::before{content:'';position:absolute;inset:0;background:var(--card-glow,transparent);opacity:0;transition:.2s;border-radius:20px}
+.quiz-card:hover{transform:translateY(-4px);border-color:var(--card-color,rgba(255,255,255,.3))}
+.quiz-card:hover::before{opacity:1}
+.quiz-card-top{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.quiz-emoji{font-size:2rem;line-height:1}
+.quiz-name{font-size:1rem;font-weight:700}
+.quiz-count{font-size:.68rem;color:var(--sub);margin-top:1px}
+.type-chips{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:14px}
+.type-chip{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:3px 8px;font-size:.65rem;color:var(--sub)}
+.quiz-cta{display:block;text-align:center;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:12px;padding:9px;font-size:.8rem;font-weight:600;transition:.2s;margin-top:auto}
+.quiz-cta:hover{background:rgba(255,255,255,.18)}
+
+/* card color themes */
+.card-neko{--card-color:rgba(244,143,177,.4);--card-glow:linear-gradient(135deg,rgba(244,143,177,.06),transparent)}
+.card-inu{--card-color:rgba(255,183,77,.4);--card-glow:linear-gradient(135deg,rgba(255,183,77,.06),transparent)}
+.card-dobutsu{--card-color:rgba(255,112,67,.4);--card-glow:linear-gradient(135deg,rgba(255,112,67,.06),transparent)}
+.card-shinjuu{--card-color:rgba(255,213,79,.4);--card-glow:linear-gradient(135deg,rgba(255,213,79,.08),transparent)}
+.card-shugoryu{--card-color:rgba(79,195,247,.4);--card-glow:linear-gradient(135deg,rgba(79,195,247,.06),transparent)}
+
+/* wide card for odd last item */
+.quiz-card-wide{grid-column:span 2}
+
+/* ===== HOW IT WORKS ===== */
+.steps{display:flex;gap:0;max-width:600px;margin:0 auto;position:relative}
+.steps::before{content:'';position:absolute;top:28px;left:10%;right:10%;height:1px;background:linear-gradient(90deg,transparent,rgba(200,144,248,.4),transparent)}
+.step{flex:1;text-align:center;padding:16px 8px;position:relative}
+.step-num{width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#2563eb);display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin:0 auto 12px;box-shadow:0 4px 16px rgba(124,58,237,.3)}
+.step-title{font-size:.9rem;font-weight:700;margin-bottom:4px}
+.step-desc{font-size:.75rem;color:var(--sub);line-height:1.5}
+
+/* ===== LINE SECTION ===== */
+.line-sec{max-width:520px;margin:0 auto;background:linear-gradient(135deg,rgba(6,199,85,.12),rgba(0,100,50,.08));border:1px solid rgba(6,199,85,.3);border-radius:24px;padding:32px 24px;text-align:center}
+.line-badge{display:inline-block;background:rgba(6,199,85,.2);border:1px solid rgba(6,199,85,.4);border-radius:12px;padding:4px 12px;font-size:.72rem;color:#80e8a8;margin-bottom:12px}
+.line-sec h2{font-size:1.2rem;font-weight:800;color:#b0f0c8;margin-bottom:8px}
+.line-sec p{font-size:.88rem;color:#90c8a0;margin-bottom:20px;line-height:1.7}
+.line-features{display:flex;justify-content:center;gap:16px;margin-bottom:20px;flex-wrap:wrap}
+.line-feature{background:rgba(6,199,85,.1);border:1px solid rgba(6,199,85,.2);border-radius:12px;padding:8px 14px;font-size:.75rem;color:#90e8b0}
+.line-btn{display:inline-flex;align-items:center;gap:10px;background:#06c755;color:#fff;padding:13px 28px;border-radius:28px;font-weight:700;font-size:.95rem;box-shadow:0 4px 20px rgba(6,199,85,.3);transition:.2s}
+.line-btn:hover{opacity:.9;transform:translateY(-2px)}
+
+/* ===== SHARE SECTION ===== */
+.share-sec{text-align:center;padding:40px 20px}
+.share-sec h2{font-size:1.1rem;font-weight:700;margin-bottom:8px}
+.share-sec p{font-size:.85rem;color:var(--sub);margin-bottom:20px}
+.share-btns{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
+.share-btn{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:20px;font-size:.85rem;font-weight:600;transition:.2s}
+.share-x{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff}
+.share-x:hover{background:rgba(255,255,255,.18)}
+.share-line{background:rgba(6,199,85,.15);border:1px solid rgba(6,199,85,.3);color:#80e8a8}
+.share-line:hover{background:rgba(6,199,85,.25)}
+
+/* ===== FOOTER ===== */
+.footer{text-align:center;padding:32px 20px;color:var(--sub);font-size:.75rem;border-top:1px solid var(--border)}
 .footer a{color:#a090c8;margin:0 8px}
+.footer a:hover{color:#fff}
+.footer-logo{font-size:1.2rem;font-weight:800;background:linear-gradient(135deg,#f0a0d0,#c890f8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:12px}
+
+@media(max-width:400px){
+  .stats{gap:0}
+  .stat{padding:8px 12px;font-size:.9rem}
+  .steps{flex-direction:column}
+  .steps::before{display:none}
+}
 </style>
 </head>
 <body>
-<div class="hero">
-  <div style="font-size:2.5rem;margin-bottom:12px">🌙✨</div>
-  <h1>星夜堂 診断コンテンツ</h1>
-  <p>あなたの内なる本質を、星と夜が教えてくれる。<br>無料パーソナリティ診断、全5種類。</p>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-logo">🌙 星夜堂</div>
+  <div class="nav-links">
+    <a href="#quizzes">診断一覧</a>
+    <a href="#line">LINE</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <!-- Stars background -->
+  <div class="stars" id="stars"></div>
+
+  <div class="hero-eyebrow">✨ 全5種類 無料パーソナリティ診断</div>
+  <h1>あなたの本質を、<br>星と夜が明かす。</h1>
+  <p class="hero-sub">猫・犬・動物・神獣・守護龍——<br>20問の質問があなたの内なるタイプを導き出す。</p>
+  <a href="#quizzes" class="hero-cta">
+    診断をはじめる
+    <span class="hero-cta-arrow">↓</span>
+  </a>
+  <p class="hero-note">無料・登録不要・スマホ対応</p>
+</section>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="stat">
+    <div class="stat-num">5</div>
+    <div class="stat-label">診断種類</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">20問</div>
+    <div class="stat-label">各診断の問題数</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">43+</div>
+    <div class="stat-label">総タイプ数</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">LINE</div>
+    <div class="stat-label">毎日の運勢配信</div>
+  </div>
 </div>
 
-<div class="grid">
-  <a href="./neko_v2.html" class="card">
-    <div class="card-emoji">🐱</div>
-    <div class="card-title">猫種診断</div>
-    <div class="card-sub">あなたに似た猫種は？</div>
-    <span class="card-badge">全8タイプ・20問</span>
-  </a>
-  <a href="./dobutsu_v2.html" class="card">
-    <div class="card-emoji">🦁</div>
-    <div class="card-title">動物診断</div>
-    <div class="card-sub">魂に宿る動物は何？</div>
-    <span class="card-badge">全7タイプ・20問</span>
-  </a>
-  <a href="./shinjuu_v2.html" class="card">
-    <div class="card-emoji">✨</div>
-    <div class="card-title">神獣診断</div>
-    <div class="card-sub">魂に宿る神獣は何？</div>
-    <span class="card-badge">全6タイプ・20問</span>
-  </a>
-  <a href="./shugoryu_v2.html" class="card">
-    <div class="card-emoji">🐉</div>
-    <div class="card-title">守護龍診断</div>
-    <div class="card-sub">あなたを守護する龍は？</div>
-    <span class="card-badge">全6タイプ・20問</span>
-  </a>
-  <a href="./inu_v2.html" class="card">
-    <div class="card-emoji">🐶</div>
-    <div class="card-title">犬種診断</div>
-    <div class="card-sub">あなたに似た犬種は？</div>
-    <span class="card-badge">全8タイプ・20問</span>
-  </a>
-</div>
+<!-- HOW IT WORKS -->
+<section class="section" style="padding-bottom:40px">
+  <div class="section-title">
+    <div class="section-eyebrow">HOW IT WORKS</div>
+    <h2>3ステップで分かる</h2>
+    <p>簡単・速い・面白い</p>
+  </div>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">🔍</div>
+      <div class="step-title">診断を選ぶ</div>
+      <div class="step-desc">気になる診断を<br>5種類から選ぼう</div>
+    </div>
+    <div class="step">
+      <div class="step-num">📝</div>
+      <div class="step-title">20問に答える</div>
+      <div class="step-desc">直感で選ぶだけ<br>約3分で完了</div>
+    </div>
+    <div class="step">
+      <div class="step-num">✨</div>
+      <div class="step-title">タイプが判明</div>
+      <div class="step-desc">あなたのタイプと<br>詳しい解説が出る</div>
+    </div>
+  </div>
+</section>
 
-<div class="line-sec">
-  <h2>🌙 毎日の運勢をLINEでお届け</h2>
-  <p>診断タイプ＋生年月日から<br>今日の運勢・今月の流れを毎日配信中</p>
-  <a href="https://lin.ee/hoshiyorudou" target="_blank" rel="noopener" class="line-btn">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
-    LINE公式を友だち追加
-  </a>
-</div>
+<!-- QUIZ GRID -->
+<section class="section" id="quizzes" style="padding-top:20px">
+  <div class="section-title">
+    <div class="section-eyebrow">DIAGNOSIS</div>
+    <h2>診断コンテンツ一覧</h2>
+    <p>全5種類・すべて無料</p>
+  </div>
+  <div class="quiz-grid">
 
+    <!-- 猫種 -->
+    <a href="./neko_v2.html" class="quiz-card card-neko">
+      <div class="quiz-card-top">
+        <span class="quiz-emoji">🐱</span>
+        <div>
+          <div class="quiz-name">猫種診断</div>
+          <div class="quiz-count">全8タイプ・20問</div>
+        </div>
+      </div>
+      <div class="type-chips">
+        <span class="type-chip">アメショ</span>
+        <span class="type-chip">ベンガル</span>
+        <span class="type-chip">ラグドール</span>
+        <span class="type-chip">ペルシャ ほか</span>
+      </div>
+      <span class="quiz-cta">診断する →</span>
+    </a>
+
+    <!-- 犬種 -->
+    <a href="./inu_v2.html" class="quiz-card card-inu">
+      <div class="quiz-card-top">
+        <span class="quiz-emoji">🐶</span>
+        <div>
+          <div class="quiz-name">犬種診断</div>
+          <div class="quiz-count">全16タイプ・20問</div>
+        </div>
+      </div>
+      <div class="type-chips">
+        <span class="type-chip">柴犬</span>
+        <span class="type-chip">ゴールデン</span>
+        <span class="type-chip">ハスキー</span>
+        <span class="type-chip">ポメラニアン ほか</span>
+      </div>
+      <span class="quiz-cta">診断する →</span>
+    </a>
+
+    <!-- 動物 -->
+    <a href="./dobutsu_v2.html" class="quiz-card card-dobutsu">
+      <div class="quiz-card-top">
+        <span class="quiz-emoji">🦁</span>
+        <div>
+          <div class="quiz-name">動物診断</div>
+          <div class="quiz-count">全7タイプ・20問</div>
+        </div>
+      </div>
+      <div class="type-chips">
+        <span class="type-chip">獅子</span>
+        <span class="type-chip">狼</span>
+        <span class="type-chip">鷹</span>
+        <span class="type-chip">狐 ほか</span>
+      </div>
+      <span class="quiz-cta">診断する →</span>
+    </a>
+
+    <!-- 神獣 -->
+    <a href="./shinjuu_v2.html" class="quiz-card card-shinjuu">
+      <div class="quiz-card-top">
+        <span class="quiz-emoji">✨</span>
+        <div>
+          <div class="quiz-name">神獣診断</div>
+          <div class="quiz-count">全6タイプ・20問</div>
+        </div>
+      </div>
+      <div class="type-chips">
+        <span class="type-chip">白虎</span>
+        <span class="type-chip">青龍</span>
+        <span class="type-chip">鳳凰</span>
+        <span class="type-chip">麒麟 ほか</span>
+      </div>
+      <span class="quiz-cta">診断する →</span>
+    </a>
+
+    <!-- 守護龍 (wide) -->
+    <a href="./shugoryu_v2.html" class="quiz-card card-shugoryu quiz-card-wide">
+      <div class="quiz-card-top">
+        <span class="quiz-emoji">🐉</span>
+        <div>
+          <div class="quiz-name">守護龍診断</div>
+          <div class="quiz-count">全6タイプ・20問</div>
+        </div>
+      </div>
+      <div class="type-chips">
+        <span class="type-chip">金龍</span>
+        <span class="type-chip">炎龍</span>
+        <span class="type-chip">月龍</span>
+        <span class="type-chip">桜龍</span>
+        <span class="type-chip">嵐龍</span>
+        <span class="type-chip">大地龍</span>
+      </div>
+      <span class="quiz-cta">診断する →</span>
+    </a>
+
+  </div>
+</section>
+
+<!-- LINE SECTION -->
+<section class="section" id="line">
+  <div class="line-sec">
+    <div class="line-badge">🌙 LINE公式アカウント</div>
+    <h2>診断タイプ別の<br>毎日の運勢をお届け</h2>
+    <p>友だち追加＋生年月日を登録するだけ。<br>あなたの診断タイプに合わせた今日の運勢・<br>今月の流れを毎日LINEで配信します。</p>
+    <div class="line-features">
+      <span class="line-feature">📅 毎日配信</span>
+      <span class="line-feature">🔮 タイプ別運勢</span>
+      <span class="line-feature">🆓 無料</span>
+    </div>
+    <a href="https://lin.ee/hoshiyorudou" target="_blank" rel="noopener" class="line-btn">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
+      友だち追加（無料）
+    </a>
+  </div>
+</section>
+
+<!-- SHARE -->
+<section class="share-sec">
+  <h2>🐾 友達と結果を比べよう</h2>
+  <p>診断結果をシェアして盛り上がろう</p>
+  <div class="share-btns">
+    <a href="https://twitter.com/intent/tweet?text=星夜堂のパーソナリティ診断やってみた！%0ahttps://hoshiyorudou.com%0a%23星夜堂&url=" target="_blank" rel="noopener" class="share-btn share-x">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.259 5.63 5.905-5.63zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+      Xでシェア
+    </a>
+    <a href="https://lin.ee/hoshiyorudou" target="_blank" rel="noopener" class="share-btn share-line">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
+      LINEで友達に送る
+    </a>
+  </div>
+</section>
+
+<!-- FOOTER -->
 <footer class="footer">
-  <div style="margin-bottom:8px">
+  <div class="footer-logo">🌙 星夜堂</div>
+  <div style="margin-bottom:10px">
     <a href="./privacy.html">プライバシーポリシー</a>
     <a href="./about.html">運営者情報・お問い合わせ</a>
   </div>
   <div>© 2026 星夜堂 | 診断コンテンツは娯楽目的です</div>
 </footer>
+
+<script>
+// Star generation
+(function(){
+  const c = document.getElementById('stars');
+  for(let i=0;i<80;i++){
+    const s = document.createElement('div');
+    s.className='star';
+    const size = Math.random()*2.5+0.5;
+    s.style.cssText=`
+      left:${Math.random()*100}%;
+      top:${Math.random()*100}%;
+      width:${size}px;height:${size}px;
+      --d:${(Math.random()*3+2).toFixed(1)}s;
+      --delay:-${(Math.random()*4).toFixed(1)}s;
+      opacity:${Math.random()*.5+.1}
+    `;
+    c.appendChild(s);
+  }
+})();
+</script>
 </body>
 </html>
