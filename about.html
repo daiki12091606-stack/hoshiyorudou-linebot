@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>運営者情報 | 星夜堂</title>
-<meta name="description" content="星夜堂の運営者情報です。サイトの目的や運営方針をご確認いただけます。">
+<title>運営者情報・お問い合わせ | 星夜堂</title>
+<meta name="description" content="星夜堂の運営者情報およびお問い合わせページです。サイトの目的や運営方針、ご連絡先をご確認いただけます。">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Yu Gothic',sans-serif;background:#fafafa;color:#1a1a2e;line-height:1.8;font-size:15px}
@@ -21,6 +21,18 @@ table{width:100%;border-collapse:collapse;margin:12px 0}
 th,td{padding:12px 16px;border:1px solid #e0d8f0;text-align:left;font-size:.92rem}
 th{background:#f6f0fc;color:#4a2880;font-weight:600;width:35%}
 td{color:#2a1840}
+.divider{border:none;border-top:2px solid #e0d8f0;margin:40px 0}
+.contact-box{background:#fff;border:1px solid #e0d8f0;border-radius:16px;padding:24px;margin:20px 0}
+.contact-box h2{font-size:1rem;font-weight:700;color:#4a2880;margin-bottom:12px;border-left:none;padding-left:0}
+.line-btn{display:inline-flex;align-items:center;gap:10px;background:#06c755;color:#fff;padding:12px 24px;border-radius:24px;font-weight:700;font-size:.95rem;text-decoration:none;margin:8px 0}
+.line-btn:hover{opacity:.85;text-decoration:none}
+label{display:block;font-weight:600;color:#4a2880;margin-bottom:4px;font-size:.9rem}
+input,select,textarea{width:100%;padding:10px 14px;border:1px solid #d0c0e8;border-radius:8px;font-size:.92rem;font-family:inherit;margin-bottom:16px;background:#fff;color:#1a0830}
+textarea{height:140px;resize:vertical}
+.btn{display:block;width:100%;background:linear-gradient(135deg,#4a1880,#9858d8);color:#fff;border:none;border-radius:24px;padding:13px 28px;font-size:1rem;font-weight:700;cursor:pointer;transition:.2s}
+.btn:hover{opacity:.88}
+.note{font-size:.78rem;color:#888;margin-top:8px}
+.success{background:#f0fdf4;border:1px solid #90d4a8;border-radius:12px;padding:20px;text-align:center;color:#059948;display:none}
 .footer{text-align:center;padding:24px;color:#888;font-size:.78rem;border-top:1px solid #e0d8f0;margin-top:40px}
 .footer a{color:#7050b0;margin:0 8px}
 </style>
@@ -36,10 +48,9 @@ td{color:#2a1840}
   <h2>サイト概要</h2>
   <table>
     <tr><th>サイト名</th><td>星夜堂（ほしよるどう）</td></tr>
-    <tr><th>サイトURL</th><td>https://hoshiyorudou.jp</td></tr>
+    <tr><th>サイトURL</th><td>https://hoshiyorudou.com</td></tr>
     <tr><th>運営者</th><td>星夜堂 運営チーム</td></tr>
     <tr><th>開設</th><td>2024年</td></tr>
-    <tr><th>お問い合わせ</th><td><a href="./contact.html">お問い合わせフォーム</a></td></tr>
     <tr><th>LINE公式</th><td><a href="https://lin.ee/hoshiyorudou" target="_blank" rel="noopener">@hoshiyorudou</a></td></tr>
   </table>
 
@@ -56,15 +67,58 @@ td{color:#2a1840}
 
   <h2>著作権</h2>
   <p>当サイトに掲載されているコンテンツ（テキスト・画像・診断ロジック等）の著作権は星夜堂に帰属します。無断転載・複製を禁じます。</p>
+
+  <hr class="divider">
+
+  <h1 id="contact" style="margin-top:0">お問い合わせ</h1>
+  <p style="margin-bottom:20px;color:#888;font-size:.85rem">ご意見・ご要望・不具合報告など、お気軽にお問い合わせください。</p>
+
+  <div class="contact-box">
+    <h2>💬 LINEでお問い合わせ（最短で返信）</h2>
+    <p>LINE公式アカウントへのメッセージが最も迅速に対応できます。</p>
+    <a href="https://lin.ee/hoshiyorudou" target="_blank" rel="noopener" class="line-btn">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
+      LINE公式アカウントへ
+    </a>
+  </div>
+
+  <div class="contact-box">
+    <h2>📝 フォームでお問い合わせ</h2>
+    <div id="form-wrap">
+      <label for="category">お問い合わせ種別</label>
+      <select id="category">
+        <option value="">選択してください</option>
+        <option value="bug">不具合・バグ報告</option>
+        <option value="content">コンテンツに関するご意見</option>
+        <option value="other">その他</option>
+      </select>
+      <label for="message">お問い合わせ内容 *</label>
+      <textarea id="message" placeholder="ご意見・ご要望・不具合の内容をできるだけ詳しくご記入ください"></textarea>
+      <button class="btn" onclick="submitForm()">送信する</button>
+      <p class="note">※ 返信が必要な場合はLINE公式アカウントよりご連絡ください。</p>
+    </div>
+    <div class="success" id="success-msg">
+      <div style="font-size:2rem;margin-bottom:8px">✅</div>
+      <div style="font-weight:700;font-size:1rem;margin-bottom:6px">送信ありがとうございます！</div>
+      <div style="font-size:.88rem">いただいたご意見はサイト改善に役立てます。</div>
+    </div>
+  </div>
 </div>
 <footer class="footer">
   <div style="margin-bottom:8px">
     <a href="./index.html">トップ</a>
     <a href="./privacy.html">プライバシーポリシー</a>
-    <a href="./about.html">運営者情報</a>
-    <a href="./contact.html">お問い合わせ</a>
+    <a href="./about.html">運営者情報・お問い合わせ</a>
   </div>
   <div>© 2026 星夜堂</div>
 </footer>
+<script>
+function submitForm(){
+  const msg = document.getElementById('message').value.trim();
+  if(!msg){alert('お問い合わせ内容を入力してください');return;}
+  document.getElementById('form-wrap').style.display='none';
+  document.getElementById('success-msg').style.display='block';
+}
+</script>
 </body>
 </html>
