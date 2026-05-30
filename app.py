@@ -7,8 +7,9 @@ import threading
 import uuid
 from datetime import datetime, timezone, timedelta
 from io import BytesIO
-from flask import Flask, request, abort, make_response, jsonify
+from flask import Flask, request, abort, make_response, jsonify, redirect
 import anthropic
+import stripe
 
 import matplotlib
 matplotlib.use('Agg')
@@ -37,6 +38,14 @@ ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
 handler = WebhookHandler(LINE_CHANNEL_SECRET)
 configuration = Configuration(access_token=LINE_CHANNEL_ACCESS_TOKEN)
 claude_client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
+
+STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY", "")
+STRIPE_WEBHOOK_SECRET = os.environ.get("STRIPE_WEBHOOK_SECRET", "")
+STRIPE_PRICE_ID = "price_1TcZR00RgosSYQ8SgjF9ExYz"
+BASE_URL = os.environ.get("BASE_URL", "https://web-production-84614.up.railway.app")
+
+if STRIPE_SECRET_KEY:
+    stripe.api_key = STRIPE_SECRET_KEY
 
 user_data = {}
 
@@ -96,6 +105,10 @@ def set_conv(uid, history):
         except Exception:
             pass
     _conv_history_fallback[uid] = history
+
+def is_premium(uid):
+    """ユーザーが課金済みかどうかを返す"""
+    return bool(get_user(uid).get("premium", False))
 # ────────────────────────────────────────────────────────────────────
 graph_cache = {}
 image_cache = {}
@@ -1451,6 +1464,14 @@ def handle_message(event):
     user = get_user(user_id)
     text = event.message.text.strip()
 
+    if text in ("登録する", "プランに登録", "課金"):
+        checkout_url = f"{BASE_URL}/stripe/checkout?uid={user_id}"
+        reply_msg(event.reply_token,
+                  f"🌙 星夜堂 月額プランへのご登録はこちら✨\n\n"
+                  f"月額980円（税込）・いつでも解約可能\n\n"
+                  f"▼ 安全なStripe決済ページ\n{checkout_url}")
+        return
+
     if text == "誕生日変更":
         user["state"] = "waiting_change_birthday"
         set_user(user_id, user)
@@ -1633,6 +1654,111 @@ def liff_result():
     except Exception as e:
         print(f"Push error: {e}")
     return jsonify({"status": "ok"})
+
+# ── Stripe 決済エンドポイント ─────────────────────────────────────────
+
+@app.route('/stripe/checkout')
+def stripe_checkout():
+    uid = request.args.get('uid', '')
+    if not uid:
+        return "Missing user ID", 400
+    if not STRIPE_SECRET_KEY:
+        return "Stripe not configured", 500
+    try:
+        session = stripe.checkout.Session.create(
+            payment_method_types=['card'],
+            line_items=[{'price': STRIPE_PRICE_ID, 'quantity': 1}],
+            mode='subscription',
+            success_url=f"{BASE_URL}/stripe/success?uid={uid}",
+            cancel_url=f"{BASE_URL}/stripe/cancel",
+            metadata={'line_user_id': uid},
+            subscription_data={'metadata': {'line_user_id': uid}},
+        )
+        return redirect(session.url, code=303)
+    except Exception as e:
+        app.logger.error(f"Stripe checkout error: {e}")
+        return "エラーが発生しました。しばらくしてからお試しください。", 500
+
+@app.route('/stripe/success')
+def stripe_success():
+    return '''<!DOCTYPE html>
+<html lang="ja"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>登録完了 | 星夜堂</title>
+<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;background:#080618;color:#f0eaff;min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px}</style>
+</head><body>
+<div>
+<div style="font-size:3rem;margin-bottom:20px">🌙✨</div>
+<h1 style="font-size:1.4rem;font-weight:800;margin-bottom:16px;background:linear-gradient(135deg,#e8d0ff,#b8d8ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent">ご登録ありがとうございます！</h1>
+<p style="color:#a090c8;font-size:.9rem;line-height:1.8">星夜堂 月額プランへのご登録が完了しました。<br>LINEに戻って「今日の運勢」をお試しください🌟</p>
+</div>
+</body></html>'''
+
+@app.route('/stripe/cancel')
+def stripe_cancel():
+    return '''<!DOCTYPE html>
+<html lang="ja"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>キャンセル | 星夜堂</title>
+<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;background:#080618;color:#f0eaff;min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px}</style>
+</head><body>
+<div>
+<div style="font-size:3rem;margin-bottom:20px">🌙</div>
+<h1 style="font-size:1.4rem;font-weight:800;margin-bottom:16px">お支払いがキャンセルされました</h1>
+<p style="color:#a090c8;font-size:.9rem;line-height:1.8">また気が向いたときにLINEから「登録する」と送ってご登録いただけます。</p>
+</div>
+</body></html>'''
+
+@app.route('/stripe/webhook', methods=['POST'])
+def stripe_webhook():
+    payload = request.get_data()
+    sig_header = request.headers.get('Stripe-Signature', '')
+    if STRIPE_WEBHOOK_SECRET:
+        try:
+            event = stripe.Webhook.construct_event(payload, sig_header, STRIPE_WEBHOOK_SECRET)
+        except Exception as e:
+            app.logger.error(f"Stripe webhook error: {e}")
+            return jsonify({'error': 'Invalid signature'}), 400
+    else:
+        try:
+            event = json.loads(payload)
+        except Exception:
+            return jsonify({'error': 'Invalid JSON'}), 400
+
+    event_type = event.get('type', '')
+    data_obj = event.get('data', {}).get('object', {})
+
+    if event_type in ('customer.subscription.created', 'customer.subscription.updated'):
+        uid = data_obj.get('metadata', {}).get('line_user_id', '')
+        if uid and data_obj.get('status') in ('active', 'trialing'):
+            user = get_user(uid) or {}
+            user['premium'] = True
+            set_user(uid, user)
+            app.logger.info(f"Premium activated: {uid}")
+
+    elif event_type == 'invoice.payment_succeeded':
+        sub_id = data_obj.get('subscription', '')
+        uid = data_obj.get('subscription_details', {}).get('metadata', {}).get('line_user_id', '')
+        if not uid and sub_id and STRIPE_SECRET_KEY:
+            try:
+                sub = stripe.Subscription.retrieve(sub_id)
+                uid = sub.metadata.get('line_user_id', '')
+            except Exception:
+                pass
+        if uid:
+            user = get_user(uid) or {}
+            user['premium'] = True
+            set_user(uid, user)
+            app.logger.info(f"Premium payment confirmed: {uid}")
+
+    elif event_type == 'customer.subscription.deleted':
+        uid = data_obj.get('metadata', {}).get('line_user_id', '')
+        if uid:
+            user = get_user(uid) or {}
+            user['premium'] = False
+            set_user(uid, user)
+            app.logger.info(f"Premium deactivated: {uid}")
+
+    return jsonify({'status': 'ok'})
+# ────────────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
