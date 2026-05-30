@@ -22,7 +22,7 @@ from linebot.v3.messaging import (
 Configuration, ApiClient, MessagingApi,
 ReplyMessageRequest, PushMessageRequest,
 TextMessage, ImageMessage,
-QuickReply, QuickReplyItem, MessageAction,
+QuickReply, QuickReplyItem, MessageAction, URIAction,
 )
 from linebot.v3.webhooks import MessageEvent, TextMessageContent, FollowEvent
 
@@ -1444,20 +1444,27 @@ REGISTRATION_PROMPT = """📝 まず、以下を教えてください。
 @handler.add(FollowEvent)
 def handle_follow(event):
     user_id = event.source.user_id
-    set_user(user_id, {"state": "waiting_diagnosis", "birthday": None, "name": None, "birthplace": None, "birth_time": None, "diagnosis_done": False})
-    LIFF_URL = "https://liff.line.me/2010080648-3cltj7zs"
-    combined = (
-        WELCOME_TEXT +
-        "\n\n━━━━━━━━━━━━━━━━━━\n\n"
-        "📝 まず、あなたのことを教えてください！\n"
-        "以下のリンクから簡単な診断（約5〜7分）を受けると、"
-        "あなただけにカスタマイズされた占いが届くようになります✨\n\n"
-        f"🔮 診断はこちら\n{LIFF_URL}"
+    set_user(user_id, {"state": "waiting_payment", "birthday": None, "name": None, "birthplace": None, "birth_time": None, "diagnosis_done": False})
+    checkout_url = f"{BASE_URL}/stripe/checkout?uid={user_id}"
+    welcome = (
+        "🌙 星夜堂へようこそ！\n\n"
+        "東洋×西洋6つの占術×AIで、あなただけのパーソナライズ運勢を毎日LINEでお届けします✨\n\n"
+        "まずは月額プランへのご登録をお願いします。\n"
+        "月額980円（税込）・いつでも解約可能"
     )
+    qr = QuickReply(items=[
+        QuickReplyItem(action=URIAction(label="💳 月額プランに登録する", uri=checkout_url))
+    ])
     try:
-        reply_msg(event.reply_token, combined)
-    except Exception:
-        push(user_id, combined, with_menu=False)
+        with ApiClient(configuration) as api_client:
+            MessagingApi(api_client).reply_message(
+                ReplyMessageRequest(
+                    reply_token=event.reply_token,
+                    messages=[TextMessage(text=welcome, quick_reply=qr)]
+                )
+            )
+    except Exception as e:
+        app.logger.error(f"handle_follow error: {e}")
 @handler.add(MessageEvent, message=TextMessageContent)
 def handle_message(event):
     user_id = event.source.user_id
@@ -1544,6 +1551,17 @@ def handle_message(event):
         return
 
     birthday = user["birthday"]
+
+    # ── 課金チェック ────────────────────────────────────────────────────
+    if not is_premium(user_id):
+        checkout_url = f"{BASE_URL}/stripe/checkout?uid={user_id}"
+        reply_msg(event.reply_token,
+                  f"🌙 星夜堂の運勢サービスは月額プランへのご登録が必要です✨\n\n"
+                  f"月額980円（税込）・いつでも解約可能\n\n"
+                  f"▼ ご登録はこちら\n{checkout_url}",
+                  with_menu=False)
+        return
+    # ────────────────────────────────────────────────────────────────────
 
     loading_msgs = {
         "今日の運勢": "📅 今日の運勢を占い中です...\nしばらくお待ちください 🌙",
@@ -1726,13 +1744,32 @@ def stripe_webhook():
     event_type = event.get('type', '')
     data_obj = event.get('data', {}).get('object', {})
 
+    _LIFF_URL = "https://liff.line.me/2010080648-3cltj7zs"
+
+    def _send_onboarding(uid):
+        """課金完了後にLIFF診断URLをpush送信する"""
+        msg = (
+            "✨ ご登録ありがとうございます！\n\n"
+            "次に、あなたのことを教えてください。\n"
+            "簡単な診断（約5〜7分）を受けると、"
+            "あなただけにカスタマイズされた占いが届くようになります🌙\n\n"
+            f"🔮 診断はこちら\n{_LIFF_URL}"
+        )
+        try:
+            push(uid, msg, with_menu=False)
+        except Exception as e:
+            app.logger.error(f"Onboarding push error: {e}")
+
     if event_type in ('customer.subscription.created', 'customer.subscription.updated'):
         uid = data_obj.get('metadata', {}).get('line_user_id', '')
         if uid and data_obj.get('status') in ('active', 'trialing'):
             user = get_user(uid) or {}
+            already_premium = user.get('premium', False)
             user['premium'] = True
             set_user(uid, user)
             app.logger.info(f"Premium activated: {uid}")
+            if not already_premium:
+                _send_onboarding(uid)
 
     elif event_type == 'invoice.payment_succeeded':
         sub_id = data_obj.get('subscription', '')
@@ -1745,9 +1782,12 @@ def stripe_webhook():
                 pass
         if uid:
             user = get_user(uid) or {}
+            already_premium = user.get('premium', False)
             user['premium'] = True
             set_user(uid, user)
             app.logger.info(f"Premium payment confirmed: {uid}")
+            if not already_premium:
+                _send_onboarding(uid)
 
     elif event_type == 'customer.subscription.deleted':
         uid = data_obj.get('metadata', {}).get('line_user_id', '')
