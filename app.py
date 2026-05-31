@@ -1471,6 +1471,25 @@ def handle_message(event):
     user = get_user(user_id)
     text = event.message.text.strip()
 
+    # waiting_payment状態 or 未課金の場合は常に支払いボタンを返す
+    if user.get("state") == "waiting_payment" or (not user.get("birthday") and not is_premium(user_id)):
+        checkout_url = f"{BASE_URL}/stripe/checkout?uid={user_id}"
+        payment_msg = (
+            "🌙 まずは月額プランへのご登録をお願いします✨\n\n"
+            "月額980円（税込）・いつでも解約可能"
+        )
+        qr = QuickReply(items=[
+            QuickReplyItem(action=URIAction(label="💳 月額プランに登録する", uri=checkout_url))
+        ])
+        with ApiClient(configuration) as api_client:
+            MessagingApi(api_client).reply_message(
+                ReplyMessageRequest(
+                    reply_token=event.reply_token,
+                    messages=[TextMessage(text=payment_msg, quick_reply=qr)]
+                )
+            )
+        return
+
     if text in ("登録する", "プランに登録", "課金"):
         checkout_url = f"{BASE_URL}/stripe/checkout?uid={user_id}"
         reply_msg(event.reply_token,
@@ -1747,7 +1766,11 @@ def stripe_webhook():
     _LIFF_URL = "https://liff.line.me/2010080648-3cltj7zs"
 
     def _send_onboarding(uid):
-        """課金完了後にLIFF診断URLをpush送信する"""
+        """課金完了後にLIFF診断URLをpush送信し、状態をwaiting_diagnosisに更新する"""
+        # stateをwaiting_diagnosisに更新
+        user_data = get_user(uid) or {}
+        user_data['state'] = 'waiting_diagnosis'
+        set_user(uid, user_data)
         msg = (
             "✨ ご登録ありがとうございます！\n\n"
             "次に、あなたのことを教えてください。\n"
