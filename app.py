@@ -250,30 +250,42 @@ def main_menu_qr():
     ])
 
 def push(user_id, text, with_menu=True):
-    with ApiClient(configuration) as api_client:
-        msg = TextMessage(text=text, quick_reply=main_menu_qr() if with_menu else None)
-        MessagingApi(api_client).push_message(
-            PushMessageRequest(to=user_id, messages=[msg])
-        )
+    try:
+        with ApiClient(configuration) as api_client:
+            msg = TextMessage(text=text, quick_reply=main_menu_qr() if with_menu else None)
+            MessagingApi(api_client).push_message(
+                PushMessageRequest(to=user_id, messages=[msg])
+            )
+    except Exception as e:
+        app.logger.error(f"push failed (to={user_id}): {e}", exc_info=True)
+        raise
 
 def push_image(user_id, img_url):
-    with ApiClient(configuration) as api_client:
-        MessagingApi(api_client).push_message(
-            PushMessageRequest(
-                to=user_id,
-                messages=[ImageMessage(
-                    original_content_url=img_url,
-                    preview_image_url=img_url,
-                )]
+    try:
+        with ApiClient(configuration) as api_client:
+            MessagingApi(api_client).push_message(
+                PushMessageRequest(
+                    to=user_id,
+                    messages=[ImageMessage(
+                        original_content_url=img_url,
+                        preview_image_url=img_url,
+                    )]
+                )
             )
-        )
+    except Exception as e:
+        app.logger.error(f"push_image failed (to={user_id}): {e}", exc_info=True)
+        raise
 
 def reply_msg(reply_token, text, with_menu=False):
-    with ApiClient(configuration) as api_client:
-        msg = TextMessage(text=text, quick_reply=main_menu_qr() if with_menu else None)
-        MessagingApi(api_client).reply_message(
-            ReplyMessageRequest(reply_token=reply_token, messages=[msg])
-        )
+    try:
+        with ApiClient(configuration) as api_client:
+            msg = TextMessage(text=text, quick_reply=main_menu_qr() if with_menu else None)
+            MessagingApi(api_client).reply_message(
+                ReplyMessageRequest(reply_token=reply_token, messages=[msg])
+            )
+    except Exception as e:
+        app.logger.error(f"reply_msg failed: {e}", exc_info=True)
+        raise
 
 def store_image(img_id, img_bytes):
     image_cache[img_id] = img_bytes
@@ -1718,6 +1730,30 @@ def stripe_checkout():
 
 @app.route('/stripe/success')
 def stripe_success():
+    # Webhookに依存せず、決済完了ページ到達時にその場で課金を有効化する
+    uid = request.args.get('uid', '')
+    if uid:
+        try:
+            user = get_user(uid) or {}
+            already = user.get('premium', False)
+            user['premium'] = True
+            if user.get('state') == 'waiting_payment':
+                user['state'] = 'waiting_diagnosis'
+            set_user(uid, user)
+            app.logger.info(f"Premium activated via success page: {uid}")
+            if not already:
+                try:
+                    _msg = (
+                        "\u2728 \u3054\u767b\u9332\u3042\u308a\u304c\u3068\u3046\u3054\u3056\u3044\u307e\u3059\uff01\n\n"
+                        "\u6b21\u306b\u3001\u3042\u306a\u305f\u306e\u3053\u3068\u3092\u6559\u3048\u3066\u304f\u3060\u3055\u3044\u3002\n"
+                        "\u7c21\u5358\u306a\u8a3a\u65ad\uff08\u7d045\u301c7\u5206\uff09\u3092\u53d7\u3051\u308b\u3068\u3001\u3042\u306a\u305f\u3060\u3051\u306b\u30ab\u30b9\u30bf\u30de\u30a4\u30ba\u3055\u308c\u305f\u5360\u3044\u304c\u5c4a\u304f\u3088\u3046\u306b\u306a\u308a\u307e\u3059\U0001f319\n\n"
+                        "\U0001f52e \u8a3a\u65ad\u306f\u3053\u3061\u3089\nhttps://liff.line.me/2010080648-3cltj7zs"
+                    )
+                    push(uid, _msg, with_menu=False)
+                except Exception as e:
+                    app.logger.error(f"success onboarding push error: {e}")
+        except Exception as e:
+            app.logger.error(f"stripe_success activate error: {e}")
     return '''<!DOCTYPE html>
 <html lang="ja"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>登録完了 | 星夜堂</title>
@@ -1748,77 +1784,87 @@ def stripe_cancel():
 def stripe_webhook():
     payload = request.get_data()
     sig_header = request.headers.get('Stripe-Signature', '')
+    # 署名検証（verify only、データはraw JSONから取得）
     if STRIPE_WEBHOOK_SECRET:
         try:
-            event = stripe.Webhook.construct_event(payload, sig_header, STRIPE_WEBHOOK_SECRET)
+            stripe.Webhook.construct_event(payload, sig_header, STRIPE_WEBHOOK_SECRET)
         except Exception as e:
-            app.logger.error(f"Stripe webhook error: {e}")
+            app.logger.error(f"Stripe webhook signature error: {e}")
             return jsonify({'error': 'Invalid signature'}), 400
-    else:
-        try:
-            event = json.loads(payload)
-        except Exception:
-            return jsonify({'error': 'Invalid JSON'}), 400
+    try:
+        event = json.loads(payload)
+    except Exception:
+        return jsonify({'error': 'Invalid JSON'}), 400
 
-    event_type = event.get('type', '')
-    data_obj = event.get('data', {}).get('object', {})
+    # ここから先は何が起きても 200 を返す（Stripeの再送ループを防ぐ）。
+    # 例外はログに残し、premium付与は取れた範囲で実行する。
+    try:
+        event_type = (event or {}).get('type', '')
+        data_obj = ((event or {}).get('data') or {}).get('object') or {}
 
-    _LIFF_URL = "https://liff.line.me/2010080648-3cltj7zs"
+        _LIFF_URL = "https://liff.line.me/2010080648-3cltj7zs"
 
-    def _send_onboarding(uid):
-        """課金完了後にLIFF診断URLをpush送信し、状態をwaiting_diagnosisに更新する"""
-        # stateをwaiting_diagnosisに更新
-        user_data = get_user(uid) or {}
-        user_data['state'] = 'waiting_diagnosis'
-        set_user(uid, user_data)
-        msg = (
-            "✨ ご登録ありがとうございます！\n\n"
-            "次に、あなたのことを教えてください。\n"
-            "簡単な診断（約5〜7分）を受けると、"
-            "あなただけにカスタマイズされた占いが届くようになります🌙\n\n"
-            f"🔮 診断はこちら\n{_LIFF_URL}"
-        )
-        try:
-            push(uid, msg, with_menu=False)
-        except Exception as e:
-            app.logger.error(f"Onboarding push error: {e}")
+        def _meta_uid(obj):
+            return ((obj or {}).get('metadata') or {}).get('line_user_id', '')
 
-    if event_type in ('customer.subscription.created', 'customer.subscription.updated'):
-        uid = data_obj.get('metadata', {}).get('line_user_id', '')
-        if uid and data_obj.get('status') in ('active', 'trialing'):
-            user = get_user(uid) or {}
-            already_premium = user.get('premium', False)
-            user['premium'] = True
-            set_user(uid, user)
-            app.logger.info(f"Premium activated: {uid}")
-            if not already_premium:
-                _send_onboarding(uid)
-
-    elif event_type == 'invoice.payment_succeeded':
-        sub_id = data_obj.get('subscription', '')
-        uid = data_obj.get('subscription_details', {}).get('metadata', {}).get('line_user_id', '')
-        if not uid and sub_id and STRIPE_SECRET_KEY:
+        def _send_onboarding(uid):
+            """課金完了後にLIFF診断URLをpush送信し、状態をwaiting_diagnosisに更新する"""
             try:
-                sub = stripe.Subscription.retrieve(sub_id)
-                uid = sub.metadata.get('line_user_id', '')
-            except Exception:
-                pass
-        if uid:
+                user_data = get_user(uid) or {}
+                user_data['state'] = 'waiting_diagnosis'
+                set_user(uid, user_data)
+                msg = (
+                    "\u2728 \u3054\u767b\u9332\u3042\u308a\u304c\u3068\u3046\u3054\u3056\u3044\u307e\u3059\uff01\n\n"
+                    "\u6b21\u306b\u3001\u3042\u306a\u305f\u306e\u3053\u3068\u3092\u6559\u3048\u3066\u304f\u3060\u3055\u3044\u3002\n"
+                    "\u7c21\u5358\u306a\u8a3a\u65ad\uff08\u7d045\u301c7\u5206\uff09\u3092\u53d7\u3051\u308b\u3068\u3001"
+                    "\u3042\u306a\u305f\u3060\u3051\u306b\u30ab\u30b9\u30bf\u30de\u30a4\u30ba\u3055\u308c\u305f\u5360\u3044\u304c\u5c4a\u304f\u3088\u3046\u306b\u306a\u308a\u307e\u3059\U0001f319\n\n"
+                    f"\U0001f52e \u8a3a\u65ad\u306f\u3053\u3061\u3089\n{_LIFF_URL}"
+                )
+                push(uid, msg, with_menu=False)
+            except Exception as e:
+                app.logger.error(f"Onboarding push error: {e}")
+
+        def _activate(uid):
             user = get_user(uid) or {}
-            already_premium = user.get('premium', False)
+            already = user.get('premium', False)
             user['premium'] = True
             set_user(uid, user)
-            app.logger.info(f"Premium payment confirmed: {uid}")
-            if not already_premium:
+            app.logger.info(f"Premium activated via webhook ({event_type}): {uid}")
+            if not already:
                 _send_onboarding(uid)
 
-    elif event_type == 'customer.subscription.deleted':
-        uid = data_obj.get('metadata', {}).get('line_user_id', '')
-        if uid:
-            user = get_user(uid) or {}
-            user['premium'] = False
-            set_user(uid, user)
-            app.logger.info(f"Premium deactivated: {uid}")
+        if event_type == 'checkout.session.completed':
+            uid = _meta_uid(data_obj) or (data_obj.get('client_reference_id') or '')
+            if uid:
+                _activate(uid)
+
+        elif event_type in ('customer.subscription.created', 'customer.subscription.updated'):
+            uid = _meta_uid(data_obj)
+            if uid and data_obj.get('status') in ('active', 'trialing'):
+                _activate(uid)
+
+        elif event_type == 'invoice.payment_succeeded':
+            uid = ((data_obj.get('subscription_details') or {}).get('metadata') or {}).get('line_user_id', '')
+            sub_id = data_obj.get('subscription', '')
+            if not uid and sub_id and STRIPE_SECRET_KEY:
+                try:
+                    sub = stripe.Subscription.retrieve(sub_id)
+                    uid = (sub.metadata or {}).get('line_user_id', '')
+                except Exception as e:
+                    app.logger.error(f"subscription retrieve error: {e}")
+            if uid:
+                _activate(uid)
+
+        elif event_type == 'customer.subscription.deleted':
+            uid = _meta_uid(data_obj)
+            if uid:
+                user = get_user(uid) or {}
+                user['premium'] = False
+                set_user(uid, user)
+                app.logger.info(f"Premium deactivated: {uid}")
+
+    except Exception as e:
+        app.logger.error(f"Stripe webhook handler error: {e}", exc_info=True)
 
     return jsonify({'status': 'ok'})
 # ────────────────────────────────────────────────────────────────────
