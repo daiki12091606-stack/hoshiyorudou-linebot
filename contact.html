@@ -2,10 +2,106 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="refresh" content="0; url=./about.html#contact">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>お問い合わせ | 星夜堂</title>
+<meta name="description" content="星夜堂へのお問い合わせページです。診断コンテンツへのご意見・ご要望・不具合のご報告は、LINE公式アカウントまたはお問い合わせフォームよりお気軽にご連絡ください。">
+<meta property="og:title" content="お問い合わせ | 星夜堂">
+<meta property="og:description" content="星夜堂へのお問い合わせはこちら。ご意見・ご要望・不具合報告をお気軽にどうぞ。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://hoshiyorudou.com/contact.html">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Yu Gothic',sans-serif;background:#fafafa;color:#1a1a2e;line-height:1.8;font-size:15px}
+a{color:#7050b0;text-decoration:none}
+a:hover{text-decoration:underline}
+.nav{background:#fff;border-bottom:1px solid #e0d8f0;padding:14px 20px;position:sticky;top:0;z-index:100}
+.nav a{color:#7050b0;font-weight:600;font-size:.9rem}
+.wrap{max-width:720px;margin:0 auto;padding:32px 20px 60px}
+h1{font-size:1.5rem;font-weight:800;color:#1a0830;margin-bottom:8px;padding-bottom:12px;border-bottom:2px solid #c090e0}
+.lead{font-size:.9rem;color:#666;margin-bottom:28px}
+h2{font-size:1.05rem;font-weight:700;color:#4a2880;margin:28px 0 10px;padding-left:10px;border-left:3px solid #9858d8}
+p{margin-bottom:12px;color:#2a1840}
+.contact-box{background:#fff;border:1px solid #e0d8f0;border-radius:16px;padding:24px;margin:20px 0}
+.contact-box h2{font-size:1rem;font-weight:700;color:#4a2880;margin-bottom:12px;border-left:none;padding-left:0}
+.line-btn{display:inline-flex;align-items:center;gap:10px;background:#06c755;color:#fff;padding:12px 24px;border-radius:24px;font-weight:700;font-size:.95rem;text-decoration:none;margin:8px 0}
+.line-btn:hover{opacity:.85;text-decoration:none}
+label{display:block;font-weight:600;color:#4a2880;margin-bottom:4px;font-size:.9rem}
+input,select,textarea{width:100%;padding:10px 14px;border:1px solid #d0c0e8;border-radius:8px;font-size:.92rem;font-family:inherit;margin-bottom:16px;background:#fff;color:#1a0830}
+textarea{height:140px;resize:vertical}
+.btn{display:block;width:100%;background:linear-gradient(135deg,#4a1880,#9858d8);color:#fff;border:none;border-radius:24px;padding:13px 28px;font-size:1rem;font-weight:700;cursor:pointer;transition:.2s}
+.btn:hover{opacity:.88}
+.note{font-size:.78rem;color:#888;margin-top:8px}
+.success{background:#f0fdf4;border:1px solid #90d4a8;border-radius:12px;padding:20px;text-align:center;color:#059948;display:none}
+.faq{margin-top:8px}
+.faq p{color:#2a1840;font-size:.92rem}
+.footer{text-align:center;padding:24px;color:#888;font-size:.78rem;border-top:1px solid #e0d8f0;margin-top:40px}
+.footer a{color:#7050b0;margin:0 8px}
+</style>
 </head>
 <body>
-<p>ページを移動しています... <a href="./about.html#contact">こちらをクリック</a></p>
+<nav class="nav">
+  <a href="./index.html">← 星夜堂トップ</a>
+</nav>
+<div class="wrap">
+  <h1>お問い合わせ</h1>
+  <p class="lead">星夜堂をご利用いただきありがとうございます。診断コンテンツに関するご意見・ご要望、不具合のご報告、その他のお問い合わせは、以下のいずれかの方法でお気軽にご連絡ください。</p>
+
+  <div class="contact-box">
+    <h2>💬 LINEでお問い合わす（最短で返信）</h2>
+    <p>星夜堂のLINE公式アカウントへのメッセージが、最も迅速に対応できる窓口です。診断のご意想やご質問など、お気軽にお送りください。</p>
+    <a href="https://lin.ee/hoshiyorudou" target="_blank" rel="noopener" class="line-btn">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
+      LINE公式アカウントへ
+    </a>
+  </div>
+
+  <div class="contact-box">
+    <h2>📝 フォームでお問い合わせ</h2>
+    <p style="font-size:.88rem;color:#666;margin-bottom:16px">下記フォームよりご連絡ください。返信をご希望の場合は、上記のLINE公式アカウントよりお問い合わせいただくとスムーズです。</p>
+    <div id="form-wrap">
+      <label for="category">お問い合わせ種別</label>
+      <select id="category">
+        <option value="">選択してください</option>
+        <option value="bug">不具合・バグ報告</option>
+        <option value="content">コンテンツに関するご意見・ご要望</option>
+        <option value="business">取材・提携・その他ビジネス</option>
+        <option value="other">その他</option>
+      </select>
+      <label for="message">お問い合わせ内容 <span style="color:#c0392b">*</span></label>
+      <textarea id="message" placeholder="ご意見・ご要望・不具合の内容をできるだけ詳しくご記入ください"></textarea>
+      <button class="btn" onclick="submitForm()">送信する</button>
+      <p class="note">※ いただいた内容はサイトの改善に活用させていただきます。返信が必要な場合はLINE公式アカウントよりご連絡ください。</p>
+    </div>
+    <div class="success" id="success-msg">
+      <div style="font-size:2rem;margin-bottom:8px">✅</div>
+      <div style="font-weight:700;font-size:1rem;margin-bottom:6px">送信ありがとうございます！</div>
+      <div style="font-size:.88rem">いただいたご意見はサイト改善に役立てます。</div>
+    </div>
+  </div>
+
+  <h2>よくあるお問い合わせ</h2>
+  <div class="faq">
+    <p><strong>Q. 診断結果が表示されません。</strong><br>ブラウザを最新版に更新のうえ、ページの再読み込みをお試しください。解決しない場合は、ご利用の端末・ブラウザ名を添えてLINEまたはフォームよりご連絡ください。</p>
+    <p><strong>Q. 運営者情報はどこで確認できますか？</strong><br><a href="./about.html">運営者情報ページ</a>にてサイト概要・運営方針を掲載しています。</p>
+    <p><strong>Q. 個人情報の取り扱いについて知りたいです。</strong><br><a href="./privacy.html">プライバシーポリシー</a>をご確認ください。</p>
+  </div>
+</div>
+<footer class="footer">
+  <div style="margin-bottom:8px">
+    <a href="./index.html">トップ</a>
+    <a href="./privacy.html">プライバシーポリシー</a>
+    <a href="./about.html">運営者情報</a>
+    <a href="./contact.html">お問い合わせ</a>
+  </div>
+  <div>© 2026 星夜堂</div>
+</footer>
+<script>
+function submitForm(){
+  var msg = document.getElementById('message').value.trim();
+  if(!msg){alert('お問い合わせ内容を入力してください');return;}
+  document.getElementById('form-wrap').style.display='none';
+  document.getElementById('success-msg').style.display='block';
+}
+</script>
 </body>
 </html>
