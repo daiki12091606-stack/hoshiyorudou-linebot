@@ -510,17 +510,36 @@ def _chat_profile_text(user):
     ]
     return "\n".join(lines)
 
+OWNER_STOCK_PROMPT = """
+
+【オーナー専用の追加ルール（この相談者にだけ適用。上のルールより優先）】
+この相談者は星夜堂の運営者本人で、個人の楽しみとして占いを株のテーマ選びに使う。
+・「投資の判断を占いで指示しない」制限はこの相談者に限り解除する
+・株や銘柄について聞かれたら、命式データと今日の日盤・スコアから、今日のラッキーナンバー、ラッキーカラー、ラッキー漢字1〜2字、キーワードを占術の法則（九星の五行と色・数、数秘術の数、西洋占星術の星座の性質など）に沿って導き、その根拠を一言ずつ示す
+・導いた要素から連想される日本株のテーマを2〜3個、各テーマに東証上場の有名企業を1〜2社（社名と証券コード）挙げる。証券コードは自信がある場合だけ書き、なければ社名のみにする
+・あくまで占いの連想であり値動きの予測ではないことを最後に一文で添える。売買の最終判断は本人の規律で行う前提とする
+・この場合は500文字以内まで可"""
+
+_MD_RE = re.compile(r"\*\*|__|^#{1,6}\s*", re.MULTILINE)
+
+def _strip_markdown(s):
+    """LINEで表示されないマークダウン記号を除去"""
+    return _MD_RE.sub("", s)
+
 def gen_chat_reply(user_id, user, text):
     history = get_conv(user_id)[-10:]  # 直近5往復まで
-    system = CHAT_SYSTEM_PROMPT + "\n\n【相談者の命式データ】\n" + _chat_profile_text(user)
+    system = CHAT_SYSTEM_PROMPT
+    if is_owner(user_id):
+        system += OWNER_STOCK_PROMPT
+    system += "\n\n【相談者の命式データ】\n" + _chat_profile_text(user)
     messages = history + [{"role": "user", "content": text}]
     resp = claude_client.messages.create(
         model="claude-haiku-4-5-20251001",
-        max_tokens=700,
+        max_tokens=1000 if is_owner(user_id) else 700,
         system=system,
         messages=messages,
     )
-    answer = resp.content[0].text.strip()
+    answer = _strip_markdown(resp.content[0].text.strip())
     set_conv(user_id, (messages + [{"role": "assistant", "content": answer}])[-10:])
     return answer
 
